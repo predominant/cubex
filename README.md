@@ -1,4 +1,4 @@
-cubus
+Cube
 =====
 
 Experimental Framework
