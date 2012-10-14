@@ -15,9 +15,5 @@ class Connection implements \Database\Connection
     echo '<pre>';
     print_r($config);
     echo '</pre>';
-    echo "MySQL Loaded";
   }
-
-  public function GetRow($sql)
-  {}
 }

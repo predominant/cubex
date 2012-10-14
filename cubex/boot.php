@@ -7,9 +7,6 @@
  */
 namespace Cubex;
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-
 $required_version = '5.4.0';
 if(version_compare(PHP_VERSION, $required_version) < 0)
 {
@@ -35,12 +32,11 @@ if(CUBEX_WEB && !isset($_REQUEST['__path__']))
 
 function shutdown()
 {
+  echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
   $event = error_get_last();
 
   if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
   {
-    echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
-
     return;
   }
 
@@ -95,19 +91,29 @@ class Cubex
   private $_connections = null;
   private $_locale = null;
 
-  public static function Core($path = null)
+  public static function core($path = null)
   {
-    if(self::$cubex === null)
-    {
-      self::$cubex = new Cubex($path);
-    }
+    if(self::$cubex === null) self::$cubex = new Cubex($path);
 
     return self::$cubex;
   }
 
-  public static function Register()
+  public static function register()
   {
-    spl_autoload_register("Cubex\Cubex::LoadClass");
+    spl_autoload_register("Cubex\Cubex::loadClass");
+
+    if(!class_exists("C", false))
+    {
+      try
+      {
+        $cached = CUBEX_ROOT . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR;
+        $cached .= 'cache' . DIRECTORY_SEPARATOR . 'core.php';
+        include_once($cached);
+      }
+      catch(\Exception $e)
+      {
+      }
+    }
 
     return self::$cubex;
   }
@@ -116,12 +122,12 @@ class Cubex
   {
     if($path !== null) $this->_path = $path;
     $this->configure();
-    $this->Register();
+    $this->register();
   }
 
-  public static function Path()
+  public static function path()
   {
-    return self::Core()->_path;
+    return self::core()->_path;
   }
 
   private function configure()
@@ -137,85 +143,92 @@ class Cubex
   }
 
   /**
+   *
    * @param string $connection
    * @return \Database\Connection
    */
-  public static function DB($connection = 'db')
+  public static function db($connection = 'db')
   {
-    return self::GetConnection("database", $connection);
+    return self::getConnection("database", $connection);
   }
 
   /**
    * @param string $connection
    * @return \Cache\Connection
    */
-  public static function Cache($connection = 'local')
+  public static function cache($connection = 'local')
   {
-    return self::GetConnection("cache", $connection);
+    return self::getConnection("cache", $connection);
   }
 
-  private static function GetConnection($type, $connection)
+  private static function getConnection($type, $connection)
   {
-    if(!isset(self::Core()->_connections[$type][$connection]))
+    if(!isset(self::core()->_connections[$type][$connection]))
     {
-      if(!isset(self::Core()->_connections[$type])) self::Core()->_connections[$type] = array();
+      if(!isset(self::core()->_connections[$type])) self::core()->_connections[$type] = array();
       $config = self::config($type . "\\" . $connection);
       $layer  = "\\" . ucwords($type) . "\\";
-      $layer .= C::ArrayValue($config, 'engine', self::Config($type, "engine"));
+      $layer .= C::ArrayValue($config, 'engine', self::config($type, "engine"));
       $layer .= "\Connection";
       //Store connection
-      self::Core()->_connections[$type][$connection] = new $layer($config);
+      self::core()->_connections[$type][$connection] = new $layer($config);
     }
 
-    return self::Core()->_connections[$type][$connection];
+    return self::core()->_connections[$type][$connection];
   }
 
   /**
    * @return \Session\Container
    */
-  public static function Session()
+  public static function session()
   {
-    if(!isset(self::Core()->_connections["session"]))
+    if(!isset(self::core()->_connections["session"]))
     {
       $layer = "\Session\\" . self::Config("session", "container") . "\Container";
       //Store Container
-      self::Core()->_connections["session"] = new $layer(self::config("session"));
+      self::core()->_connections["session"] = new $layer(self::config("session"));
     }
 
-    return self::Core()->_connections["session"];
+    return self::core()->_connections["session"];
   }
 
-  public static function Config($area, $item = null)
+  public static function config($area, $item = null)
   {
-    if($item === null) return self::Core()->_configuration[$area];
-    else return self::Core()->_configuration[$area][$item];
+    if($item === null) return self::core()->_configuration[$area];
+    else return self::core()->_configuration[$area][$item];
   }
 
-  public static function Locale($locale = null)
+  public static function locale($locale = null)
   {
-    if($locale === null) return self::Core()->_locale;
-    self::Core()->_locale = $locale;
+    if($locale === null) return self::core()->_locale;
+    self::core()->_locale = $locale;
     putenv('LC_ALL=' . $locale);
 
     return self::$cubex;
   }
 
-  public static function LoadClass($class)
+  public static function loadClass($class)
   {
-    include_once(CUBEX_ROOT . '/cubes/' . str_replace('_', '/', $class) . '.php');
+    try
+    {
+      include_once(CUBEX_ROOT . '/cubes/' . str_replace('_', '/', $class) . '.php');
+    }
+    catch(\Exception $e)
+    {
+
+    }
   }
 }
 
-Cubex::Core($_REQUEST['__path__']);
-
-if(Cubex::Config('locale', 'enabled'))
+Cubex::core($_REQUEST['__path__']);
+if(Cubex::config('locale', 'enabled'))
 {
-  Cubex::Locale(C::ArrayValue($_REQUEST, 'locale', Cubex::Config("locale", "default")));
+  Cubex::locale(C::arrayValue($_REQUEST, 'locale', Cubex::config("locale", "default")));
 }
 
 //Basic Translations
 /*
-bindtextdomain("messages", CUBEX_ROOT . "/locale");
+ bindtextdomain("messages", CUBEX_ROOT . "/locale");
 textdomain("messages");
 
 $n = rand(0, 10);

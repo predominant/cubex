@@ -13,10 +13,10 @@ interface Connection
 
   public function __construct(array $configuration);
 
-  public function Get($key);
+  public function get($key);
 
-  public function Multi(array $keys);
+  public function multi(array $keys);
 
-  public function Set($key, $data, $expire=0);
+  public function set($key, $data, $expire=0);
 
 }

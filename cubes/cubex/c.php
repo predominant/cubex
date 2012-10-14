@@ -11,7 +11,7 @@ namespace Cubex;
 class C
 {
 
-  public static function ArrayValue($array, $key, $default, $default_type = 0)
+  public static function arrayValue($array, $key, $default, $default_type = 0)
   {
     if(!isset($array[$key])) return $default;
     if($array[$key] === null) return $default;
