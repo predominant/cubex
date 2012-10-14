@@ -167,9 +167,9 @@ class Cubex
     {
       if(!isset(self::core()->_connections[$type])) self::core()->_connections[$type] = array();
       $config = self::config($type . "\\" . $connection);
-      $layer  = "\\" . ucwords($type) . "\\";
+      $layer  = "\\Cubex\\" . ucwords($type) . "\\";
       $layer .= C::ArrayValue($config, 'engine', self::config($type, "engine"));
-      $layer .= "\Connection";
+      $layer .= "\\Connection";
       //Store connection
       self::core()->_connections[$type][$connection] = new $layer($config);
     }
@@ -184,7 +184,8 @@ class Cubex
   {
     if(!isset(self::core()->_connections["session"]))
     {
-      $layer = "\Session\\" . self::Config("session", "container") . "\Container";
+      $layer = "\\Cubex\\Session\\";
+      $layer .= self::Config("session", "container") . "\\Container";
       //Store Container
       self::core()->_connections["session"] = new $layer(self::config("session"));
     }

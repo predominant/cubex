@@ -5,9 +5,9 @@
  * Time: 00:57
  * Description:
  */
-namespace Cache\Memcache;
+namespace Cubex\Cache\Memcache;
 
-class Connection implements \Cache\Connection
+class Connection implements \Cubex\Cache\Connection
 {
   private $_connection = null;
   public function __construct(array $config)

@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cache;
+namespace Cubex\Cache;
 
 interface Connection
 {

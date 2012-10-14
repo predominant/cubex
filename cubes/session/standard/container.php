@@ -5,9 +5,9 @@
  * Time: 00:31
  * Description:
  */
-namespace Session\Standard;
+namespace Cubex\Session\Standard;
 
-class Container implements \Session\Container
+class Container implements \Cubex\Session\Container
 {
 
   public function __construct(array $config)

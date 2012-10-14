@@ -7,7 +7,7 @@
  */
 namespace Database\MySQL;
 
-class Connection implements \Database\Connection
+class Connection implements \Cubex\Database\Connection
 {
 
   public function __construct(array $config)

@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Session;
+namespace Cubex\Session;
 
 interface Container
 {

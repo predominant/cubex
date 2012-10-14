@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Database;
+namespace Cubex\Database;
 
 interface Connection
 {
