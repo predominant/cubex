@@ -39,7 +39,7 @@ function shutdown()
 
   if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
   {
-    echo "Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
+    echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
 
     return;
   }
@@ -69,6 +69,20 @@ function fatal($message)
   exit(1);
 }
 
+/* Translation functions */
+
+function t($string)
+{
+  return _($string);
+}
+
+function p($singular, $plural = null, $number = 0)
+{
+  return ngettext($singular, $plural, $number);
+}
+
+/* Translation functions */
+
 define("CUBEX_START", microtime(true));
 
 class Cubex
@@ -78,10 +92,22 @@ class Cubex
 
   private $_path = null;
   private $_configuration = null;
+  private $_connections = null;
+  private $_locale = null;
 
   public static function Core($path = null)
   {
-    if(self::$cubex === null) self::$cubex = new Cubex($path);
+    if(self::$cubex === null)
+    {
+      self::$cubex = new Cubex($path);
+    }
+
+    return self::$cubex;
+  }
+
+  public static function Register()
+  {
+    spl_autoload_register("Cubex\Cubex::LoadClass");
 
     return self::$cubex;
   }
@@ -90,7 +116,12 @@ class Cubex
   {
     if($path !== null) $this->_path = $path;
     $this->configure();
-    spl_autoload_register(array($this, 'LoadClass'), true, true);
+    $this->Register();
+  }
+
+  public static function Path()
+  {
+    return self::Core()->_path;
   }
 
   private function configure()
@@ -101,8 +132,57 @@ class Cubex
     }
     catch(\Exception $e)
     {
-      fatal("Configuration file missing for '" . CUBEX_ENV . "' environment");
+      fatal("Configuration file missing or invalid for '" . CUBEX_ENV . "' environment");
     }
+  }
+
+  /**
+   * @param string $connection
+   * @return \Database\Connection
+   */
+  public static function DB($connection = 'db')
+  {
+    return self::GetConnection("database", $connection);
+  }
+
+  /**
+   * @param string $connection
+   * @return \Cache\Connection
+   */
+  public static function Cache($connection = 'local')
+  {
+    return self::GetConnection("cache", $connection);
+  }
+
+  private static function GetConnection($type, $connection)
+  {
+    if(!isset(self::Core()->_connections[$type][$connection]))
+    {
+      if(!isset(self::Core()->_connections[$type])) self::Core()->_connections[$type] = array();
+      $config = self::config($type . "\\" . $connection);
+      $layer  = "\\" . ucwords($type) . "\\";
+      $layer .= C::ArrayValue($config, 'engine', self::Config($type, "engine"));
+      $layer .= "\Connection";
+      //Store connection
+      self::Core()->_connections[$type][$connection] = new $layer($config);
+    }
+
+    return self::Core()->_connections[$type][$connection];
+  }
+
+  /**
+   * @return \Session\Container
+   */
+  public static function Session()
+  {
+    if(!isset(self::Core()->_connections["session"]))
+    {
+      $layer = "\Session\\" . self::Config("session", "container") . "\Container";
+      //Store Container
+      self::Core()->_connections["session"] = new $layer(self::config("session"));
+    }
+
+    return self::Core()->_connections["session"];
   }
 
   public static function Config($area, $item = null)
@@ -111,26 +191,34 @@ class Cubex
     else return self::Core()->_configuration[$area][$item];
   }
 
-  public function Debug()
+  public static function Locale($locale = null)
   {
-    $output   = array();
-    $output[] = "Environment:\t" . $this->Config('environment');
-    $output[] = "CUBEX_ENV:\t" . CUBEX_ENV;
-    $output[] = "CUBEX_WEB:\t" . (CUBEX_WEB ? 'True' : 'False');
-    if(CUBEX_WEB) $output[] = "WEB_ROOT:\t" . WEB_ROOT;
-    $output[] = "CUBEX_ROOT:\t" . CUBEX_ROOT;
+    if($locale === null) return self::Core()->_locale;
+    self::Core()->_locale = $locale;
+    putenv('LC_ALL=' . $locale);
 
-    $msg = CUBEX_WEB ? '<pre>' : '';
-    $msg .= implode("\n", $output);
-    $msg .= CUBEX_WEB ? '</pre>' : '';
-
-    return $msg;
+    return self::$cubex;
   }
 
-  public function LoadClass($class)
+  public static function LoadClass($class)
   {
     include_once(CUBEX_ROOT . '/cubes/' . str_replace('_', '/', $class) . '.php');
   }
 }
 
-echo Cubex::Core($_REQUEST['__path__'])->Debug();
+Cubex::Core($_REQUEST['__path__']);
+
+if(Cubex::Config('locale', 'enabled'))
+{
+  Cubex::Locale(C::ArrayValue($_REQUEST, 'locale', Cubex::Config("locale", "default")));
+}
+
+//Basic Translations
+/*
+bindtextdomain("messages", CUBEX_ROOT . "/locale");
+textdomain("messages");
+
+$n = rand(0, 10);
+printf(p("There is %d comment", "There are %d comments", $n), $n);
+echo " : " . t("Hello world") . " " . t("Color");
+*/

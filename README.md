@@ -3,7 +3,7 @@ Cubex
 
 Apache Virtual Host Config
 
-<VirtualHost *:80>
+  <VirtualHost *:80>
     SetEnv CUBEX_ENV development
 
     DocumentRoot "PATH_TO_CUBEX\cubex\webroot"
@@ -18,4 +18,7 @@ Apache Virtual Host Config
     RewriteRule ^/img/(.*)    -                       [L,QSA]
     RewriteRule ^/favicon.ico -                       [L,QSA]
     RewriteRule ^(.*)$        /index.php?__path__=$1  [B,L,QSA]
-</VirtualHost>
+  </VirtualHost>
+
+Recommended PHP Modules
+- APC
