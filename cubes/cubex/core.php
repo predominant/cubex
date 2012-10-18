@@ -17,7 +17,7 @@ class Core
    *
    * new Foo()->Bar(); //throws an error
    *
-   * C:_(new Foo())->Bar(); //works lovely
+   * Core:_(new Foo())->Bar(); //works lovely
    *
    * @static
    * @param $object
