@@ -195,7 +195,7 @@ class Cubex
 
   public static function config($area)
   {
-    return new Data\Handler(self::core()->_configuration[$area]);
+    return new \Cubex\Data\Handler(self::core()->_configuration[$area]);
   }
 
   public static function locale($locale = null)
@@ -211,7 +211,11 @@ class Cubex
   {
     try
     {
-      include_once(CUBEX_ROOT . '/cubes/' . str_replace('_', '/', $class) . '.php');
+      if(strpos($class, 'Cubex\\') === 0)
+      {
+        $class = substr($class, 6);
+      }
+      include_once(CUBEX_ROOT . '/cubes/' . strtolower(str_replace('_', '/', $class)) . '.php');
     }
     catch(\Exception $e)
     {
