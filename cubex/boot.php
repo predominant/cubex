@@ -100,7 +100,7 @@ class Cubex
 
   public static function register()
   {
-    spl_autoload_register("Cubex\Cubex::loadClass");
+    spl_autoload_register("Cubex\\Cubex::loadClass");
 
     if(!class_exists("Core", false))
     {
