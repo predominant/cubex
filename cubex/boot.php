@@ -168,7 +168,7 @@ class Cubex
       if(!isset(self::core()->_connections[$type])) self::core()->_connections[$type] = array();
       $config = self::config($type . "\\" . $connection);
       $layer  = "\\Cubex\\" . ucwords($type) . "\\";
-      $layer .= C::ArrayValue($config, 'engine', self::config($type, "engine"));
+      $layer .= $config->getStr("engine", self::config($type)->getStr("engine", "mysql"));
       $layer .= "\\Connection";
       //Store connection
       self::core()->_connections[$type][$connection] = new $layer($config);
@@ -185,7 +185,7 @@ class Cubex
     if(!isset(self::core()->_connections["session"]))
     {
       $layer = "\\Cubex\\Session\\";
-      $layer .= self::Config("session", "container") . "\\Container";
+      $layer .= self::config("session")->getStr("container", 'standard') . "\\Container";
       //Store Container
       self::core()->_connections["session"] = new $layer(self::config("session"));
     }
@@ -193,10 +193,9 @@ class Cubex
     return self::core()->_connections["session"];
   }
 
-  public static function config($area, $item = null)
+  public static function config($area)
   {
-    if($item === null) return self::core()->_configuration[$area];
-    else return self::core()->_configuration[$area][$item];
+    return new Data\Handler(self::core()->_configuration[$area]);
   }
 
   public static function locale($locale = null)
@@ -222,10 +221,11 @@ class Cubex
 }
 
 Cubex::core($_REQUEST['__path__']);
-if(Cubex::config('locale', 'enabled'))
+/*if(Cubex::config('locale')->getBool('enabled'))
 {
-  Cubex::locale(C::arrayValue($_REQUEST, 'locale', Cubex::config("locale", "default")));
-}
+  $reqest = new Http\Request();
+  $reqest->getstr('locale', Cubex::config('locale')->getStr('default', 'en_US'));
+}*/
 
 //Basic Translations
 /*
