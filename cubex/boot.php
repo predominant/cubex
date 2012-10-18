@@ -102,7 +102,7 @@ class Cubex
   {
     spl_autoload_register("Cubex\Cubex::loadClass");
 
-    if(!class_exists("C", false))
+    if(!class_exists("Core", false))
     {
       try
       {
