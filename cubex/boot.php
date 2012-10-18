@@ -145,7 +145,7 @@ class Cubex
   /**
    *
    * @param string $connection
-   * @return \Database\Connection
+   * @return \Cubex\Database\Connection
    */
   public static function db($connection = 'db')
   {
@@ -154,7 +154,7 @@ class Cubex
 
   /**
    * @param string $connection
-   * @return \Cache\Connection
+   * @return \Cubex\Cache\Connection
    */
   public static function cache($connection = 'local')
   {
@@ -178,7 +178,7 @@ class Cubex
   }
 
   /**
-   * @return \Session\Container
+   * @return \Cubex\Session\Container
    */
   public static function session()
   {
