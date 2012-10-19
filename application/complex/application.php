@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Application\Complex;
+namespace Cubex\Application\Complex;
 
 class ComplexApplication extends \Cubex\Application\App
 {
