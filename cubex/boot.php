@@ -77,6 +77,28 @@ function p($singular, $plural = null, $number = 0)
   return ngettext($singular, $plural, $number);
 }
 
+function dt($domain, $string)
+{
+  return dgettext($domain, $string);
+}
+
+function dp($domain, $singular, $plural = null, $number = 0)
+{
+  return dngettext($domain, $singular, $plural, $number);
+}
+
+function btdom($domain)
+{
+  return bindtextdomain($domain, CUBEX_ROOT . "/locale");
+}
+
+function tdom($domain, $bind = false)
+{
+  if($bind) btdom($domain);
+
+  return textdomain($domain);
+}
+
 /* Translation functions */
 
 define("CUBEX_START", microtime(true));
@@ -225,18 +247,7 @@ class Cubex
 }
 
 Cubex::core($_REQUEST['__path__']);
-/*if(Cubex::config('locale')->getBool('enabled'))
+if(Cubex::config('locale')->getBool('enabled'))
 {
-  $reqest = new Http\Request();
-  $reqest->getstr('locale', Cubex::config('locale')->getStr('default', 'en_US'));
-}*/
-
-//Basic Translations
-/*
- bindtextdomain("messages", CUBEX_ROOT . "/locale");
-textdomain("messages");
-
-$n = rand(0, 10);
-printf(p("There is %d comment", "There are %d comments", $n), $n);
-echo " : " . t("Hello world") . " " . t("Color");
-*/
+  Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
+}
