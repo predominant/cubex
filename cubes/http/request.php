@@ -36,7 +36,7 @@ class Request extends \Cubex\Data\Handler
 
   final public function getPath()
   {
-    $this->_path;
+    return $this->_path;
   }
 
   final public function setHost($host)

@@ -10,7 +10,7 @@ namespace Cubex\Data;
 
 class Handler implements \IteratorAggregate
 {
-  private $_data;
+  protected $_data;
 
   public function __construct($data = null)
   {

@@ -6,33 +6,33 @@
  * Description:
  */
 
-namespace Cubex\Application\Complex;
+namespace Cubex\Application\Simple;
 
 class Application extends \Cubex\Base\Application
 {
   public function getName()
   {
-    return "Complex Application";
+    return "Simple Application";
   }
 
   public function getDescription()
   {
-    return "Complex application to demonstrate full functionality of the Cubex framework";
+    return "Simple application to demonstrate minimal functionality of the Cubex framework";
   }
 
   public function requiredApplications()
   {
-    return array('simple');
+    return array();
   }
 
   public function getBaseURI()
   {
-    return "/complex/";
+    return "/simple/";
   }
 
   public function getDefaultController()
   {
-    return 'ComplexController';
+    return 'DefaultController';
   }
 
   public function getRoutes()

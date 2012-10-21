@@ -10,15 +10,15 @@ namespace Cubex;
 $required_version = '5.4.0';
 if(version_compare(PHP_VERSION, $required_version) < 0)
 {
-  fatal("You are running PHP '" . PHP_VERSION . "', version '{$required_version}' required");
+  Cubex::fatal("You are running PHP '" . PHP_VERSION . "', version '{$required_version}' required");
 }
 
 $env = getenv('CUBEX_ENV'); // Apache Config
 if(!$env && isset($_ENV['CUBEX_ENV'])) $env = $_ENV['CUBEX_ENV'];
-if(!$env) fatal("The 'CUBEX_ENV' environmental variable is not defined.");
+if(!$env) Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
 
-register_shutdown_function('Cubex\shutdown');
-set_error_handler('Cubex\error_handler');
+register_shutdown_function('Cubex\Cubex::shutdown');
+set_error_handler('Cubex\Cubex::error_handler');
 
 define("CUBEX_ENV", $env);
 define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
@@ -27,42 +27,7 @@ define("CUBEX_ROOT", dirname(dirname(__FILE__)));
 
 if(CUBEX_WEB && !isset($_REQUEST['__path__']))
 {
-  fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
-}
-
-function shutdown()
-{
-  echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
-  $event = error_get_last();
-
-  if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
-  {
-    return;
-  }
-
-  $message = $event['message'] . "\n\n" . $event['file'] . ':' . $event['line'];
-
-  fatal($message);
-}
-
-function error_handler($code, $message, $file, $line, array $context)
-{
-  switch($code)
-  {
-    case E_WARNING:
-      throw new \Exception($message, $code);
-      break;
-    default:
-      break;
-  }
-}
-
-function fatal($message)
-{
-  header("Content-Type: text/plain; charset=utf-8", true, 500);
-  echo "== Fatal Error ==\n\n";
-  echo $message . "\n";
-  exit(1);
+  Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
 }
 
 /* Translation functions */
@@ -108,14 +73,14 @@ class Cubex
 
   public static $cubex = null;
 
-  private $_path = null;
+  private $_request = null;
   private $_configuration = null;
   private $_connections = null;
   private $_locale = null;
 
-  public static function core($path = null)
+  public static function core()
   {
-    if(self::$cubex === null) self::$cubex = new Cubex($path);
+    if(self::$cubex === null) self::$cubex = new Cubex();
 
     return self::$cubex;
   }
@@ -140,16 +105,20 @@ class Cubex
     return self::$cubex;
   }
 
-  public function __construct($path = null)
+  public function __construct()
   {
-    if($path !== null) $this->_path = $path;
     $this->configure();
     $this->register();
   }
 
-  public static function path()
+  public function setRequest(Http\Request $request)
   {
-    return self::core()->_path;
+    $this->_request = $request;
+  }
+
+  public static function request()
+  {
+    return self::core()->_request;
   }
 
   private function configure()
@@ -160,7 +129,7 @@ class Cubex
     }
     catch(\Exception $e)
     {
-      fatal("Configuration file missing or invalid for '" . CUBEX_ENV . "' environment");
+      self::fatal("Configuration file missing or invalid for '" . CUBEX_ENV . "' environment");
     }
   }
 
@@ -237,17 +206,59 @@ class Cubex
       {
         $class = substr($class, 6);
       }
-      include_once(CUBEX_ROOT . '/cubes/' . strtolower(str_replace('_', '/', $class)) . '.php');
+
+      if(!(strpos($class, 'Application\\') === 0))
+      {
+        $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
+      }
+      include_once(CUBEX_ROOT . DIRECTORY_SEPARATOR . strtolower(str_replace('_', '/', $class)) . '.php');
     }
     catch(\Exception $e)
     {
-
     }
+  }
+
+
+  final public static function shutdown()
+  {
+    echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
+    $event = error_get_last();
+
+    if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
+    {
+      return;
+    }
+
+    $message = $event['message'] . "\n\n" . $event['file'] . ':' . $event['line'];
+
+    self::fatal($message);
+  }
+
+  final public static function error_handler($code, $message, $file, $line, array $context)
+  {
+    switch($code)
+    {
+      case E_WARNING:
+        throw new \Exception($message, $code);
+        break;
+      default:
+        break;
+    }
+  }
+
+  final public static function fatal($message)
+  {
+    header("Content-Type: text/plain; charset=utf-8", true, 500);
+    echo "== Fatal Error ==\n\n";
+    echo $message . "\n";
+    exit(1);
   }
 }
 
-Cubex::core($_REQUEST['__path__']);
+Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
 if(Cubex::config('locale')->getBool('enabled'))
 {
   Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
 }
+
+Application\Loader::load(Cubex::request());

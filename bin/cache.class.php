@@ -8,18 +8,21 @@
 
 $directory = dirname(dirname(__FILE__)) . '/cubes/';
 $files     = array();
-$files[]   = 'cubex/c.php';
+$files[]   = 'core.php';
 $files[]   = 'cache/connection.php';
 $files[]   = 'cache/memcache/connection.php';
 $files[]   = 'database/connection.php';
 $files[]   = 'database/mysql/connection.php';
 $files[]   = 'session/container.php';
+$files[]   = 'data/handler.php';
+$files[]   = 'http/request.php';
+$files[]   = 'base/application.php';
+$files[]   = '../application/loader.php';
 
-$final = '<?php
-';
+$final = '<?php ';
 foreach($files as $file)
 {
-  $final .= "/* $file Start */\n";
+  $final .= "/* $file */\n";
   $script = file($directory . $file);
   $lines  = count($script);
   foreach($script as $line_num => $line)
@@ -28,11 +31,38 @@ foreach($files as $file)
     if($line_num > 0) $final .= $line;
     if($line_num == $lines && $line == '?>') break;
   }
-  $final .= "/* $file End */\n";
 }
 
-file_put_contents(
-  dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR .
-    'cubex' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'core.php',
-  $final
-);
+/* Strip out comments */
+$tokens        = token_get_all($final);
+$cache_content = '';
+foreach($tokens as $token)
+{
+  if(is_array($token))
+  {
+    if(in_array($token[0], array(T_COMMENT, T_DOC_COMMENT))) continue;
+    $token = $token[1];
+  }
+  $cache_content .= $token;
+}
+
+
+$git_revision = shell_exec("git log -1 --pretty=format:%h");
+$date         = date("d/m/y");
+$time         = date("H:i");
+
+$header = '
+/**
+ * Git Revision: ' . $git_revision . '
+ * Date: ' . $date . '
+ * Time: ' . $time . '
+*/
+';
+
+$output = "<?php\n" . $header . substr($cache_content, 5);
+
+$cachedir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'cubex';
+$cachedir .= DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+
+if(!file_exists($cachedir)) mkdir($cachedir, 0644);
+file_put_contents($cachedir . 'core.php', $output);

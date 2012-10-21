@@ -6,9 +6,8 @@
  * Description:
  */
 
-namespace Cubex\Application;
+namespace Cubex\Base;
 
 class Controller
 {
-
 }
