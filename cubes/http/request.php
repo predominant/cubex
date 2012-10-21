@@ -19,6 +19,7 @@ class Request extends \Cubex\Data\Handler
   private $_subdomain;
   private $_domain;
   private $_tld;
+  private $_processed_host;
 
 
   public function __construct($path = null, $host = null)
@@ -53,11 +54,12 @@ class Request extends \Cubex\Data\Handler
     return $host;
   }
 
-  final public function processHost($host)
+  private function processHost($host)
   {
-    $extra_tlds = \Cubex\Cubex::configuration()->getArr("tlds");
-    $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
-    $parts      = array_reverse(explode('.', $host));
+    if($this->_processed_host) return $this;
+    $extra_tlds = \Cubex\Cubex::config("general")->getArr("tlds");
+    $hard_tlds = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
+    $parts     = array_reverse(explode('.', $host));
     foreach($parts as $i => $part)
     {
       if(empty($this->_tld))
@@ -89,6 +91,8 @@ class Request extends \Cubex\Data\Handler
         }
       }
     }
+
+    $this->_processed_host = true;
 
     return $this;
   }
@@ -153,11 +157,13 @@ class Request extends \Cubex\Data\Handler
     return $_SERVER['REQUEST_METHOD'] == 'POST';
   }
 
+  //TODO: When pushing ajax request, include _cubex_ajax_ POST VAR
   public function isAjax()
   {
     return $this->getExists(self::TYPE_AJAX);
   }
 
+  //TODO: When posting to a form, include _cubex_form_ POST VAR
   public function isForm()
   {
     return $this->getExists(self::TYPE_FORM);
