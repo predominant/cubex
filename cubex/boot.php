@@ -189,6 +189,11 @@ class Cubex
     return new \Cubex\Data\Handler(self::core()->_configuration[$area]);
   }
 
+  public static function configuration()
+  {
+    return new \Cubex\Data\Handler(self::core()->_configuration);
+  }
+
   public static function locale($locale = null)
   {
     if($locale === null) return self::core()->_locale;

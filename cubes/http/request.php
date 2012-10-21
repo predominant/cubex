@@ -23,7 +23,7 @@ class Request extends \Cubex\Data\Handler
 
   public function __construct($path = null, $host = null)
   {
-    $this->_host = $host === null ? $_SERVER['HTTP_HOST'] : $host;//SERVER_NAME
+    $this->_host = $host === null ? $_SERVER['HTTP_HOST'] : $host; //SERVER_NAME
     $this->_path = $path === null ? $_SERVER['REQUEST_URI'] : $path;
   }
 
@@ -55,11 +55,40 @@ class Request extends \Cubex\Data\Handler
 
   final public function processHost($host)
   {
-    $host_parts       = explode('.', $host, 3);
-    $spcount          = count($host_parts);
-    $this->_subdomain = $spcount == 3 ? $host_parts[0] : '';
-    $this->_domain    = $host_parts[$spcount - 2];
-    $this->_tld       = $host_parts[$spcount - 1];
+    $extra_tlds = \Cubex\Cubex::configuration()->getArr("tlds");
+    $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
+    $parts      = array_reverse(explode('.', $host));
+    foreach($parts as $i => $part)
+    {
+      if(empty($this->_tld))
+      {
+        $this->_tld = $part;
+      }
+      else if(empty($this->_domain))
+      {
+        if($i < 2 &&
+          (strlen($part) == 2 || in_array($part . '.' . $this->_tld, $extra_tlds) || in_array($part, $hard_tlds))
+        )
+        {
+          $this->_tld = $part . '.' . $this->_tld;
+        }
+        else
+        {
+          $this->_domain = $part;
+        }
+      }
+      else
+      {
+        if(empty($this->_subdomain))
+        {
+          $this->_subdomain = $part;
+        }
+        else
+        {
+          $this->_subdomain = $part . '.' . $this->_subdomain;
+        }
+      }
+    }
 
     return $this;
   }
