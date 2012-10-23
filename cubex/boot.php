@@ -7,7 +7,10 @@
  */
 namespace Cubex;
 
-xhprof_enable(XHPROF_FLAGS_NO_BUILTINS);
+if(function_exists('xhprof_enable'))
+{
+  xhprof_enable(XHPROF_FLAGS_NO_BUILTINS);
+}
 
 $required_version = '5.4.0';
 if(version_compare(PHP_VERSION, $required_version) < 0)
