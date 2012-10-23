@@ -352,7 +352,7 @@ class Cubex
     echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
     $event = error_get_last();
 
-    if(self::core()->config('general')->getBool("debug", false))
+    if(self::core()->config('general')->getBool("debug", false) && function_exists("xhprof_disable"))
     {
       $xhprof_data = xhprof_disable();
       $XHPROF_ROOT = dirname(dirname(dirname(dirname(__FILE__)))) . '/facebook/xhprof';
