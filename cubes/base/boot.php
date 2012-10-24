@@ -32,7 +32,9 @@ set_error_handler('Cubex\Cubex::error_handler');
 define("CUBEX_ENV", $env);
 define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
 define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-define("CUBEX_ROOT", dirname(dirname(__FILE__)));
+define("CUBEX_ROOT",
+substr(dirname(__FILE__),-5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
+);
 
 if(CUBEX_WEB && !isset($_REQUEST['__path__']))
 {
@@ -162,8 +164,7 @@ class Cubex
     {
       try
       {
-        $cached = CUBEX_ROOT . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR;
-        $cached .= 'cache' . DIRECTORY_SEPARATOR . 'core.php';
+        $cached = CUBEX_ROOT . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'core.php';
         include_once($cached);
       }
       catch(\Exception $e)
@@ -355,7 +356,7 @@ class Cubex
     if(self::core()->config('general')->getBool("debug", false) && function_exists("xhprof_disable"))
     {
       $xhprof_data = xhprof_disable();
-      $XHPROF_ROOT = dirname(dirname(dirname(dirname(__FILE__)))) . '/facebook/xhprof';
+      $XHPROF_ROOT = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/facebook/xhprof';
       include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_lib.php";
       include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_runs.php";
 

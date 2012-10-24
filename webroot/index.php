@@ -6,4 +6,4 @@
  * Description: Launch
  */
 
-require_once(dirname(dirname(__FILE__)) . '/cubex/boot.php');
+require_once(dirname(dirname(__FILE__)) . '/cubes/base/boot.php');

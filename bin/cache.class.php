@@ -10,9 +10,7 @@ $directory = dirname(dirname(__FILE__)) . '/cubes/';
 $files     = array();
 $files[]   = 'core.php';
 $files[]   = 'cache/connection.php';
-$files[]   = 'cache/memcache/connection.php';
 $files[]   = 'database/connection.php';
-$files[]   = 'database/mysql/connection.php';
 $files[]   = 'session/container.php';
 $files[]   = 'data/handler.php';
 $files[]   = 'http/request.php';
@@ -61,8 +59,7 @@ $header = '
 
 $output = "<?php\n" . $header . substr($cache_content, 5);
 
-$cachedir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'cubex';
-$cachedir .= DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR;
+$cachedir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'cache'  . DIRECTORY_SEPARATOR;
 
 if(!file_exists($cachedir)) mkdir($cachedir, 0644);
 file_put_contents($cachedir . 'core.php', $output);
