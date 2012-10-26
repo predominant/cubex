@@ -32,7 +32,7 @@ class Application extends \Cubex\Base\Application
 
   public function getDefaultController()
   {
-    return 'DefaultController';
+    return 'defaultController';
   }
 
   public function getRoutes()

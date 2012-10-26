@@ -10,11 +10,14 @@ namespace Cubex\Base;
 
 class Application
 {
-
   final public static function initialise($application)
   {
     $class_name = "\\Cubex\\Application\\$application\\Application";
-    \Cubex\Core::_(new $class_name)->launch();
+    if(class_exists($class_name))
+    {
+      \Cubex\Core::_(new $class_name)->launch();
+    }
+    else throw new \Exception("Application '" . $application . "' is unavailable",503);
   }
 
   public function launch($launch_default_controller = true)

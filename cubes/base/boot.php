@@ -461,4 +461,11 @@ if(Cubex::config('locale')->getBool('enabled'))
   Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
 }
 
-Application\Loader::load(Cubex::request());
+try
+{
+  Application\Loader::load(Cubex::request());
+}
+catch(\Exception $e)
+{
+  Cubex::fatal($e->getMessage());
+}

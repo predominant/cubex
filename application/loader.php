@@ -67,6 +67,8 @@ class Loader
     {
       case 'www':
         return 'Simple';
+      case 'broken':
+        return 'broken';
     }
     return null;
   }
