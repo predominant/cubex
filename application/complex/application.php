@@ -10,6 +10,7 @@ namespace Cubex\Application\Complex;
 
 class Application extends \Cubex\Base\Application
 {
+
   public function getName()
   {
     return "Complex Application";
@@ -32,7 +33,7 @@ class Application extends \Cubex\Base\Application
 
   public function getDefaultController()
   {
-    return 'ComplexController';
+    return 'defaultController';
   }
 
   public function getRoutes()
@@ -40,8 +41,13 @@ class Application extends \Cubex\Base\Application
     return array();
   }
 
+  public static function loadClass($classname)
+  {
+    $base = dirname(__FILE__);
+  }
+
   public function registerAutoLoader()
   {
-    return null;
+    spl_autoload_register("self::loadClass",true,true);
   }
 }

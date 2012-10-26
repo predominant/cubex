@@ -33,7 +33,7 @@ define("CUBEX_ENV", $env);
 define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
 define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
 define("CUBEX_ROOT",
-substr(dirname(__FILE__),-5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
+substr(dirname(__FILE__), -5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
 );
 
 if(CUBEX_WEB && !isset($_REQUEST['__path__']))
@@ -337,6 +337,48 @@ class Cubex
       {
         $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
       }
+      else
+      {
+        $parts = explode('\\', $class);
+
+        if(count($parts) > 2)
+        {
+          $end = $parts[count($parts) - 1];
+
+          if(substr($class, -10) === 'Controller')
+          {
+            $end                      = 'controller\\' . substr($end, 0, -10);
+            $parts[count($parts) - 1] = $end;
+            $class                    = implode('\\', $parts);
+          }
+          else if($end === 'Events')
+          {
+            $class .= '\\Events';
+          }
+          else if($end === 'Constants')
+          {
+            $class .= '\\Constants';
+          }
+          else if(substr($class, -6) === 'Events')
+          {
+            $end                      = 'events\\' . substr($end, 0, -6);
+            $parts[count($parts) - 1] = $end;
+            $class                    = implode('\\', $parts);
+          }
+          else if(substr($class, -9) === 'Constants')
+          {
+            $end                      = 'constants\\' . substr($end, 0, -9);
+            $parts[count($parts) - 1] = $end;
+            $class                    = implode('\\', $parts);
+          }
+          else if($parts[2] !== 'Application')
+          {
+            $parts[2] = 'lib\\' . $parts[2];
+            $class    = implode('\\', $parts);
+          }
+        }
+      }
+
       include_once(CUBEX_ROOT . DIRECTORY_SEPARATOR . strtolower(str_replace('_', '/', $class)) . '.php');
     }
     catch(\Exception $e)
