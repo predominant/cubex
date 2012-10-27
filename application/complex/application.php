@@ -10,7 +10,6 @@ namespace Cubex\Application\Complex;
 
 class Application extends \Cubex\Base\Application
 {
-
   public function getName()
   {
     return "Complex Application";
