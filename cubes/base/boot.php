@@ -379,7 +379,11 @@ class Cubex
         }
       }
 
-      include_once(CUBEX_ROOT . DIRECTORY_SEPARATOR . strtolower(str_replace('_', '/', $class)) . '.php');
+      include_once(
+      CUBEX_ROOT . DIRECTORY_SEPARATOR
+      . strtolower(str_replace('_', '/', str_replace('\\', '/', $class)))
+      . '.php'
+      );
     }
     catch(\Exception $e)
     {
@@ -392,7 +396,8 @@ class Cubex
    */
   final public static function shutdown()
   {
-    echo "\n<br/>Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
+    echo CUBEX_WEB ? '<br/>' : "\n";
+    echo "Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
     $event = error_get_last();
 
     if(self::core()->config('general')->getBool("debug", false) && function_exists("xhprof_disable"))
@@ -455,17 +460,24 @@ class Cubex
   }
 }
 
-Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
-if(Cubex::config('locale')->getBool('enabled'))
+if(CUBEX_WEB)
 {
-  Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
-}
+  Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
+  if(Cubex::config('locale')->getBool('enabled'))
+  {
+    Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
+  }
 
-try
-{
-  Application\Loader::load(Cubex::request());
+  try
+  {
+    Application\Loader::load(Cubex::request());
+  }
+  catch(\Exception $e)
+  {
+    Cubex::fatal($e->getMessage());
+  }
 }
-catch(\Exception $e)
+else
 {
-  Cubex::fatal($e->getMessage());
+  Cubex::core();
 }
