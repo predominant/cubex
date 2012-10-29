@@ -10,6 +10,7 @@ namespace Cubex\Base;
 
 class WebPage
 {
+
   private $_title;
   private $_meta;
 
@@ -62,13 +63,13 @@ class WebPage
     {
       $html .= '<meta name="' . $name . '" content="' . $content . '" />';
     }
+
     return $html;
   }
 
   public function getHead()
   {
     //TODO: Get Stylesheets
-    //TODO: Get Scripts
     return $this->getMetaHTML();
   }
 
@@ -77,26 +78,31 @@ class WebPage
     return '';
   }
 
+  public function getClosing()
+  {
+    //TODO: Get Scripts
+    return '';
+  }
+
   public function render()
   {
-    $charset = $this->getCharset();
-    $title = $this->getTitle();
-    $head  = $this->getHead();
-    $body  = $this->getBody();
+    $charset     = $this->getCharset();
+    $title       = $this->getTitle();
+    $head        = $this->getHead();
+    $body        = $this->getBody();
+    $closing     = $this->getClosing();
+    $method      = strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
+    $request_url = \Cubex\Cubex::request()->getPath();
+    $request_url .= '?' . http_build_query(\Cubex\Cubex::request()->variables(), '', '&amp;');
 
     $response = <<<EOHTML
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="$charset" />
-    <title>{$title}</title>
-    {$head}
-  </head>
-  <body>
-  {$body}
-  </body>
-</html>
-
+<html class="no_js"><head><meta charset="$charset" />
+<script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};Env = window.Env || {};b(Env);};
+!function(){var doc = document,htm = doc.documentElement;htm.className = htm.className.replace('no_js', '');}();
+envPop({"method":"$method"});</script>
+<noscript><meta http-equiv="refresh" content="0; URL=$request_url&amp;__noscript__=1" /></noscript>
+<title>{$title}</title>{$head}</head><body>{$body}{$closing}</body></html>
 EOHTML;
 
     return $response;

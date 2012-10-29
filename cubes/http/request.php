@@ -58,8 +58,8 @@ class Request extends \Cubex\Data\Handler
   {
     if($this->_processed_host) return $this;
     $extra_tlds = \Cubex\Cubex::config("general")->getArr("tlds");
-    $hard_tlds = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
-    $parts     = array_reverse(explode('.', $host));
+    $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
+    $parts      = array_reverse(explode('.', $host));
     foreach($parts as $i => $part)
     {
       if(empty($this->_tld))
@@ -69,7 +69,7 @@ class Request extends \Cubex\Data\Handler
       else if(empty($this->_domain))
       {
         if($i < 2 &&
-          (strlen($part) == 2 || in_array($part . '.' . $this->_tld, $extra_tlds) || in_array($part, $hard_tlds))
+        (strlen($part) == 2 || in_array($part . '.' . $this->_tld, $extra_tlds) || in_array($part, $hard_tlds))
         )
         {
           $this->_tld = $part . '.' . $this->_tld;
@@ -145,6 +145,17 @@ class Request extends \Cubex\Data\Handler
     if(empty($_SERVER['HTTPS'])) return false;
     else if(!strcasecmp($_SERVER["HTTPS"], "off")) return false;
     else return true;
+  }
+
+  public function variables()
+  {
+    $variables = array();
+    foreach($_REQUEST as $k => $v)
+    {
+      if(substr($k, 0, 2) !== '__') $variables[$k] = $v;
+    }
+
+    return $variables;
   }
 
   final public function isHTTP()
