@@ -9,18 +9,31 @@ class CubexTest extends PHPUnit_Framework_TestCase
 {
   public function testCubexHasLoaded()
   {
-    $this->assertTrue(class_exists('\\Cubex\\Cubex'), "Cubex has not been loaded");
+    $this->assertTrue(
+      class_exists('\\Cubex\\Cubex'),
+      "Cubex has not been loaded"
+    );
   }
 
   public function testCubexHasInstantiated()
   {
-    $this->assertInstanceOf('\\Cubex\\Cubex', \Cubex\Cubex::$cubex);
+    $cubex = \Cubex\Cubex::$cubex;
+    $this->assertInstanceOf('\\Cubex\\Cubex', $cubex);
+
+    return $cubex;
   }
 
-  public function testCubexConfigurationExists()
+  /**
+   * @depends testCubexHasInstantiated
+   * @param $cubex \Cubex\Cubex
+   */
+  public function testCubexConfigurationExists($cubex)
   {
-    $configuration = \Cubex\Cubex::configuration();
+    $configuration = $cubex::configuration();
     $this->assertInstanceOf('\\Cubex\\Data\\Handler', $configuration);
-    $this->assertEquals('Development Platform', $configuration->environment);
+    $this->assertEquals(
+      'Development Platform',
+      $configuration->getStr('environment')
+    );
   }
 }
