@@ -333,7 +333,7 @@ class Cubex
         $class = substr($class, 6);
       }
 
-      if(!(strpos($class, 'Application\\') === 0))
+      if(!(strpos($class, 'Application\\') === 0) && !(strpos($class, 'Module\\') === 0))
       {
         $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
       }
