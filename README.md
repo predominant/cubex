@@ -22,3 +22,20 @@ Apache Virtual Host Config
 
 Recommended PHP Modules
 - APC
+
+
+The Cubex Stack
+
+ Application
+ Modules | Cubes
+ Cubex
+
+ Cubex: sits at the base level, and handles common loading of classes.
+
+ Cubes: are a collection of generic modules that can be used across projects, such as the session layer, or db access
+
+ Modules: similar to cubes, however, these contain specific functionality, e.g. a User module.
+          The modules can be used on multiple projects, however, contain specific logic and models
+          that can be used by an application.
+
+ Application: ties everything together, handling the users request through to the response.
