@@ -129,7 +129,7 @@ function tdom($domain, $bind = false)
 /**
  * Cubex Framework
  */
-class Cubex
+final class Cubex
 {
 
   public static $cubex = null;
@@ -178,7 +178,7 @@ class Cubex
   /**
    * Load configuration and register autoloaders
    */
-  public function __construct()
+  private function __construct()
   {
     $this->configure();
     $this->register();
