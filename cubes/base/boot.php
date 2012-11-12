@@ -158,6 +158,7 @@ final class Cubex
    */
   public static function register()
   {
+    set_include_path(get_include_path() . PATH_SEPARATOR . CUBEX_ROOT);
     spl_autoload_register("Cubex\\Cubex::loadClass");
 
     if(!class_exists("Core", false))
@@ -215,6 +216,11 @@ final class Cubex
     try
     {
       $this->_configuration = parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
+      if(isset($this->_configuration['general']['include_path']))
+      {
+        $application_dir = $this->_configuration['general']['include_path'];
+        set_include_path(get_include_path() . PATH_SEPARATOR . $application_dir);
+      }
     }
     catch(\Exception $e)
     {
@@ -379,11 +385,8 @@ final class Cubex
         }
       }
 
-      include_once(
-      CUBEX_ROOT . DIRECTORY_SEPARATOR
-      . strtolower(str_replace('_', '/', str_replace('\\', '/', $class)))
-      . '.php'
-      );
+      $include_file = strtolower(str_replace('_', '/', str_replace('\\', '/', $class))) . '.php';
+      include_once($include_file);
     }
     catch(\Exception $e)
     {
@@ -397,7 +400,7 @@ final class Cubex
   final public static function shutdown()
   {
     echo CUBEX_WEB ? '<br/>' : "\n";
-    echo "Completed in: " . number_format((microtime(true) - CUBEX_START) * 1000, 3) . " ms";
+    echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
     $event = error_get_last();
 
     if(self::core()->config('general')->getBool("debug", false) && function_exists("xhprof_disable"))
