@@ -339,11 +339,11 @@ final class Cubex
         $class = substr($class, 6);
       }
 
-      if(!(strpos($class, 'Application\\') === 0) && !(strpos($class, 'Module\\') === 0))
+      if(strpos($class, 'Module\\') === 0)
       {
-        $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
+        //TODO: Add some module loaders to handle more complex modules
       }
-      else
+      else if(strpos($class, 'Application\\') === 0)
       {
         $parts = explode('\\', $class);
 
@@ -383,6 +383,10 @@ final class Cubex
             $class    = implode('\\', $parts);
           }
         }
+      }
+      else
+      {
+        $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
       }
 
       $include_file = strtolower(str_replace('_', '/', str_replace('\\', '/', $class))) . '.php';
