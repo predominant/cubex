@@ -21,5 +21,12 @@ class defaultController extends \Cubex\Base\Controller
     $partial->addElement("Brooke Bryan", "CTO");
     $partial->addElement("Gareth Evans", "Director of Developer");
     echo $partial->render();
+
+    $menu = new \Cubex\Widgets\Menu\Widget();
+    echo "Random String";
+    $menu->addItem("Link 1", '/link1');
+    $menu->addItem("Link 2", '/link2');
+    echo $menu->render();
+
   }
 }

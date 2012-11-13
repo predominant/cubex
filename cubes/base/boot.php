@@ -343,6 +343,10 @@ final class Cubex
       {
         //TODO: Add some module loaders to handle more complex modules
       }
+      else if(strpos($class, 'Widgets\\') === 0)
+      {
+        //TODO: Add some widget loaders
+      }
       else if(strpos($class, 'Application\\') === 0)
       {
         $parts = explode('\\', $class);
