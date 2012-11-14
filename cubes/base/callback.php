@@ -10,6 +10,10 @@ namespace Cubex\Base;
 
 class Callback
 {
+
+  const TYPE_GENERIC   = 'generic';
+  const TYPE_FILTER    = 'filter';
+  const TYPE_VALIDATOR = 'validator';
   private $_method;
   private $_options;
   private $_type;
@@ -28,19 +32,19 @@ class Callback
 
   public function Process($input = null)
   {
-    if($this->_type == 'filter' && is_string($this->_method))
+    if($this->_type == self::TYPE_FILTER && is_string($this->_method))
     {
-      if(!function_exists($this->_method) && method_exists("Filter", $this->_method))
+      if(!function_exists($this->_method) && method_exists("\\Cubex\\Data\\Filter", $this->_method))
       {
-        $this->_method = array("Filter", $this->_method);
+        $this->_method = array("\\Cubex\\Data\\Filter", $this->_method);
       }
     }
 
-    if($this->_type == 'validator' && is_string($this->_method))
+    if($this->_type == self::TYPE_VALIDATOR && is_string($this->_method))
     {
-      if(!function_exists($this->_method) && method_exists("Validate", $this->_method))
+      if(!function_exists($this->_method) && method_exists("\\Cubex\\Data\\Validate", $this->_method))
       {
-        $this->_method = array("Validate", $this->_method);
+        $this->_method = array("\\Cubex\\Data\\Validate", $this->_method);
       }
     }
 
