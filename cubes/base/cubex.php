@@ -7,11 +7,6 @@
  */
 namespace Cubex;
 
-if(function_exists('xhprof_enable'))
-{
-  xhprof_enable(XHPROF_FLAGS_NO_BUILTINS);
-}
-
 $required_version = '5.4.0';
 if(version_compare(PHP_VERSION, $required_version) < 0)
 {
@@ -43,88 +38,6 @@ if(CUBEX_WEB && !isset($_REQUEST['__path__']))
 
 define("CUBEX_START", microtime(true));
 
-/* Translation functions */
-
-/**
- * Translate string to locale, wrapper for gettext
- *
- * @link http://php.net/manual/en/function.gettext.php
- * @param string $string
- * @return string
- */
-function t($string)
-{
-  return _($string);
-}
-
-/**
- * Translate plural, wrapper for ngettext
- *
- * @link http://php.net/manual/en/function.ngettext.php
- * @param      $singular
- * @param null $plural
- * @param int  $number
- * @return string
- */
-function p($singular, $plural = null, $number = 0)
-{
-  return ngettext($singular, $plural, $number);
-}
-
-/**
- * Translate string using specific domain
- *
- * @link http://php.net/manual/en/function.dgettext.php
- * @param $domain
- * @param $string
- * @return string
- */
-function dt($domain, $string)
-{
-  return dgettext($domain, $string);
-}
-
-/**
- * Translate plural, using specific domain
- *
- * @link http://php.net/manual/en/function.dngettext.php
- * @param      $domain
- * @param      $singular
- * @param null $plural
- * @param int  $number
- * @return string
- */
-function dp($domain, $singular, $plural = null, $number = 0)
-{
-  return dngettext($domain, $singular, $plural, $number);
-}
-
-/**
- * Bind domain to language file (CUBEX_ROOT/locale)
- *
- * @link http://php.net/manual/en/function.bindtextdomain.php
- * @param $domain
- * @return string
- */
-function btdom($domain)
-{
-  return bindtextdomain($domain, CUBEX_ROOT . "/locale");
-}
-
-/**
- * Set the text domain, wrapper for textdomain
- *
- * @link http://php.net/manual/en/function.textdomain.php
- * @param string     $domain
- * @param bool       $bind
- * @return string
- */
-function tdom($domain, $bind = false)
-{
-  if($bind) btdom($domain);
-
-  return textdomain($domain);
-}
 
 /**
  * Cubex Framework
@@ -409,21 +322,8 @@ final class Cubex
   {
     echo CUBEX_WEB ? '<br/>' : "\n";
     echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
+    echo " - " . number_format(((microtime(true) - CUBEX_START))*1000, 1) . " ms";
     $event = error_get_last();
-
-    if(self::core()->config('general')->getBool("debug", false) && function_exists("xhprof_disable"))
-    {
-      $xhprof_data = xhprof_disable();
-      $XHPROF_ROOT = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/facebook/xhprof';
-      include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_lib.php";
-      include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_runs.php";
-
-      $xhprof_runs = new \XHProfRuns_Default();
-      $run_id      = $xhprof_runs->save_run($xhprof_data, "xhprof_cubex");
-
-      echo '<br/><a target="_blank" href="http://www.xhprof.local/index.php?run=' . $run_id;
-      echo '&source=xhprof_cubex">Debug Data</a>';
-    }
 
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
     {

@@ -18,7 +18,7 @@ class defaultController extends \Cubex\Base\Controller
 
   public function runPage()
   {
-    echo \Cubex\Core::_(new \Cubex\Base\WebPage())->setTitle("Complex Application")->render();
+    echo \id(new \Cubex\Base\WebPage())->setTitle("Complex Application")->render();
     Events::pageStarted();
   }
 }

@@ -17,7 +17,7 @@ class Application
     $class_name = "\\Cubex\\Application\\$application\\Application";
     if(class_exists($class_name))
     {
-      \Cubex\Core::_(new $class_name)->launch();
+      \id(new $class_name)->launch();
     }
     else throw new \Exception("Application '" . $application . "' is unavailable",503);
   }
