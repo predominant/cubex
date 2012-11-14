@@ -8,7 +8,7 @@
 
 namespace Cubex\Module\User;
 
-class User
+class User extends \Cubex\Base\Module
 {
 
   public function authenticate($username, $password)
