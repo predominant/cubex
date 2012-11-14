@@ -14,14 +14,14 @@ class Events
   private static $_coathook = null;
   private $_hooks;
 
-  protected static function Hook()
+  final protected static function Hook()
   {
     if(self::$_coathook === null) self::$_coathook = new Events();
 
     return self::$_coathook;
   }
 
-  protected function addHook($event_name, $callback)
+  final protected function addHook($event_name, $callback)
   {
     if(!is_callable($callback, true))
     {
@@ -30,12 +30,12 @@ class Events
     $this->_hooks[$event_name][] = $callback;
   }
 
-  protected function getCallbacks($event_name)
+  final protected function getCallbacks($event_name)
   {
     return isset($this->_hooks[$event_name]) ? $this->_hooks[$event_name] : array();
   }
 
-  protected function fire($event_name)
+  final protected function fire($event_name)
   {
     foreach($this->getCallbacks($event_name) as $callback)
     {
@@ -49,8 +49,12 @@ class Events
     self::Hook()->fire($name);
   }
 
-  public static function hookEvent($name, callable $callback)
+  final public static function hookEvent($name, callable $callback)
   {
     self::Hook()->addHook($name, $callback);
+  }
+
+  public static function createHooks()
+  {
   }
 }

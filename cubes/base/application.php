@@ -10,6 +10,8 @@ namespace Cubex\Base;
 
 class Application
 {
+  private $_layout = 'default';
+
   final public static function initialise($application)
   {
     $class_name = "\\Cubex\\Application\\$application\\Application";
@@ -29,7 +31,7 @@ class Application
      * Initiate Event Hooks
      */
     $events = $namespace . "\\Events";
-    if(class_exists($events))
+    if(class_exists($events) && $events instanceof \Cubex\Events\Events)
     {
       $events::createHooks();
     }
@@ -85,4 +87,16 @@ class Application
   {
     return null;
   }
+
+  public function getLayout()
+  {
+    return $this->_layout;
+  }
+
+  public function setLayout($layout)
+  {
+    $this->_layout = $layout;
+  }
+
+
 }
