@@ -14,7 +14,7 @@ class Widget
   protected $_content;
   protected $_meta;
 
-  public function __construct($capture = true)
+  public function __construct($capture = false)
   {
     if($capture) $this->begin();
   }
