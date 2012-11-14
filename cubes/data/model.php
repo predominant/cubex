@@ -8,45 +8,93 @@
 
 namespace Cubex\Data;
 
-class Model
+abstract class Model
 {
 
   private $_attributes;
   private $_invalid_attributes;
 
-  public function __construct($data=null)
+  public function __construct()
   {
-    if($data !== null)
+    $this->unsetAttributePublics();
+  }
+
+  /**
+   * @param $name
+   * @return Attribute
+   */
+  final protected function attribute($name)
+  {
+    return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
+  }
+
+  final protected function addAttribute(Attribute $attribute)
+  {
+    $this->_attributes[strtolower($attribute->getName())] = $attribute;
+  }
+
+  final protected function unsetAttributePublics()
+  {
+    foreach((array)array_keys($this->_attributes) as $key)
     {
-      $this->populate($data);
+      unset($this->$key);
     }
+    return true;
   }
 
-  public function populateAttribute($attribute_name,$value)
+  protected function attributeExists($attribute)
   {
-    return $this->populate(array($attribute_name,$value));
+    return isset($this->_attributes[$attribute]);
   }
 
-  public function populate($data=array())
+  public function __call($method, $args)
   {
-    if(is_array($data))
+    // NOTE: PHP has a bug that static variables defined in __call() are shared
+    // across all children classes. Call a different method to work around this
+    // bug.
+    return $this->call($method, $args);
+  }
+
+  final protected function call($method, $args)
+  {
+    switch(substr($method, 0, 3))
     {
-      foreach($data as $attribute => $value)
-      {
-        $attr = isset($this->_attributes[$attribute]) ? $this->_attributes[$attribute] : null;
-        if($attr instanceof Attribute)
+      case 'set':
+        $attribute = strtolower(substr($method, 3));
+        if($this->attributeExists($attribute))
         {
-          $attr->setData($value);
-        }
-      }
-    }
+          $this->attribute($attribute)->setData("Defined " . $args[0]);
 
-    return $this;
+          return $this;
+        }
+        else
+        {
+          throw new \Exception("Invalid Attribute " . $attribute);
+        }
+        break;
+      case 'get':
+        $attribute = strtolower(substr($method, 3));
+        if($this->attributeExists($attribute))
+        {
+          return $this->attribute($attribute)->data();
+        }
+        else
+        {
+          throw new \Exception("Invalid Attribute " . $attribute);
+        }
+        break;
+    }
+    return true;
   }
 
-  public function attribute($name)
+  public function __get($name)
   {
-    return isset($this->_attributes[$name]) ? $this->_attributes[$name] : false;
+    return $this->call("get" . ucwords($name), null);
+  }
+
+  public function __set($name,$value)
+  {
+    return $this->call("set" . ucwords($name), array($value));
   }
 
   public function valid($attributes = null, $process_all_validators = false, $fail_first = false)

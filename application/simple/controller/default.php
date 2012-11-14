@@ -13,7 +13,7 @@ class defaultController extends \Cubex\Base\Controller
 
   public function runPage()
   {
-    echo \Cubex\Core::_(new \Cubex\Base\WebPage())->setTitle("Simple Application")->render();
+    echo \id(new \Cubex\Base\WebPage())->setTitle("Simple Application")->render();
 
     $partial = new \Cubex\View\Partial(
       '<div><strong>{#name}</strong> - {#title}</div>', array("name", "title")
@@ -27,7 +27,11 @@ class defaultController extends \Cubex\Base\Controller
     echo "User Module Name: " . $user->moduleName() . "\n<br/>";
     echo "User Module Description: " . $user->moduleDescription() . "\n<br/>";
 
-    $menu = new \Cubex\Widgets\Menu\Widget();
+    $usr = new \Cubex\Module\User\Model\User();
+    $usr->name = 'Brooke';
+    echo $usr->name;
+
+    $menu = new \Cubex\Widgets\Menu\Widget(true);
     echo "Random String";
     $menu->addItem("Link 1", '/link1');
     $menu->addItem("Link 2", '/link2');
