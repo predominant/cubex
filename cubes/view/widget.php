@@ -25,6 +25,11 @@ class Widget
     ob_start();
   }
 
+  final public function getCapturedContent()
+  {
+    return $this->_content;
+  }
+
   final public function capture()
   {
     if($this->_captured === false)
@@ -35,7 +40,7 @@ class Widget
     else $this->_captured = false;
   }
 
-  final protected function preRender()
+  final public function preRender()
   {
     if($this->_captured === false) $this->capture();
   }

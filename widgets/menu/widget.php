@@ -17,7 +17,7 @@ class Widget extends \Cubex\View\Widget
   {
     $this->preRender();
     $content = "<h3>" . Constants::TITLE . "</h3>";
-    $content .= $this->_content;
+    $content .= $this->getCapturedContent();
 
     if($this->_items !== null)
     {
