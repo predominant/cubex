@@ -276,4 +276,19 @@ class Attribute
   {
     return is_array($this->_exceptions) ? $this->_exceptions : array();
   }
+
+  public function errors()
+  {
+    $errors = array();
+
+    foreach($this->exceptions() as $e)
+    {
+      if($e instanceof \Exception)
+      {
+        $errors[] = $e->getMessage();
+      }
+    }
+
+    return $errors;
+  }
 }
