@@ -11,12 +11,48 @@ namespace Cubex\Data;
 abstract class Model
 {
 
+  const CONFIG_IDS = 'id-mechanism';
+
+  const ID_AUTOINCREMENT = 'auto';
+  const ID_MANUAL        = 'manual';
+
   private $_attributes;
   private $_invalid_attributes;
 
+  /*
+   * Automatically add all public properties as attributes and unset them for automatic handling of data
+   */
   public function __construct()
   {
-    $this->unsetAttributePublics();
+    $class = new \ReflectionClass(get_class($this));
+    foreach($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $p)
+    {
+      $property = $p->getName();
+      if(!$this->attributeExists($property)) $this->addAttribute(new Attribute($property));
+      unset($this->$property);
+    }
+  }
+
+  /*
+   * Column Name for ID field
+   * @return string Name of ID column
+   */
+  public function getIDKey()
+  {
+    return 'id';
+  }
+
+  /*
+   * @param string Mode, either 'r' (reading) or 'w' (reading and writing)
+   * @returns DataConnection
+   */
+  abstract protected function dataConnection($mode);
+
+  protected function getConfiguration()
+  {
+    return array(
+      self::CONFIG_IDS => self::ID_AUTOINCREMENT
+    );
   }
 
   /**
@@ -33,18 +69,44 @@ abstract class Model
     $this->_attributes[strtolower($attribute->getName())] = $attribute;
   }
 
-  final protected function unsetAttributePublics()
-  {
-    foreach((array)array_keys($this->_attributes) as $key)
-    {
-      unset($this->$key);
-    }
-    return true;
-  }
-
-  protected function attributeExists($attribute)
+  final protected function attributeExists($attribute)
   {
     return isset($this->_attributes[$attribute]);
+  }
+
+  final protected function addAttributeFilter($attribute,\Cubex\Base\Callback $filter)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addFilter($filter);
+      return true;
+    }
+    return false;
+  }
+
+  final protected function addAttributeValidator($attribute,\Cubex\Base\Callback $filter)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addValidator($filter);
+      return true;
+    }
+    return false;
+  }
+  final protected function addAttributeOption($attribute,$option)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addOption($option);
+      return true;
+    }
+    return false;
   }
 
   public function __call($method, $args)
@@ -63,7 +125,7 @@ abstract class Model
         $attribute = strtolower(substr($method, 3));
         if($this->attributeExists($attribute))
         {
-          $this->attribute($attribute)->setData("Defined " . $args[0]);
+          $this->attribute($attribute)->setData($args[0]);
 
           return $this;
         }
@@ -92,7 +154,7 @@ abstract class Model
     return $this->call("get" . ucwords($name), null);
   }
 
-  public function __set($name,$value)
+  public function __set($name, $value)
   {
     return $this->call("set" . ucwords($name), array($value));
   }
@@ -112,10 +174,11 @@ abstract class Model
         $attr = isset($this->_attributes[$attribute]) ? $this->_attributes[$attribute] : null;
         if($attr instanceof Attribute)
         {
+          unset($this->_invalid_attributes[$attribute]);
           if(!$attr->valid($process_all_validators))
           {
             $valid                       = false;
-            $this->_invalid_attributes[] = $attribute;
+            $this->_invalid_attributes[$attribute] = $attr->errors();
             if($fail_first) return false;
           }
         }

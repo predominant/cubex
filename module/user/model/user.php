@@ -7,21 +7,29 @@
  */
 
 namespace Cubex\Module\User\Model;
-use \Cubex\Data\Attribute as Attribute;
 
 class User extends \Cubex\Data\Model
 {
+
   /**
    * @public varchar(70) $username
    * @public varchar(32) $name
    * @public $names mixed
    */
 
-  public $name,$username;
+  public $name;
+  public $username;
+  public $names;
 
   public function __construct()
   {
-    $this->addAttribute(new Attribute('name'));
-    $this->unsetAttributePublics();
+    parent::__construct();
+    $this->addAttributeFilter('name', \Cubex\Base\Callback::filter("trim"));
+    $this->addAttributeValidator('username', \Cubex\Base\Callback::validator("email"));
+  }
+
+  public function dataConnection($mode)
+  {
+    return new \Cubex\Database\MySQL\Connection(array());
   }
 }
