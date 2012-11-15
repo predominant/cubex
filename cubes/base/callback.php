@@ -14,6 +14,7 @@ class Callback
   const TYPE_GENERIC   = 'generic';
   const TYPE_FILTER    = 'filter';
   const TYPE_VALIDATOR = 'validator';
+
   private $_method;
   private $_options;
   private $_type;
@@ -28,6 +29,16 @@ class Callback
   public static function _($method, $options = array(), $callback_type = null)
   {
     return new callback($method, $options, $callback_type);
+  }
+
+  public static function validator($method, $options = array())
+  {
+    return new callback($method, $options, self::TYPE_VALIDATOR);
+  }
+
+  public static function filter($method, $options = array())
+  {
+    return new callback($method, $options, self::TYPE_FILTER);
   }
 
   public function Process($input = null)
