@@ -5,7 +5,7 @@
  * Time: 00:31
  * Description:
  */
-namespace Database\MySQL;
+namespace Cubex\Database\MySQL;
 
 class Connection implements \Cubex\Database\Connection
 {

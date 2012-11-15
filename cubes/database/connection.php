@@ -8,7 +8,7 @@
 
 namespace Cubex\Database;
 
-interface Connection
+interface Connection extends \Cubex\Base\DataConnection
 {
   public function __construct(array $configuration);
 }
