@@ -101,7 +101,7 @@ class Attribute
     {
       if($filter instanceof \Cubex\Base\Callback)
       {
-        $data = $filter->process($this->Data());
+        $data = $filter->process($data);
       }
     }
 
@@ -237,7 +237,7 @@ class Attribute
   {
     if($this->required() && !$this->populated())
     {
-      $this->_exceptions[] = new \Exception("Required Field " . $this->Name());
+      $this->_exceptions[] = new \Exception("Required Field " . $this->name());
 
       return false;
     }
@@ -251,7 +251,7 @@ class Attribute
         $passed = false;
         try
         {
-          $passed = $validator->process($this->Data());
+          $passed = $validator->process($this->data());
           if(!$passed)
           {
             throw new \Exception("Validation failed");
