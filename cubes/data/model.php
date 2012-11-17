@@ -8,7 +8,7 @@
 
 namespace Cubex\Data;
 
-abstract class Model
+abstract class Model implements \IteratorAggregate
 {
 
   const CONFIG_IDS = 'id-mechanism';
@@ -33,80 +33,45 @@ abstract class Model
     }
   }
 
-  /*
-   * Column Name for ID field
-   * @return string Name of ID column
-   */
-  public function getIDKey()
+  public function getIterator()
   {
-    return 'id';
-  }
-
-  /*
-   * @param string Mode, either 'r' (reading) or 'w' (reading and writing)
-   * @returns DataConnection
-   */
-  abstract protected function dataConnection($mode);
-
-  protected function getConfiguration()
-  {
-    return array(
-      self::CONFIG_IDS => self::ID_AUTOINCREMENT
-    );
-  }
-
-  /**
-   * @param $name
-   * @return Attribute
-   */
-  final protected function attribute($name)
-  {
-    return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
-  }
-
-  final protected function addAttribute(Attribute $attribute)
-  {
-    $this->_attributes[strtolower($attribute->getName())] = $attribute;
-  }
-
-  final protected function attributeExists($attribute)
-  {
-    return isset($this->_attributes[$attribute]);
-  }
-
-  final protected function addAttributeFilter($attribute,\Cubex\Base\Callback $filter)
-  {
-    if(!isset($this->_attributes[$attribute])) return false;
-    $attr = $this->_attributes[$attribute];
-    if($attr instanceof Attribute)
+    $attrs = array();
+    foreach($this->_attributes as $attr)
     {
-      $this->_attributes[$attribute] = $attr->addFilter($filter);
-      return true;
+      if($attr instanceof Attribute)
+      {
+        if(!$attr->isEmpty())
+        {
+          $attrs[$attr->getName()] = $attr->data();
+        }
+      }
     }
-    return false;
+
+    return new \ArrayIterator($attrs);
   }
 
-  final protected function addAttributeValidator($attribute,\Cubex\Base\Callback $filter)
+  public function __toString()
   {
-    if(!isset($this->_attributes[$attribute])) return false;
-    $attr = $this->_attributes[$attribute];
-    if($attr instanceof Attribute)
+    if($this->attributeExists($this->getIDKey()))
     {
-      $this->_attributes[$attribute] = $attr->addValidator($filter);
-      return true;
+      return $this->attribute($this->getIDKey())->data();
     }
-    return false;
-  }
-  final protected function addAttributeOption($attribute,$option)
-  {
-    if(!isset($this->_attributes[$attribute])) return false;
-    $attr = $this->_attributes[$attribute];
-    if($attr instanceof Attribute)
+    else
     {
-      $this->_attributes[$attribute] = $attr->addOption($option);
-      return true;
+      $properties = array();
+      foreach($this->_attributes as $attr)
+      {
+        if($attr instanceof Attribute)
+        {
+          if(!$attr->isEmpty())
+          {
+            $properties[] = $attr->getName() . ' = ' . $attr->data();
+          }
+        }
+      }
+
+      return get_class($this) . " {" . implode(', ', $properties) . "}";
     }
-    return false;
   }
 
   public function __call($method, $args)
@@ -159,7 +124,96 @@ abstract class Model
     return $this->call("set" . ucwords($name), array($value));
   }
 
-  public function valid($attributes = null, $process_all_validators = false, $fail_first = false)
+  public function getTableName()
+  {
+    return str_replace(
+      '_model', '', str_replace('cubex_module_', '', strtolower(str_replace('\\', '_', get_class($this))))
+    );
+  }
+
+  /*
+   * Column Name for ID field
+   * @return string Name of ID column
+   */
+  public function getIDKey()
+  {
+    return 'id';
+  }
+
+  /*
+   * @returns DataConnection
+   */
+  abstract protected function dataConnection();
+
+  protected function getConfiguration()
+  {
+    return array(
+      self::CONFIG_IDS => self::ID_AUTOINCREMENT
+    );
+  }
+
+  /**
+   * @param $name
+   * @return Attribute
+   */
+  final protected function attribute($name)
+  {
+    return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
+  }
+
+  final protected function addAttribute(Attribute $attribute)
+  {
+    $this->_attributes[strtolower($attribute->getName())] = $attribute;
+  }
+
+  final protected function attributeExists($attribute)
+  {
+    return isset($this->_attributes[$attribute]);
+  }
+
+  final protected function addAttributeFilter($attribute, \Cubex\Base\Callback $filter)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addFilter($filter);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  final protected function addAttributeValidator($attribute, \Cubex\Base\Callback $filter)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addValidator($filter);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  final protected function addAttributeOption($attribute, $option)
+  {
+    if(!isset($this->_attributes[$attribute])) return false;
+    $attr = $this->_attributes[$attribute];
+    if($attr instanceof Attribute)
+    {
+      $this->_attributes[$attribute] = $attr->addOption($option);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  public function isValid($attributes = null, $process_all_validators = false, $fail_first = false)
   {
     $valid = true;
     if($attributes === null)
@@ -177,7 +231,7 @@ abstract class Model
           unset($this->_invalid_attributes[$attribute]);
           if(!$attr->valid($process_all_validators))
           {
-            $valid                       = false;
+            $valid                                 = false;
             $this->_invalid_attributes[$attribute] = $attr->errors();
             if($fail_first) return false;
           }
@@ -186,5 +240,56 @@ abstract class Model
     }
 
     return $valid;
+  }
+
+
+  public function saveChanges()
+  {
+
+  }
+
+  public function delete()
+  {
+
+  }
+
+  public function load($id, $columns = array("*"))
+  {
+    //Load single model
+  }
+
+  public static function loadAll($columns = array("*"))
+  {
+    //Load array of models
+  }
+
+  public function loadFromArray(array $data)
+  {
+    foreach($data as $k => $v)
+    {
+      if($this->attributeExists($k))
+      {
+        $set = "set$k";
+        $this->$set($v);
+      }
+    }
+
+    return $this;
+  }
+
+  public function loadMultiFromArray(array $rows)
+  {
+    $result = array();
+    $id     = $this->getIDKey();
+    foreach($rows as $row)
+    {
+      $object = clone $this;
+      if($id && isset($row[$id]))
+      {
+        $result[$row[$id]] = $object->loadFromArray($row);
+      }
+    }
+
+    return $result;
   }
 }

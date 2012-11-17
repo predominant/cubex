@@ -8,7 +8,7 @@
 
 namespace Cubex\Module\User\Model;
 
-class User extends \Cubex\Data\Model
+class User extends \Cubex\Data\SQLModel
 {
 
   /**
@@ -28,8 +28,13 @@ class User extends \Cubex\Data\Model
     $this->addAttributeValidator('username', \Cubex\Base\Callback::validator("email"));
   }
 
-  public function dataConnection($mode)
+  public function dataConnection()
   {
-    return new \Cubex\Database\MySQL\Connection(array());
+    return \Cubex\Cubex::db('db');
+  }
+
+  public function isBusiness()
+  {
+    return $this->type == 'business';
   }
 }

@@ -6,9 +6,9 @@
  * Description: Cubex Boot
  */
 
-
 /**
  * Identity function, returns its argument unmodified.
+ *
  * @param   item.
  * @return  mixed Unmodified argument.
  */

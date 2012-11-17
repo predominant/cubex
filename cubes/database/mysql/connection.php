@@ -10,10 +10,40 @@ namespace Cubex\Database\MySQL;
 class Connection implements \Cubex\Database\Connection
 {
 
-  public function __construct(array $config)
+  public function __construct(array $config = array())
   {
     echo '<pre>';
     print_r($config);
     echo '</pre>';
+  }
+
+  public function connect($mode='w')
+  {
+
+  }
+
+  public function disconnect()
+  {
+
+  }
+
+  public function escapeColumnName($column)
+  {
+    return "`$column`";
+  }
+
+  public function escapeString($string)
+  {
+    return $string;
+  }
+
+  public function escapeStringForLikeClause($string)
+  {
+    return $string;
+  }
+
+  public function escapeMultilineComment($comment)
+  {
+    return $comment;
   }
 }

@@ -79,6 +79,11 @@ class Attribute
     return $this->_required ? true : false;
   }
 
+  public function isEmpty()
+  {
+    return empty($this->_data);
+  }
+
   public function setData($data)
   {
     $this->_populated = !is_null($data);

@@ -9,8 +9,20 @@ namespace Cubex\Base;
 
 interface DataConnection
 {
+  public function __construct(array $config = array());
 
-  public function connect();
+  /*
+   * @param $mode string Mode, either 'r' (reading) or 'w' (reading and writing)
+   */
+  public function connect($mode = 'w');
 
   public function disconnect();
+
+  public function escapeColumnName($column);
+
+  public function escapeString($string);
+
+  public function escapeStringForLikeClause($string);
+
+  public function escapeMultilineComment($comment);
 }

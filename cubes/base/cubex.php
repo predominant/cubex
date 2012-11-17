@@ -38,7 +38,6 @@ if(CUBEX_WEB && !isset($_REQUEST['__path__']))
 
 define("CUBEX_START", microtime(true));
 
-
 /**
  * Cubex Framework
  */
@@ -166,7 +165,7 @@ final class Cubex
   /**
    * @param $type
    * @param $connection
-   * @return mixed
+   * @return \Cubex\Base\DataConnection
    */
   private static function getConnection($type, $connection)
   {
@@ -322,7 +321,7 @@ final class Cubex
   {
     echo CUBEX_WEB ? '<br/>' : "\n";
     echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
-    echo " - " . number_format(((microtime(true) - CUBEX_START))*1000, 1) . " ms";
+    echo " - " . number_format(((microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
     $event = error_get_last();
 
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
