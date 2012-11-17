@@ -49,7 +49,8 @@ class defaultController extends \Cubex\Base\Controller
     $o->ran2 = 43;
     $o->ran3 = 43.63;
     $o->ran4 = true;
-    $usr->loadAllWhere("%QO", $o);
+    $o->name = 'Davide';
+    $usr->loadAllWhere("%QO AND bob IN(%Lf)", $o,array(3497.1,43.3,3497.6));
 
     /*$usr->loadOneWhere(
       "%C = %d AND %C = %s AND random IN(%Ls)",

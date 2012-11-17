@@ -90,6 +90,7 @@ abstract class SQLModel extends Model
    *
    * Implode an array of the type
    * %Ld = implode int array
+   * %Lf = implode int array
    * %Ls = implode string array
    * %LC = implode column names
    *
@@ -251,6 +252,9 @@ abstract class SQLModel extends Model
         {
           case 'd': //  ...integers.
             $value = implode(', ', array_map('intval', $value));
+            break;
+          case 'f': //  ...floats.
+            $value = implode(', ', array_map('floatval', $value));
             break;
           case 's': // ...strings.
             foreach($value as $k => $v)
