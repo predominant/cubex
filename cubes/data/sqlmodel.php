@@ -40,6 +40,11 @@ abstract class SQLModel extends Model
     else return false;
   }
 
+  public function loadMatches(SearchObject $o)
+  {
+    return self::loadAllWhere("%QO",$o);
+  }
+
   public function loadRawWhere($columns, $pattern /* , $arg, $arg, $arg ... */)
   {
     $args = func_get_args();
