@@ -17,6 +17,7 @@ class User extends \Cubex\Data\SQLModel
    * @public $names mixed
    */
 
+  public $id = '4390';
   public $name;
   public $username;
 

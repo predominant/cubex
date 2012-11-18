@@ -44,6 +44,8 @@ class defaultController extends \Cubex\Base\Controller
       var_dump($usr);
     }*/
 
+    echo $usr;
+
     $o = new \stdClass();
     $o->ran = '43';
     $o->ran2 = 43;

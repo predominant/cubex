@@ -28,7 +28,10 @@ abstract class Model implements \IteratorAggregate
     foreach($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $p)
     {
       $property = $p->getName();
-      if(!$this->attributeExists($property)) $this->addAttribute(new Attribute($property));
+      if(!$this->attributeExists($property))
+      {
+        $this->addAttribute(new Attribute($property,false,null,null,null,$this->$property));
+      }
       unset($this->$property);
     }
   }
