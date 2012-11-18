@@ -46,12 +46,13 @@ class defaultController extends \Cubex\Base\Controller
 
     echo $usr;
 
-    $o = new \stdClass();
+    $o = new \Cubex\Data\SearchObject();
     $o->ran = '43';
     $o->ran2 = 43;
     $o->ran3 = 43.63;
     $o->ran4 = true;
     $o->name = 'Davide';
+    $o->setMatchType("name",$o::MATCH_LIKE);
     $usr->loadAllWhere("%QO AND bob IN(%Lf)", $o,array(3497.1,43.3,3497.6));
 
     /*$usr->loadOneWhere(

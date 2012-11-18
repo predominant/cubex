@@ -10,6 +10,7 @@ namespace Cubex\Base;
 
 class Sprintf
 {
+
   /*
    * Query Patterns
    *
@@ -46,9 +47,9 @@ class Sprintf
    * %QA = Query Array
    *
    */
-  final public static function parseQuery($connection,$args)
+  final public static function parseQuery($connection, $args)
   {
-    return self::call(array("\\Cubex\\Base\\Sprintf","query"),$connection,$args);
+    return self::call(array("\\Cubex\\Base\\Sprintf", "query"), $connection, $args);
   }
 
   final public static function call($callback, $user_data, $argv)
@@ -132,7 +133,7 @@ class Sprintf
   }
 
   final private static function query(\Cubex\Base\DataConnection $connection, &$pattern, &$pos, &$value,
-                                             &$length)
+                                      &$length)
   {
     $type = $pattern[$pos];
     $next = (strlen($pattern) > $pos + 1) ? $pattern[$pos + 1] : null;
@@ -195,14 +196,37 @@ class Sprintf
         {
           case 'O': //Object
           case 'A': //Array
-            $qu = array();
+            $check_match = $next == 'O' && method_exists($value, 'getMatchType');
+            $qu          = array();
             foreach($value as $k => $v)
             {
               if(is_int($v)) $val = (int)$v;
               else if(is_float($v)) $val = (float)$v;
               else if(is_bool($v)) $val = (int)$v;
               else $val = "'" . $connection->escapeString($v) . "'";
-              $qu[] = $connection->escapeColumnName($k) . " = " . $val;
+
+              if($check_match)
+              {
+                switch($value->getMatchType($k))
+                {
+                  case '~':
+                    $qu[] = $connection->escapeColumnName($k) . " LIKE '%" . $connection->escapeString($v) . "%'";
+                    break;
+                  case '>':
+                    $qu[] = $connection->escapeColumnName($k) . " LIKE '" . $connection->escapeString($v) . "%'";
+                    break;
+                  case '<':
+                    $qu[] = $connection->escapeColumnName($k) . " LIKE '%" . $connection->escapeString($v) . "'";
+                    break;
+                  case '=':
+                    $qu[] = $connection->escapeColumnName($k) . " = " . $val;
+                    break;
+                }
+              }
+              else
+              {
+                $qu[] = $connection->escapeColumnName($k) . " = " . $val;
+              }
             }
             $value = implode(' AND ', $qu);
             break;
