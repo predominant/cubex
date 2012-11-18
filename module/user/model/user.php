@@ -19,22 +19,11 @@ class User extends \Cubex\Data\SQLModel
 
   public $name;
   public $username;
-  public $names;
 
   public function __construct()
   {
     parent::__construct();
     $this->addAttributeFilter('name', \Cubex\Base\Callback::filter("trim"));
     $this->addAttributeValidator('username', \Cubex\Base\Callback::validator("email"));
-  }
-
-  public function dataConnection()
-  {
-    return \Cubex\Cubex::db('db');
-  }
-
-  public function isBusiness()
-  {
-    return $this->type == 'business';
   }
 }
