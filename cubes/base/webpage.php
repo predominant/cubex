@@ -95,6 +95,8 @@ class WebPage
     $request_url = \Cubex\Cubex::request()->getPath();
     $request_url .= '?' . http_build_query(\Cubex\Cubex::request()->variables(), '', '&amp;');
 
+    //TODO: Handle popups / ajax / form requests
+
     $response = <<<EOHTML
 <!DOCTYPE html>
 <html class="no_js"><head><meta charset="$charset" />
