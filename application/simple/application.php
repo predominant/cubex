@@ -10,6 +10,7 @@ namespace Cubex\Application\Simple;
 
 class Application extends \Cubex\Base\Application
 {
+
   public function getName()
   {
     return "Simple Application";
@@ -37,7 +38,15 @@ class Application extends \Cubex\Base\Application
 
   public function getRoutes()
   {
-    return array();
+    return array(
+      '/I(?P<id>[1-9]\d*)'                 => 'itemController',
+      '/(?P<name>[a-z]*)(?P<id>[0-9]*)' => 'dataController',
+      '/basic/'                            =>
+      array(
+        ''    => 'basicController',
+        'com' => 'complexController'
+      )
+    );
   }
 
   public function registerAutoLoader()
