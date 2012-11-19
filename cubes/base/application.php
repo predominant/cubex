@@ -12,14 +12,25 @@ class Application
 {
 
   private $_uri_data = array();
+  protected $_processed_route = '';
   private $_layout = 'default';
+  public static $app = null;
+
+  /**
+   * @return Application
+   */
+  final public static function getApp()
+  {
+    return self::$app;
+  }
 
   final public static function initialise($application)
   {
     $class_name = "\\Cubex\\Application\\$application\\Application";
     if(class_exists($class_name))
     {
-      \id(new $class_name)->launch();
+      self::$app = new $class_name;
+      self::$app->launch();
     }
     else throw new \Exception("Application '" . $application . "' is unavailable", 503);
   }
@@ -95,6 +106,7 @@ class Application
   public function setLayout($layout)
   {
     $this->_layout = $layout;
+    return $this;
   }
 
   public function getURIData($key = null)
@@ -104,12 +116,12 @@ class Application
     else return array();
   }
 
-  private function getController($path)
+  protected function getController($path)
   {
     return $this->parseRoute($this->getRoutes(), $path);
   }
 
-  private function parseRoute($routes, $path, $prepend = '')
+  protected function parseRoute($routes, $path, $prepend = '')
   {
     if(!is_array($routes)) return $this->getDefaultController();
     foreach($routes as $route => $control)
@@ -126,14 +138,22 @@ class Application
         }
       }
 
-      if(is_array($control)) return $this->parseRoute($control, $path, $prepend . $route);
-      else if($attempt[0]) return $control;
+      if(is_array($control))
+      {
+        $this->_processed_route = $prepend . $route;
+        return $this->parseRoute($control, $path, $prepend . $route);
+      }
+      else if($attempt[0])
+      {
+        $this->_processed_route = $prepend . $route;
+        return $control;
+      }
     }
 
     return $this->getDefaultController();
   }
 
-  private function tryRoute($route, $path)
+  protected function tryRoute($route, $path)
   {
     if(substr($path, -1) != '/') $path = $path . '/';
     $data  = $matches = array();
@@ -145,6 +165,11 @@ class Application
     }
 
     return array($match, $data);
+  }
+
+  public function processedRoute()
+  {
+    return $this->_processed_route;
   }
 
 }

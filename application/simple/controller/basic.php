@@ -11,8 +11,10 @@ namespace Cubex\Application\Simple;
 class basicController extends \Cubex\Base\Controller
 {
 
-  public function runPage()
+  public function runPage($path)
   {
+    echo $this->processedRoute();
+    echo $path;
     echo \id(new \Cubex\Base\WebPage())->setTitle("Simple Application : Basic")->render();
     echo "Basic";
   }
