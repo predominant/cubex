@@ -12,9 +12,6 @@ class Connection implements \Cubex\Database\Connection
 
   public function __construct(array $config = array())
   {
-    echo '<pre>';
-    print_r($config);
-    echo '</pre>';
   }
 
   public function connect($mode='w')
