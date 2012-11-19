@@ -40,7 +40,7 @@ class Application extends \Cubex\Base\Application
   {
     return array(
       '/I(?P<id>[1-9]\d*)'                 => 'itemController',
-      '/(?P<name>[a-z]*)(?P<id>[0-9]*)' => 'dataController',
+      '/D(?P<name>[a-z]*)(?P<id>[0-9]*)' => 'dataController',
       '/basic/'                            =>
       array(
         ''    => 'basicController',

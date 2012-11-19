@@ -41,11 +41,10 @@ class Application
     /*
      * Initiate Controller
      */
-    $c = $namespace . "\\" . $this->getController(\Cubex\Cubex::request()->getPath());
-    ;
-    if(class_exists($c))
+    $controller = $namespace . "\\" . $this->getController(\Cubex\Cubex::request()->getPath());
+    if(class_exists($controller))
     {
-      new $c();
+      new $controller();
     }
     else
     {

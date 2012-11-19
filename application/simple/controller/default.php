@@ -31,32 +31,24 @@ class defaultController extends \Cubex\Base\Controller
 
     $usr       = new \Cubex\Module\User\Model\User();
     $usr->name = ' Brooke ';
-    echo $usr->name;
     $usr->username = 'brooke@bajb.net';
-    /*$usr->saveChanges();
-    $usr->delete();
-    if($usr->isValid())
-    {
-      echo "All Valid";
-    }
-    else
-    {
-      var_dump($usr);
-    }*/
+
+    //$usr->saveChanges();
+    //$usr->delete();
 
     echo $usr;
+    if($usr->isValid()) echo " - <strong>All Valid</strong>";
+    else echo " - <strong>Invalid</strong>";
+
+    echo "\n<br/>";
+    $usr->loadAllWhere("%C = %s", "name", "brooke");
+    echo "\n<br/>";
 
     $o = new \Cubex\Data\SearchObject();
     $o->name = 'Davide';
     $o->setMatchType("name",$o::MATCH_LIKE);
     $o->addSearch("username","brooke",$o::MATCH_END);
-    //$usr->loadAllWhere("%QO", $o);
     $usr->loadMatches($o);
-
-    /*$usr->loadOneWhere(
-      "%C = %d AND %C = %s AND random IN(%Ls)",
-      'user_id', 23, 'username', 'bajbnet', array('bob', 'jay')
-    );*/
 
     $menu = new \Cubex\Widgets\Menu\Widget(true);
     echo "Random String";
