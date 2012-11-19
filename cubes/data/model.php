@@ -30,7 +30,7 @@ abstract class Model implements \IteratorAggregate
       $property = $p->getName();
       if(!$this->attributeExists($property))
       {
-        $this->addAttribute(new Attribute($property,false,null,null,null,$this->$property));
+        $this->addAttribute(new Attribute($property, false, null, null, null, $this->$property));
       }
       unset($this->$property);
     }
@@ -55,26 +55,19 @@ abstract class Model implements \IteratorAggregate
 
   public function __toString()
   {
-    if($this->attributeExists($this->getIDKey()))
+    $properties = array();
+    foreach($this->_attributes as $attr)
     {
-      return $this->attribute($this->getIDKey())->data();
-    }
-    else
-    {
-      $properties = array();
-      foreach($this->_attributes as $attr)
+      if($attr instanceof Attribute)
       {
-        if($attr instanceof Attribute)
+        if(!$attr->isEmpty())
         {
-          if(!$attr->isEmpty())
-          {
-            $properties[] = $attr->getName() . ' = ' . $attr->data();
-          }
+          $properties[] = $attr->getName() . ' = ' . $attr->data();
         }
       }
-
-      return get_class($this) . " {" . implode(', ', $properties) . "}";
     }
+
+    return get_class($this) . " {" . implode(', ', $properties) . "}";
   }
 
   public function __call($method, $args)
