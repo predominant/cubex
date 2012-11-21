@@ -10,12 +10,13 @@ namespace Cubex\View;
 
 class Partial
 {
+
   private $_template;
   private $_variables;
   private $_elements;
 
   /**
-   * @param string $template (HTML Template)
+   * @param string $template  (HTML Template)
    * @param null   $variables (array of variables e.g. array("name","description");
    */
   public function __construct($template = '', $variables = null)
@@ -36,7 +37,9 @@ class Partial
     {
       $element = str_replace('{#' . $key . '}', $args[$arg], $element);
     }
+    $element = vsprintf($element, $args);
     $this->_elements[] = $element;
+
     return $this;
   }
 
