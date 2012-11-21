@@ -72,7 +72,7 @@ class WebPage
 
   public function getBody()
   {
-    return $this->capturedContent();
+    return '<div style="padding:20px;">'. $this->capturedContent() .'</div>';
   }
 
   public function getClosing()
