@@ -12,24 +12,21 @@ class WebPage
 {
 
   private $_title;
+  private $_http_status;
   private $_meta;
+  private $_captured;
+  private $_captured_content;
 
-  public function redirect($url, $final = true)
+  public function setHttpStatus($status = 200)
   {
-    $this->setHeader("location: " . $url);
-    if($final) die;
+    $this->_http_status = $status;
+
+    return $this;
   }
 
-  public function setHeader($header, $replace = false)
+  public function getHttpStatus()
   {
-    if(!headers_sent())
-    {
-      header($header, $replace);
-
-      return true;
-    }
-
-    return false;
+    return $this->_http_status;
   }
 
   public function getCharset()
@@ -75,7 +72,7 @@ class WebPage
 
   public function getBody()
   {
-    return '';
+    return $this->capturedContent();
   }
 
   public function getClosing()
@@ -86,6 +83,7 @@ class WebPage
 
   public function render()
   {
+    $this->preRender();
     $charset     = $this->getCharset();
     $title       = $this->getTitle();
     $head        = $this->getHead();
@@ -109,5 +107,32 @@ EOHTML;
 
     return $response;
 
+  }
+
+
+  final public function beginCapture()
+  {
+    $this->_captured = false;
+    ob_start();
+  }
+
+  final public function capturedContent()
+  {
+    return $this->_captured_content;
+  }
+
+  final public function endCapture()
+  {
+    if($this->_captured === false)
+    {
+      $this->_captured_content = ob_get_clean();
+      $this->_captured         = true;
+    }
+    else $this->_captured = false;
+  }
+
+  final public function preRender()
+  {
+    if($this->_captured === false) $this->endCapture();
   }
 }

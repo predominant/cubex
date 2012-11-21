@@ -14,6 +14,7 @@ class ErrorPage extends WebPage
 
   public function __construct($code=404,$message="Page Not Found",$params=null)
   {
+    $this->setHttpStatus($code);
     $this->setTitle($code . ": " . $message);
     $this->_params = $params;
   }

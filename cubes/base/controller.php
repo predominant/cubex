@@ -42,6 +42,12 @@ class Controller
 
   public function runPage($path = null)
   {
-    echo \id(new \Cubex\Base\ErrorPage(500, "Control Error", array('path' => $path)))->render();
+    $this->renderInvalidAction($path);
+  }
+
+  public function renderInvalidAction($path=null)
+  {
+    $webpage = new \Cubex\Base\ErrorPage(500, "Control Error : Invalid Action", array('path' => $path));
+    new \Cubex\Http\Response($webpage);
   }
 }
