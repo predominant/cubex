@@ -14,6 +14,7 @@ class Partial
   private $_template;
   private $_variables;
   private $_elements;
+  private $_element_data = array();
 
   /**
    * @param string $template  (HTML Template)
@@ -31,13 +32,14 @@ class Partial
    */
   public function addElement()
   {
-    $element = $this->_template;
-    $args    = func_get_args();
+    $element               = $this->_template;
+    $args                  = func_get_args();
+    $this->_element_data[] = $args; //Allow for changing the template at a later point in time, or handling in render
     foreach($this->_variables as $arg => $key)
     {
       $element = str_replace('{#' . $key . '}', $args[$arg], $element);
     }
-    $element = vsprintf($element, $args);
+    $element           = vsprintf($element, $args);
     $this->_elements[] = $element;
 
     return $this;
