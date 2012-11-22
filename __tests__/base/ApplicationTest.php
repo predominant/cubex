@@ -21,10 +21,8 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
     // We need to set the request object here as we are mocking a http request
     // even though we're running via the cli
     Cubex\Cubex::core()->setRequest(new Cubex\Http\Request());
-    ob_start();
+
+    $this->expectOutputRegex('/^<!DOCTYPE html>.*/');
     Cubex\Base\Application::initialise('simple');
-    $response = ob_get_contents();
-    ob_end_clean();
-    $this->assertStringStartsWith('<!DOCTYPE html>', $response);
   }
 }
