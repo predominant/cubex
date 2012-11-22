@@ -1,4 +1,4 @@
-<phpunit bootstrap="../cubes/base/boot.php">
+<phpunit bootstrap="../cubes/boot.php">
   <php>
     <env name="CUBEX_ENV" value="development" />
     <env name="CUBEX_UNITTEST" value="true" />
