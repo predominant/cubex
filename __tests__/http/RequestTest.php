@@ -19,7 +19,7 @@ class Http_RequestTest extends PHPUnit_Framework_TestCase
   const REQUEST_HOST = 'www.example.com';
   const REQUEST_PATH = '/foo/bar';
 
-  public function setUp()
+  protected function setUp()
   {
     $this->_empty_request = new Cubex\Http\Request();
     $this->_built_request = new Cubex\Http\Request(

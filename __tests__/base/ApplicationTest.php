@@ -7,6 +7,19 @@
  */
 class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 {
+  private $_original_current_working_dir;
+
+  protected function setUp()
+  {
+    $this->_original_current_working_dir = getcwd();
+    chdir('webroot');
+  }
+
+  protected function tearDown()
+  {
+    chdir($this->_original_current_working_dir);
+  }
+
   public function testExceptionThrownWhenBadParamPassedToInitiator()
   {
     $this->setExpectedException(
@@ -28,7 +41,6 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
     // We need to set the request object here as we are mocking a http request
     // even though we're running via the cli
     Cubex\Cubex::core()->setRequest(new Cubex\Http\Request());
-
     $this->expectOutputRegex('/^<!DOCTYPE html>.*/');
     Cubex\Base\Application::initialise('simple');
   }
