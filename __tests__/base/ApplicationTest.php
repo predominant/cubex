@@ -18,6 +18,13 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 
   public function testSimpleApplicationInitiator()
   {
+    if(!class_exists('Cubex\Application\Simple\Application'))
+    {
+      $this->markTestSkipped(
+        "This test requires the cubex_example applications"
+      );
+    }
+
     // We need to set the request object here as we are mocking a http request
     // even though we're running via the cli
     Cubex\Cubex::core()->setRequest(new Cubex\Http\Request());
