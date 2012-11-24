@@ -8,15 +8,37 @@
 
 namespace Cubex\Base;
 
-class Controller
+abstract class Controller extends \Cubex\Data\Handler
 {
 
-  public function __construct()
+  final public function __construct()
   {
-    $this->runPage(\Cubex\Cubex::request()->getPath());
+    /* Populate data set with routes */
+    $uri_data = $this->app()->getURIData();
+    if($uri_data !== null)
+    {
+      foreach($uri_data as $k => $v)
+      {
+        $this->setData($k, $v);
+      }
+    }
+
+    $this->setData('_route', $this->app()->processedRoute());
+    $this->setData('_path', $this->request()->getPath());
+
+    if($this->canProcess())
+    {
+      $this->preProcess();
+      $this->processRequest();
+      $this->postProcess();
+    }
+    else
+    {
+      $this->failedProcess();
+    }
   }
 
-  /**
+  /*
    * @return Application
    */
   public function app()
@@ -24,9 +46,52 @@ class Controller
     return \Cubex\Base\Application::getApp();
   }
 
-  public function processedRoute()
+  /*
+   * @return Http\Request
+   */
+  public function request()
   {
-    return $this->App()->processedRoute();
+    return \Cubex\Cubex::request();
+  }
+
+  /*
+   * Should the continue process, or run failedProcess()
+   */
+  public function canProcess()
+  {
+    return true;
+  }
+
+  /*
+   * response when canProcess() returns false
+   */
+  public function failedProcess()
+  {
+    $webpage = new \Cubex\Base\ErrorPage(500, "Failed to Process", array('path' => $this->request()->getPath()));
+    new \Cubex\Http\Response($webpage);
+  }
+
+  /*
+   * Any pre filtering
+   */
+  public function preProcess()
+  {
+  }
+
+  /*
+   * Main method for handling the request
+   */
+  public function processRequest()
+  {
+    $webpage = new \Cubex\Base\ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
+    new \Cubex\Http\Response($webpage);
+  }
+
+  /*
+   * Any post processing
+   */
+  public function postProcess()
+  {
   }
 
   public function getLayout()
@@ -37,17 +102,7 @@ class Controller
   public function setLayout($layout)
   {
     $this->app()->setLayout($layout);
+
     return $this;
-  }
-
-  public function runPage($path = null)
-  {
-    $this->renderInvalidAction($path);
-  }
-
-  public function renderInvalidAction($path=null)
-  {
-    $webpage = new \Cubex\Base\ErrorPage(500, "Control Error : Invalid Action", array('path' => $path));
-    new \Cubex\Http\Response($webpage);
   }
 }

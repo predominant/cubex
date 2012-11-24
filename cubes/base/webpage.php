@@ -17,6 +17,11 @@ class WebPage
   private $_captured;
   private $_captured_content;
 
+  public function controller()
+  {
+    return \Cubex\Cubex::core()->controller();
+  }
+
   public function setHttpStatus($status = 200)
   {
     $this->_http_status = $status;

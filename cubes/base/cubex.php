@@ -47,6 +47,7 @@ final class Cubex
   public static $cubex = null;
 
   private $_request = null;
+  private $_controller = null;
   private $_configuration = null;
   private $_connections = null;
   private $_locale = null;
@@ -118,6 +119,29 @@ final class Cubex
   public static function request()
   {
     return self::core()->_request;
+  }
+
+  /**
+   * Define active controller object for views to pull
+   *
+   * @param \Cubex\Base\Controller $request
+   * @return \Cubex\Cubex
+   */
+  public function setController(\Cubex\Base\Controller $controller)
+  {
+    $this->_controller = $controller;
+
+    return $this;
+  }
+
+  /**
+   * Globally available HTTP Request object
+   *
+   * @return \Cubex\Base\Controller
+   */
+  public static function controller()
+  {
+    return self::core()->_controller;
   }
 
   /**

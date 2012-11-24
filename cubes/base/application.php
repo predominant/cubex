@@ -55,7 +55,7 @@ class Application
     $controller = $namespace . "\\" . $this->getController(\Cubex\Cubex::request()->getPath());
     if(class_exists($controller))
     {
-      new $controller();
+      \Cubex\Cubex::core()->setController(new $controller());
     }
     else
     {
@@ -106,6 +106,7 @@ class Application
   public function setLayout($layout)
   {
     $this->_layout = $layout;
+
     return $this;
   }
 
@@ -141,11 +142,13 @@ class Application
       if(is_array($control))
       {
         $this->_processed_route = $prepend . $route;
+
         return $this->parseRoute($control, $path, $prepend . $route);
       }
       else if($attempt[0])
       {
         $this->_processed_route = $prepend . $route;
+
         return $control;
       }
     }
@@ -153,7 +156,7 @@ class Application
     return $this->getDefaultController();
   }
 
-  protected function tryRoute($route, $path)
+  protected function tryRoute($route, $path, $second = false)
   {
     if(substr($path, -1) != '/') $path = $path . '/';
     $data  = $matches = array();
@@ -162,6 +165,14 @@ class Application
     {
       //Strip out all non declared matches
       if(!is_numeric($k)) $data[$k] = $v;
+    }
+
+    /* Allow Simple Routes */
+    if(!$second && !$match && stristr($route, ':'))
+    {
+      $retry = preg_replace("/\:([a-zA-Z]+)/", "(?P<$1>[^\/]+)", $route);
+
+      return $this->tryRoute($retry, $path, true);
     }
 
     return array($match, $data);
