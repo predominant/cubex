@@ -61,4 +61,15 @@ class Partial
   {
     $this->_elements = array();
   }
+
+  /**
+   * Compiled View
+   * @return View
+   */
+  public function compiledView()
+  {
+    $view = new View();
+    $view->setOutput($this->render());
+    return $view;
+  }
 }
