@@ -105,4 +105,9 @@ abstract class Controller extends \Cubex\Data\Handler
 
     return $this;
   }
+
+  public function baseView()
+  {
+    return new \Cubex\View\View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(),$this->app());
+  }
 }

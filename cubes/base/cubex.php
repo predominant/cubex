@@ -343,11 +343,24 @@ final class Cubex
    */
   final public static function shutdown()
   {
-    echo CUBEX_WEB ? '<br/>' : "\n";
+    if(CUBEX_WEB)
+    {
+      echo '<div id="cubex-shutdown-debug" style="
+      bottom:0; left:0; border:1px solid #666; padding:3px; border-left:0; border-bottom: 0;
+      background:#FFFFFF; position:fixed;
+      ">';
+    }
+    else
+    {
+      echo "\n";
+    }
+
     echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
     echo " - " . number_format(((microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
-    $event = error_get_last();
 
+    echo CUBEX_WEB ? '</div>' : '';
+
+    $event = error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
     {
       return;

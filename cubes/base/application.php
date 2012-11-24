@@ -93,6 +93,12 @@ class Application
     return array();
   }
 
+  public function filePath()
+  {
+    $reflector = new \ReflectionClass(get_class($this));
+    return dirname($reflector->getFileName());
+  }
+
   public function registerAutoLoader()
   {
     return null;

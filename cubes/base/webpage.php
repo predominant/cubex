@@ -16,6 +16,14 @@ class WebPage
   private $_meta;
   private $_captured;
   private $_captured_content;
+  private $_view;
+
+  public function setView(\Cubex\View\View $view)
+  {
+    $this->_view = $view;
+
+    return $this;
+  }
 
   public function controller()
   {
@@ -77,7 +85,14 @@ class WebPage
 
   public function getBody()
   {
-    return '<div style="padding:20px;">'. $this->capturedContent() .'</div>';
+    if($this->_view instanceof \Cubex\View\View)
+    {
+      return $this->_view->render();
+    }
+    else
+    {
+      $this->capturedContent();
+    }
   }
 
   public function getClosing()
@@ -98,7 +113,7 @@ class WebPage
     $request_url = \Cubex\Cubex::request()->getPath();
     $request_url .= '?' . http_build_query(\Cubex\Cubex::request()->variables(), '', '&amp;');
 
-    $noscript = '<meta http-equiv="refresh" content="0; URL='. $request_url .'&amp;__noscript__=1" />';
+    $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
     if(\Cubex\Cubex::request()->jsSupport() === false) $noscript = '';
 
     //TODO: Handle popups / ajax / form requests
