@@ -13,6 +13,7 @@ class Request extends \Cubex\Data\Handler
 
   const TYPE_AJAX = '_cubex_ajax_';
   const TYPE_FORM = '_cubex_form_';
+  const NO_JAVASCRIPT = '__noscript__';
 
   private $_path;
   private $_host;
@@ -178,5 +179,10 @@ class Request extends \Cubex\Data\Handler
   public function isForm()
   {
     return $this->getExists(self::TYPE_FORM);
+  }
+
+  public function jsSupport()
+  {
+    return !isset($_REQUEST[self::NO_JAVASCRIPT]);
   }
 }

@@ -98,6 +98,9 @@ class WebPage
     $request_url = \Cubex\Cubex::request()->getPath();
     $request_url .= '?' . http_build_query(\Cubex\Cubex::request()->variables(), '', '&amp;');
 
+    $noscript = '<meta http-equiv="refresh" content="0; URL='. $request_url .'&amp;__noscript__=1" />';
+    if(\Cubex\Cubex::request()->jsSupport() === false) $noscript = '';
+
     //TODO: Handle popups / ajax / form requests
 
     $response = <<<EOHTML
@@ -105,8 +108,7 @@ class WebPage
 <html class="no_js"><head><meta charset="$charset" />
 <script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};window.Env = Env = window.Env || {};b(Env);};
 !function(){document.documentElement.className.replace('no_js', '');}();
-envPop({"method":"$method"});</script>
-<noscript><meta http-equiv="refresh" content="0; URL=$request_url&amp;__noscript__=1" /></noscript>
+envPop({"method":"$method"});</script><noscript>{$noscript}</noscript>
 <title>{$title}</title>{$head}</head><body>{$body}{$closing}</body></html>
 EOHTML;
 
