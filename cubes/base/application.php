@@ -14,6 +14,7 @@ class Application
   private $_uri_data = array();
   protected $_processed_route = '';
   private $_layout = 'default';
+  /* @var $app Application */
   public static $app = null;
 
   /**
@@ -48,6 +49,8 @@ class Application
     {
       $events::createHooks();
     }
+
+    $this->bindLanguageFile();
 
     /*
      * Initiate Controller
@@ -97,6 +100,11 @@ class Application
   {
     $reflector = new \ReflectionClass(get_class($this));
     return dirname($reflector->getFileName());
+  }
+
+  public function bindLanguageFile()
+  {
+    \btdom('application', $this->filePath() . '\\locale');
   }
 
   public function registerAutoLoader()

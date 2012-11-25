@@ -78,11 +78,13 @@ function dp($domain, $singular, $plural = null, $number = 0)
  *
  * @link http://php.net/manual/en/function.bindtextdomain.php
  * @param $domain
+ * @param $root mixed defaults to cubex/locale
  * @return string
  */
-function btdom($domain)
+function btdom($domain, $root = null)
 {
-  return bindtextdomain($domain, CUBEX_ROOT . "/locale");
+  if($root === null) $root = CUBEX_ROOT . "/locale";
+  return bindtextdomain($domain, $root);
 }
 
 /**
