@@ -91,7 +91,7 @@ class WebPage
     }
     else
     {
-      $this->capturedContent();
+      return $this->capturedContent();
     }
   }
 
