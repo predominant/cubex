@@ -110,4 +110,30 @@ abstract class Controller extends \Cubex\Data\Handler
   {
     return new \Cubex\View\View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(),$this->app());
   }
+
+  /**
+   * Translate string to locale, wrapper for gettext
+   *
+   * @link http://php.net/manual/en/function.gettext.php
+   * @param $message string $string
+   * @return string
+   */
+  public function t($message)
+  {
+    return $this->app()->t($message);
+  }
+
+  /**
+   * Translate plural, using specific domain
+   *
+   * @link http://php.net/manual/en/function.dngettext.php
+   * @param      $singular
+   * @param null $plural
+   * @param int  $number
+   * @return string
+   */
+  public function p($singular, $plural = null, $number = 0)
+  {
+    return $this->app()->p($singular, $plural, $number);
+  }
 }

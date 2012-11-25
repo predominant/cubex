@@ -7,9 +7,8 @@
  */
 namespace Cubex\View;
 
-class Widget
+class Widget extends \Cubex\Base\Translatable
 {
-
   protected $_captured;
   protected $_content;
   protected $_meta;

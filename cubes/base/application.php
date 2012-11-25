@@ -8,9 +8,8 @@
 
 namespace Cubex\Base;
 
-class Application
+class Application extends Translatable
 {
-
   private $_uri_data = array();
   protected $_processed_route = '';
   private $_layout = 'default';
@@ -50,7 +49,7 @@ class Application
       $events::createHooks();
     }
 
-    $this->bindLanguageFile();
+    $this->bindLanguage();
 
     /*
      * Initiate Controller
@@ -94,17 +93,6 @@ class Application
   public function getRoutes()
   {
     return array();
-  }
-
-  public function filePath()
-  {
-    $reflector = new \ReflectionClass(get_class($this));
-    return dirname($reflector->getFileName());
-  }
-
-  public function bindLanguageFile()
-  {
-    \btdom('application', $this->filePath() . '\\locale');
   }
 
   public function registerAutoLoader()

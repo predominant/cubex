@@ -34,6 +34,8 @@ class View extends \Cubex\Data\Handler
     }
   }
 
+
+
   public function addEphemeral($name,$value)
   {
     self::$ephemeral[$name] = $value;
@@ -125,5 +127,33 @@ class View extends \Cubex\Data\Handler
     {
       return static::$cache[md5($this->_render_file)] = file_get_contents($this->_render_file);
     }
+  }
+
+
+
+  /**
+   * Translate string to locale, wrapper for gettext
+   *
+   * @link http://php.net/manual/en/function.gettext.php
+   * @param $message string $string
+   * @return string
+   */
+  public function t($message)
+  {
+    return \Cubex\Base\Application::$app->t($message);
+  }
+
+  /**
+   * Translate plural, using specific domain
+   *
+   * @link http://php.net/manual/en/function.dngettext.php
+   * @param      $singular
+   * @param null $plural
+   * @param int  $number
+   * @return string
+   */
+  public function p($singular, $plural = null, $number = 0)
+  {
+    return \Cubex\Base\Application::$app->p($singular, $plural, $number);
   }
 }
