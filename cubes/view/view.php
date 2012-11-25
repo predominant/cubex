@@ -19,6 +19,7 @@ class View extends \Cubex\Data\Handler
   private $_view_type = self::VIEW_DYNAMIC;
   private $_compiled = '';
   public static $cache = array();
+  public static $ephemeral = array();
   public static $last_known_base = '';
 
   public function __construct($file=null,$application=null)
@@ -31,6 +32,11 @@ class View extends \Cubex\Data\Handler
     {
       $this->setViewFile($file);
     }
+  }
+
+  public function addEphemeral($name,$value)
+  {
+    self::$ephemeral[$name] = $value;
   }
 
   public function setBasePath($base)
@@ -69,6 +75,15 @@ class View extends \Cubex\Data\Handler
 
       if($this->_render_file !== null)
       {
+
+        foreach(self::$ephemeral as $k => $v)
+        {
+          if(!isset($this->$k))
+          {
+            $this->$k = $v;
+          }
+        }
+
         $view_content = $this->loadRawView();
         ob_start();
         try //Make sure the view does not cause the entire render to fail
