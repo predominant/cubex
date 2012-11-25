@@ -64,12 +64,13 @@ class Partial
 
   /**
    * Compiled View
+   * @param null $glue Glue for imploding all elements
    * @return View
    */
-  public function compiledView()
+  public function compiledView($glue = null)
   {
     $view = new View();
-    $view->setOutput($this->render());
+    $view->setOutput($this->render($glue));
     return $view;
   }
 }
