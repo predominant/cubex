@@ -41,6 +41,7 @@ class Analyse
     $tokens    = token_get_all($content);
     $startline = 0;
     $msgid     = '';
+    $started   = false;
 
     foreach($tokens as $token)
     {
