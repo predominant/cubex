@@ -10,7 +10,7 @@ namespace Cubex\Language;
 class Analyse
 {
 
-  protected $_translations = array();
+  protected $_translations = array('single' => array(), 'plural' => array());
 
   public function processDirectory($base, $directory)
   {
@@ -39,28 +39,60 @@ class Analyse
     $content   = file_get_contents($base . $path);
     $path      = ltrim($path, DIRECTORY_SEPARATOR);
     $tokens    = token_get_all($content);
-    $startline = 0;
-    $msgid     = '';
+    $startline = $building = 0;
+    $msgid     = $type = $msgid_plural = '';
     $started   = false;
 
     foreach($tokens as $token)
     {
       if($token[0] == 307 && $token[1] == 't')
       {
+        $building  = 0;
+        $msgid     = $msgid_plural = '';
+        $type      = 'single';
         $startline = $token[2];
         $started   = true;
       }
 
+      if($token[0] == 307 && $token[1] == 'p')
+      {
+        $msgid     = $msgid_plural = '';
+        $type      = 'plural';
+        $building  = 0;
+        $startline = $token[2];
+        $started   = true;
+      }
+
+      if($token == ',' && $type == 'plural')
+      {
+        $building = 1;
+      }
+
       if($started && is_scalar($token) && $token == ')')
       {
-        $this->_translations[$msgid][] = array($path, $startline);
-        $msgid                         = '';
-        $started                       = false;
+        if($type == 'plural')
+        {
+          $this->_translations[$type][md5($msgid . $msgid_plural)]['data']    = array($msgid, $msgid_plural);
+          $this->_translations[$type][md5($msgid . $msgid_plural)]['options'] = array($path, $startline);
+        }
+        else
+        {
+          $this->_translations[$type][$msgid][] = array($path, $startline);
+        }
+
+        $started = false;
       }
 
       if($started && $token[0] == 315)
       {
-        $msgid .= substr($token[1], 1, -1);
+        if($building == 0)
+        {
+          $msgid .= substr($token[1], 1, -1);
+        }
+        else
+        {
+          $msgid_plural .= substr($token[1], 1, -1);
+        }
       }
     }
   }
@@ -79,26 +111,70 @@ msgstr ""
 
 ';
 
-    foreach($this->_translations as $message => $appearances)
+    foreach($this->_translations as $build_type => $translations)
     {
-      $result .= '#:';
-      foreach($appearances as $appearance)
+      foreach($translations as $message => $appearances)
       {
-        $result .= ' ' . implode(':', $appearance);
+        if($build_type == 'plural')
+        {
+          $data        = $appearances;
+          $appearances = array($data['options']);
+          $message     = $data['data'];
+        }
+
+        $result .= '#:';
+        foreach($appearances as $appearance)
+        {
+          $result .= ' ' . implode(':', $appearance);
+        }
+
+        $result .= "\n";
+        if($build_type == 'single')
+        {
+          if(strlen($message) < 80)
+          {
+            $result .= 'msgid "' . $message . '"';
+          }
+          else
+          {
+            $result .= 'msgid ""' . "\n";
+            $result .= '"' . $this->iconv_wordwrap($message, 76, " \"\n\"") . '"';
+          }
+          $result .= "\n";
+          $result .= 'msgstr ""';
+          $result .= "\n\n";
+        }
+        else if($build_type == 'plural')
+        {
+          if(strlen($message[0]) < 80)
+          {
+            $result .= 'msgid "' . $message[0] . '"';
+          }
+          else
+          {
+            $result .= 'msgid ""' . "\n";
+            $result .= '"' . $this->iconv_wordwrap($message[0], 76, " \"\n\"") . '"';
+          }
+
+          $result .= "\n";
+
+          if(strlen($message[1]) < 80)
+          {
+            $result .= 'msgid_plural "' . $message[1] . '"';
+          }
+          else
+          {
+            $result .= 'msgid_plural ""' . "\n";
+            $result .= '"' . $this->iconv_wordwrap($message[1], 76, " \"\n\"") . '"';
+          }
+
+          $result .= "\n";
+          $result .= 'msgstr[0] ""';
+          $result .= "\n";
+          $result .= 'msgstr[1] ""';
+          $result .= "\n\n";
+        }
       }
-      $result .= "\n";
-      if(strlen($message) < 80)
-      {
-        $result .= 'msgid "' . $message . '"';
-      }
-      else
-      {
-        $result .= 'msgid ""' . "\n";
-        $result .= '"' . $this->iconv_wordwrap($message, 76, " \"\n\"") . '"';
-      }
-      $result .= "\n";
-      $result .= 'msgstr ""';
-      $result .= "\n\n";
     }
 
     return $result;
