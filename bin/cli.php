@@ -26,7 +26,7 @@ foreach($argv as $argi => $arg)
   }
 }
 
-require_once(dirname(dirname(__FILE__)) . '/cubes/base/boot.php');
+require_once(dirname(dirname(__FILE__)) . '/cubes/boot.php');
 
 if(class_exists($script))
 {

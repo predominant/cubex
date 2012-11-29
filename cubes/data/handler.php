@@ -96,6 +96,7 @@ class Handler implements \IteratorAggregate
     {
       return explode(',', $this->_data[$name]);
     }
+    else if(empty($this->_data[$name])) return $default;
     else if(is_scalar($this->_data[$name])) return array($this->_data[$name]);
     else if(is_object($this->_data[$name])) return (array)$this->_data[$name];
     else return $default;

@@ -45,7 +45,7 @@ class Application extends Translatable
      * Initiate Event Hooks
      */
     $events = $namespace . "\\Events";
-    if(class_exists($events) && is_subclass_of($events,'\\Cubex\\Events\\Events'))
+    if(class_exists($events) && is_subclass_of($events, '\\Cubex\\Events\\Events'))
     {
       $events::createHooks();
     }
@@ -68,78 +68,66 @@ class Application extends Translatable
     }
   }
 
-  public
-  function getName()
+  public function getName()
   {
     return "";
   }
 
-  public
-  function getDescription()
+  public function getDescription()
   {
     return "";
   }
 
-  public
-  function requiredApplications()
+  public function requiredApplications()
   {
     return array();
   }
 
-  public
-  function getBaseURI()
+  public function getBaseURI()
   {
     return "/";
   }
 
-  public
-  function getDefaultController()
+  public function getDefaultController()
   {
     return 'defaultController';
   }
 
-  public
-  function getRoutes()
+  public function getRoutes()
   {
     return array();
   }
 
-  public
-  function registerAutoLoader()
+  public function registerAutoLoader()
   {
     return null;
   }
 
-  public
-  function getLayout()
+  public function getLayout()
   {
     return $this->_layout;
   }
 
-  public
-  function setLayout($layout)
+  public function setLayout($layout)
   {
     $this->_layout = $layout;
 
     return $this;
   }
 
-  public
-  function getURIData($key = null)
+  public function getURIData($key = null)
   {
     if($key === null) return $this->_uri_data;
     else if(isset($this->_uri_data[$key])) return $this->_uri_data[$key];
     else return array();
   }
 
-  protected
-  function getController($path)
+  protected function getController($path)
   {
     return $this->parseRoute($this->getRoutes(), $path);
   }
 
-  protected
-  function parseRoute($routes, $path, $prepend = '')
+  protected function parseRoute($routes, $path, $prepend = '')
   {
     if(!is_array($routes)) return $this->getDefaultController();
     foreach($routes as $route => $control)
@@ -173,8 +161,7 @@ class Application extends Translatable
     return $this->getDefaultController();
   }
 
-  protected
-  function tryRoute($route, $path, $second = false)
+  protected function tryRoute($route, $path, $second = false)
   {
     if(substr($path, -1) != '/') $path = $path . '/';
     $data  = $matches = array();
@@ -196,8 +183,7 @@ class Application extends Translatable
     return array($match, $data);
   }
 
-  public
-  function processedRoute()
+  public function processedRoute()
   {
     return $this->_processed_route;
   }

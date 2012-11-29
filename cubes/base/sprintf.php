@@ -290,7 +290,7 @@ class Sprintf
         case '~': // Like Substring
         case '>': // Like Prefix
         case '<': // Like Suffix
-          $value = $connection->escapeStringForLikeClause($value);
+          $value = $connection->escapeString($value);
           switch($type)
           {
             case '~':

@@ -9,7 +9,7 @@ namespace Cubex\Base;
 
 interface DataConnection
 {
-  public function __construct(array $config = array());
+  public function __construct(\Cubex\Data\Handler $configuration);
 
   /*
    * @param $mode string Mode, either 'r' (reading) or 'w' (reading and writing)
@@ -22,7 +22,4 @@ interface DataConnection
 
   public function escapeString($string);
 
-  public function escapeStringForLikeClause($string);
-
-  public function escapeMultilineComment($comment);
 }
