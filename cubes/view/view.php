@@ -24,7 +24,7 @@ class View extends \Cubex\Data\Handler
 
   public function __construct($file=null,$application=null)
   {
-    if($application instanceof \Cubex\Application\Complex\Application)
+    if($application instanceof \Cubex\Base\Application)
     {
       $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR);
     }
@@ -128,7 +128,6 @@ class View extends \Cubex\Data\Handler
       return static::$cache[md5($this->_render_file)] = file_get_contents($this->_render_file);
     }
   }
-
 
 
   /**
