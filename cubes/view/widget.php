@@ -7,7 +7,7 @@
  */
 namespace Cubex\View;
 
-class Widget extends \Cubex\Base\Translatable
+class Widget extends \Cubex\Base\Translatable implements Renderable
 {
   protected $_captured;
   protected $_content;
@@ -58,12 +58,5 @@ class Widget extends \Cubex\Base\Translatable
   public function getMeta($key, $default = null)
   {
     return isset($this->_meta[$key]) ? $this->_meta[$key] : $default;
-  }
-
-  public function compiledView()
-  {
-    $view = new View();
-    $view->setOutput($this->render());
-    return $view;
   }
 }

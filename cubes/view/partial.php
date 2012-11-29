@@ -8,13 +8,14 @@
 
 namespace Cubex\View;
 
-class Partial
+class Partial implements Renderable
 {
 
   private $_template;
   private $_variables;
   private $_elements;
   private $_element_data = array();
+  protected $_glue = '';
 
   /**
    * @param string $template  (HTML Template)
@@ -45,13 +46,19 @@ class Partial
     return $this;
   }
 
+  public function setGlue($glue = '')
+  {
+    $this->_glue = $glue;
+    return $this;
+  }
+
   /**
    * @param null $glue Glue for imploding all elements
    * @return string Rendered elements
    */
-  public function render($glue = null)
+  public function render()
   {
-    return implode($glue === null ? '' : $glue, $this->_elements);
+    return implode($this->_glue === null ? '' : $this->_glue, $this->_elements);
   }
 
   /**
@@ -60,17 +67,5 @@ class Partial
   public function clearElements()
   {
     $this->_elements = array();
-  }
-
-  /**
-   * Compiled View
-   * @param null $glue Glue for imploding all elements
-   * @return View
-   */
-  public function compiledView($glue = null)
-  {
-    $view = new View();
-    $view->setOutput($this->render($glue));
-    return $view;
   }
 }

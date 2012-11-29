@@ -34,7 +34,12 @@ class View extends \Cubex\Data\Handler
     }
   }
 
-
+  public static function create(Renderable $from)
+  {
+    $view = new View();
+    $view->setOutput($from->render());
+    return $view;
+  }
 
   public function addEphemeral($name,$value)
   {
