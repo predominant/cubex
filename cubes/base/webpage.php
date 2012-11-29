@@ -122,7 +122,7 @@ class WebPage
 <!DOCTYPE html>
 <html class="no_js"><head><meta charset="$charset" />
 <script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};window.Env = Env = window.Env || {};b(Env);};
-!function(){document.documentElement.className.replace('no_js', '');}();
+!function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);
 envPop({"method":"$method"});</script><noscript>{$noscript}</noscript>
 <title>{$title}</title>{$head}</head><body>{$body}{$closing}</body></html>
 EOHTML;
