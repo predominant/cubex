@@ -24,7 +24,7 @@ class View extends \Cubex\Data\Handler
 
   public function __construct($file=null,$application=null)
   {
-    if($application instanceof \Cubex\Base\Application)
+    if($application !== null && $application instanceof \Cubex\Base\Application)
     {
       $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR);
     }
