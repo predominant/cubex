@@ -7,6 +7,14 @@
  *
  * To use run something similar to the following;
  * c:\php\php5.4.8\php.exe -S localhost:8000 -t webroot bin/cli_server_route.php
+ *
+ * There is currently no way to pass paramaters through to the routing script
+ * in php 5.4's server. However, we want to be able to change the CUBEX_ENV
+ * straight from a command prompt. To do this we've hijacked the 'user_agent'
+ * php.ini directive. This can be set as follows (using above example);
+ * c:\php\php5.4.8\php.exe -S localhost:8000 -d user_agent=local -t webroot ...
+ *
+ * There is no promise that the above won't affect the running of your script.
  */
 if(php_sapi_name() !== 'cli-server')
 {
@@ -22,7 +30,9 @@ if(!isset($_SERVER["DOCUMENT_ROOT"]))
   );
 }
 
-$_ENV['CUBEX_ENV'] = 'development';
+// See page comment for info on the below
+$cubex_env = ini_get('user_agent');
+$_ENV['CUBEX_ENV'] = $cubex_env ?: 'development';
 $url = parse_url($_SERVER['REQUEST_URI']);
 $_REQUEST['__path__'] = $url['path'];
 

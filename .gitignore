@@ -1,2 +1,7 @@
 .idea
 cubex/cache
+
+# Ignore all ini files apart from the development, allows anyone to setup local
+# ini files for testing without affecting git
+conf/*.ini
+!conf/development.ini
