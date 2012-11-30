@@ -20,6 +20,7 @@ class Request extends \Cubex\Data\Handler
   private $_subdomain;
   private $_domain;
   private $_tld;
+  private $_port;
   private $_processed_host;
 
 
@@ -50,9 +51,7 @@ class Request extends \Cubex\Data\Handler
 
   final public function getHost()
   {
-    list($host) = explode(':', $this->_host, 2);
-
-    return $host;
+    return $this->_host;
   }
 
   private function processHost($host)
@@ -61,6 +60,12 @@ class Request extends \Cubex\Data\Handler
     $extra_tlds = \Cubex\Cubex::config("general")->getArr("tlds");
     $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
     $parts      = array_reverse(explode('.', $host));
+
+    if(strstr($parts[0], ':') !== false)
+    {
+      list($parts[0], $this->_port) = explode(':', $parts[0], 2);
+    }
+
     foreach($parts as $i => $part)
     {
       if(empty($this->_tld))
@@ -69,8 +74,10 @@ class Request extends \Cubex\Data\Handler
       }
       else if(empty($this->_domain))
       {
-        if($i < 2 &&
-        (strlen($part) == 2 || in_array($part . '.' . $this->_tld, $extra_tlds) || in_array($part, $hard_tlds))
+        if($i < 2
+          && (strlen($part) == 2
+            || in_array($part . '.' . $this->_tld, $extra_tlds)
+            || in_array($part, $hard_tlds))
         )
         {
           $this->_tld = $part . '.' . $this->_tld;
@@ -122,6 +129,13 @@ class Request extends \Cubex\Data\Handler
     if($this->_tld === null) $this->processHost($this->_host);
 
     return $this->_tld;
+  }
+
+  final public function getPort()
+  {
+    if($this->_port === null) $this->processHost($this->_host);
+
+    return $this->_port;
   }
 
   final public function getRequestData()

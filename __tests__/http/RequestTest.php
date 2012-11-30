@@ -16,7 +16,7 @@ class Http_RequestTest extends PHPUnit_Framework_TestCase
    */
   protected $_built_request;
 
-  const REQUEST_HOST = 'www.example.com';
+  const REQUEST_HOST = 'www.example.com:8080';
   const REQUEST_PATH = '/foo/bar';
 
   protected function setUp()
@@ -46,5 +46,6 @@ class Http_RequestTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('com', $this->_built_request->getTld());
     $this->assertEquals('www', $this->_built_request->getSubDomain());
     $this->assertEquals('example', $this->_built_request->getDomain());
+    $this->assertEquals('8080', $this->_built_request->getPort());
   }
 }
