@@ -255,17 +255,18 @@ abstract class Model implements \IteratorAggregate
 
   public function saveChanges()
   {
-
+    return false;
   }
 
   public function delete()
   {
-
+    return false;
   }
 
   public function load($id, $columns = array("*"))
   {
     //Load single model
+    return false;
   }
 
   public function loadAll($columns = array("*"))

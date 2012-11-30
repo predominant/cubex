@@ -99,4 +99,23 @@ abstract class SQLModel extends Model
     }
     else return false;
   }
+
+  public function load($id, $columns = array("*"))
+  {
+    $config = $this->getConfiguration();
+    if($config[self::CONFIG_IDS] == self::ID_AUTOINCREMENT)
+    {
+      $data = $this->loadRawWhere($columns, "%C = %d", $this->getIDKey(), $id);
+    }
+    else
+    {
+      $data = $this->loadRawWhere($columns, "%C = %s", $this->getIDKey(), $id);
+    }
+    if($data)
+    {
+      $this->loadFromStdClass(current($data));
+      return true;
+    }
+    else return false;
+  }
 }
