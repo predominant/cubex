@@ -18,6 +18,7 @@ class Connection implements \Cubex\Database\Connection
    * @var \Cubex\Data\Handler
    */
   protected $_config;
+  private $_connected = false;
 
   public function __construct(\Cubex\Data\Handler $config)
   {
@@ -43,6 +44,8 @@ class Connection implements \Cubex\Database\Connection
       $this->_config->getStr('port', 3306)
     );
 
+    $this->_connected = true;
+
     return $this;
   }
 
@@ -60,6 +63,8 @@ class Connection implements \Cubex\Database\Connection
 
   public function escapeString($string)
   {
+    $this->prepareConnection('r');
+
     return $this->_connection->real_escape_string($string);
   }
 
@@ -68,16 +73,28 @@ class Connection implements \Cubex\Database\Connection
    */
   protected function doQuery($query)
   {
+    //echo "\n<strong>Processing $query</strong>\n";
     return $this->_connection->query($query);
+  }
+
+  protected function prepareConnection($mode = 'r')
+  {
+    if(!$this->_connected)
+    {
+      $this->connect($mode);
+    }
   }
 
   public function query($query)
   {
+    $this->prepareConnection('w');
+
     return $this->doQuery($query) === true;
   }
 
   public function getField($query)
   {
+    $this->prepareConnection('r');
     $result = $this->doQuery($query)->fetch_row();
 
     return isset($result[0]) ? $result[0] : false;
@@ -85,6 +102,7 @@ class Connection implements \Cubex\Database\Connection
 
   public function getRow($query)
   {
+    $this->prepareConnection('r');
     $result = $this->doQuery($query);
 
     return $result->fetch_object();
@@ -92,56 +110,70 @@ class Connection implements \Cubex\Database\Connection
 
   public function getRows($query)
   {
+    $this->prepareConnection('r');
     $result = $this->doQuery($query);
     $rows   = array();
-    while($row = $result->fetch_object())
+    if($result->num_rows > 0)
     {
-      $rows[] = $row;
+      while($row = $result->fetch_object())
+      {
+        $rows[] = $row;
+      }
     }
+    $result->close();
 
     return $rows;
   }
 
   public function getKeyedRows($query)
   {
+    $this->prepareConnection('r');
     $result         = $this->doQuery($query);
     $rows           = array();
     $keyfield       = $value_key = null;
     $value_as_array = true;
-    while($row = $result->fetch_object())
+    if($result->num_rows > 0)
     {
-      if($keyfield == null)
+      while($row = $result->fetch_object())
       {
-        $keyfield = array_keys(get_object_vars($row));
-        if(count($keyfield) == 2)
+        if($keyfield == null)
         {
-          $value_as_array = false;
-          $value_key      = $keyfield[1];
+          $keyfield = array_keys(get_object_vars($row));
+          if(count($keyfield) == 2)
+          {
+            $value_as_array = false;
+            $value_key      = $keyfield[1];
+          }
+          else if(count($keyfield) == 1)
+          {
+            $value_as_array = false;
+            $value_key      = $keyfield[0];
+          }
+          $keyfield = $keyfield[0];
         }
-        else if(count($keyfield) == 1)
-        {
-          $value_as_array = false;
-          $value_key      = $keyfield[0];
-        }
-        $keyfield = $keyfield[0];
+        $rows[$row->$keyfield] = !$value_as_array && !empty($value_key) ? $row->$value_key : $row;
       }
-      $rows[$row->$keyfield] = !$value_as_array && !empty($value_key) ? $row->$value_key : $row;
     }
+    $result->close();
 
     return $rows;
   }
 
   public function getColumns($query)
   {
+    $this->prepareConnection('r');
     $result = $this->getKeyedRows($query, 0);
+
     return array_keys($result);
   }
 
   public function numRows($query)
   {
+    $this->prepareConnection('r');
     $result = $this->doQuery($query);
-
-    return $result->num_rows;
+    $rows = (int)$result->num_rows;
+    $result->close();
+    return $rows;
   }
 
 }

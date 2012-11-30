@@ -86,7 +86,7 @@ class Attribute
 
   public function setData($data)
   {
-    $this->_populated = !is_null($data);
+    $this->_populated = $data !== null;
     $this->_data      = $data;
 
     return $this;

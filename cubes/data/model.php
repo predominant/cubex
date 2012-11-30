@@ -36,6 +36,20 @@ abstract class Model implements \IteratorAggregate
     }
   }
 
+  public function __clone()
+  {
+    $attrs             = $this->_attributes;
+    $this->_attributes = array();
+    foreach($attrs as $attr)
+    {
+      if($attr instanceof Attribute)
+      {
+        $attr->setData(null);
+        $this->addAttribute(clone $attr);
+      }
+    }
+  }
+
   public function getIterator()
   {
     $attrs = array();
@@ -254,12 +268,27 @@ abstract class Model implements \IteratorAggregate
     //Load single model
   }
 
-  public static function loadAll($columns = array("*"))
+  public function loadAll($columns = array("*"))
   {
     //Load array of models
+    return array();
   }
 
   public function loadFromArray(array $data)
+  {
+    foreach($data as $k => $v)
+    {
+      if($this->attributeExists($k))
+      {
+        $set = "set$k";
+        $this->$set($v);
+      }
+    }
+
+    return $this;
+  }
+
+  public function loadFromStdClass(\stdClass $data)
   {
     foreach($data as $k => $v)
     {
@@ -280,12 +309,29 @@ abstract class Model implements \IteratorAggregate
     foreach($rows as $row)
     {
       $object = clone $this;
-      if($id && isset($row[$id]))
+      if(is_object($row))
       {
-        $result[$row[$id]] = $object->loadFromArray($row);
+        if($id && isset($row->$id))
+        {
+          $result[$row->$id] = $object->loadFromStdClass($row);
+        }
+      }
+      else if(is_array($row))
+      {
+        if($id && isset($row[$id]))
+        {
+          $result[$row[$id]] = $object->loadFromArray($row);
+        }
       }
     }
 
     return $result;
+  }
+
+  public static function All($columns = array('*'))
+  {
+    $user = new static;
+
+    return $user->loadAll($columns);
   }
 }

@@ -10,6 +10,7 @@ namespace Cubex\Data;
 
 abstract class SQLModel extends Model
 {
+
   /*
    * Recommended to override this method in your models
    */
@@ -40,9 +41,16 @@ abstract class SQLModel extends Model
     else return false;
   }
 
+  public function loadAll($columns = array("*"))
+  {
+    $data = $this->loadRawWhere($columns, "1=1");
+    if($data) return $this->loadMultiFromArray($data);
+    else return false;
+  }
+
   public function loadMatches(SearchObject $o)
   {
-    return self::loadAllWhere("%QO",$o);
+    return self::loadAllWhere("%QO", $o);
   }
 
   public function loadRawWhere($columns, $pattern /* , $arg, $arg, $arg ... */)
@@ -53,9 +61,13 @@ abstract class SQLModel extends Model
     array_unshift($args, $this->getTableName());
 
     $column = '%LC';
-    if(is_bool($columns) || $columns === '*')
+    if(is_bool($columns) || $columns === '*' || (is_array($columns) && $columns[0] == '*'))
     {
       $column = '*';
+    }
+    else if(is_array($columns))
+    {
+      array_unshift($args, $columns);
     }
     else if(is_scalar($columns))
     {
@@ -73,13 +85,18 @@ abstract class SQLModel extends Model
 
     try
     {
-      echo \Cubex\Base\Sprintf::parseQuery($this->dataConnection("r"), $args);
+      $query = \Cubex\Base\Sprintf::parseQuery($this->dataConnection("r"), $args);
     }
     catch(\Exception $e)
     {
       var_dump($e);
+      $query = false;
     }
 
-    return array();
+    if($query !== false)
+    {
+      return $this->dataConnection()->getRows($query);
+    }
+    else return false;
   }
 }
