@@ -153,6 +153,14 @@ EOHTML;
     else $this->_captured = false;
   }
 
+  public function capturedView()
+  {
+    $this->endCapture();
+    $view = new \Cubex\View\View();
+    $view->setOutput($this->capturedContent());
+    return $view;
+  }
+
   final public function preRender()
   {
     if($this->_captured === false) $this->endCapture();
