@@ -255,8 +255,11 @@ final class Cubex
   public static function locale($locale = null)
   {
     if($locale === null) return self::core()->_locale;
-    self::core()->_locale = $locale;
-    putenv('LC_ALL=' . $locale);
+    $loc                  = explode(',', $locale);
+    self::core()->_locale = $loc[0];
+    putenv('LC_ALL=' . $loc[0]);
+    array_unshift($loc, LC_ALL);
+    call_user_func_array('setlocale', $loc);
 
     return self::$cubex;
   }
