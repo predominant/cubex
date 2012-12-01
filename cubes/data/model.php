@@ -18,6 +18,8 @@ abstract class Model implements \IteratorAggregate
 
   private $_attributes;
   private $_invalid_attributes;
+  //TODO: on load, store data results in ephemeral to stop re-collecting data from source
+  protected static $_ephemeral_datastore;
 
   /*
    * Automatically add all public properties as attributes and unset them for automatic handling of data
@@ -150,6 +152,11 @@ abstract class Model implements \IteratorAggregate
     return 'id';
   }
 
+  public function getID()
+  {
+    return $this->attribute($this->getIDKey())->rawData();
+  }
+
   /*
    * @returns DataConnection
    */
@@ -263,6 +270,12 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  public function reload()
+  {
+    $this->clearEphemeral($this->getID());
+    return $this->load($this->getID());
+  }
+
   public function load($id, $columns = array("*"))
   {
     //Load single model
@@ -334,5 +347,22 @@ abstract class Model implements \IteratorAggregate
     $user = new static;
 
     return $user->loadAll($columns);
+  }
+
+  public function clearEphemeral($id)
+  {
+    unset(self::$_ephemeral_datastore[$id]);
+    return true;
+  }
+
+  public function addEphemeral($id,$data)
+  {
+    self::$_ephemeral_datastore[$id] = $data;
+    return $this;
+  }
+
+  public function getEphemeral($id)
+  {
+    return self::$_ephemeral_datastore[$id];
   }
 }
