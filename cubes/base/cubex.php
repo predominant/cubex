@@ -8,9 +8,9 @@
 namespace Cubex;
 
 $required_version = '5.4.0';
-if(version_compare(PHP_VERSION, $required_version) < 0)
+if(version_compare(phpversion(), $required_version) < 0)
 {
-  Cubex::fatal("You are running PHP '" . PHP_VERSION . "', version '{$required_version}' required");
+  Cubex::fatal("You are running PHP '" . phpversion() . "', version '{$required_version}' required");
 }
 
 $env = getenv('CUBEX_ENV'); // Apache Config
