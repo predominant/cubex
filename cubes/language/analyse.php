@@ -124,7 +124,7 @@ class Analyse
           $translated = $translator->translate($message, $source_language, $language);
           if(strlen($message) < 80)
           {
-            $result .= 'msgid "' . $message . '"';
+            $result .= 'msgid "' . $this->slash($message) . '"';
           }
           else
           {
@@ -134,7 +134,7 @@ class Analyse
           $result .= "\n";
           if(strlen($translated) < 80)
           {
-            $result .= 'msgstr "' . $translated . '"';
+            $result .= 'msgstr "' . $this->slash($translated) . '"';
           }
           else
           {
@@ -146,11 +146,11 @@ class Analyse
         else if($build_type == 'plural')
         {
           $singular = $translator->translate($message[0], $source_language, $language);
-          $plural = $translator->translate($message[1], $source_language, $language);
+          $plural   = $translator->translate($message[1], $source_language, $language);
 
           if(strlen($message[0]) < 80)
           {
-            $result .= 'msgid "' . $message[0] . '"';
+            $result .= 'msgid "' . $this->slash($message[0]) . '"';
           }
           else
           {
@@ -162,7 +162,7 @@ class Analyse
 
           if(strlen($message[1]) < 80)
           {
-            $result .= 'msgid_plural "' . $message[1] . '"';
+            $result .= 'msgid_plural "' . $this->slash($message[1]) . '"';
           }
           else
           {
@@ -171,9 +171,9 @@ class Analyse
           }
 
           $result .= "\n";
-          $result .= 'msgstr[0] "'. $singular .'"';
+          $result .= 'msgstr[0] "' . $this->slash($singular) . '"';
           $result .= "\n";
-          $result .= 'msgstr[1] "'. $plural .'"';
+          $result .= 'msgstr[1] "' . $this->slash($plural) . '"';
           $result .= "\n\n";
         }
       }
@@ -226,7 +226,7 @@ class Analyse
       {
         if($current - $lastStart >= $width)
         {
-          $result .= iconv_substr($string, $lastStart, $current - $lastStart, $charset) . $break;
+          $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
           $lastStart = $current + 1;
         }
 
@@ -234,22 +234,30 @@ class Analyse
       }
       elseif($current - $lastStart >= $width && $cut && $lastStart >= $lastSpace)
       {
-        $result .= iconv_substr($string, $lastStart, $current - $lastStart, $charset) . $break;
+        $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
         $lastStart = $lastSpace = $current;
       }
       elseif($current - $lastStart >= $width && $lastStart < $lastSpace)
       {
-        $result .= iconv_substr($string, $lastStart, $lastSpace - $lastStart, $charset) . $break;
+        $result .= $this->slash(iconv_substr($string, $lastStart, $lastSpace - $lastStart, $charset)) . $break;
         $lastStart = $lastSpace = $lastSpace + 1;
       }
     }
 
     if($lastStart !== $current)
     {
-      $result .= iconv_substr($string, $lastStart, $current - $lastStart, $charset);
+      $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset));
     }
 
     return $result;
+  }
+
+  public function slash($text)
+  {
+    $pattern = '/<span class="notranslate">([^<]*)<\/span>/';
+    $text    = preg_replace($pattern, '$1', urldecode($text));
+
+    return str_replace('"', '\"', $text);
   }
 
 }
