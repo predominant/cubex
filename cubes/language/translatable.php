@@ -23,7 +23,7 @@ class Translatable
    */
   public function t($message)
   {
-    return \dt($this->textDomain(), $message);
+    return dgettext($this->textDomain(), $message);
   }
 
   /**
@@ -37,7 +37,7 @@ class Translatable
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    return \dp($this->textDomain(), $singular, $plural, $number);
+    return dngettext($this->textDomain(), $singular, $plural, $number);
   }
 
   public function textDomain()
@@ -53,7 +53,7 @@ class Translatable
   public function bindLanguage()
   {
     $this->_bound_td = true;
-    \btdom($this->textDomain(), $this->filePath() . '\\locale');
+    return bindtextdomain($this->textDomain(), $this->filePath() . '\\locale');
   }
 
   public function filePath()
