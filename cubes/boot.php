@@ -103,3 +103,4 @@ function tdom($domain, $bind = false)
 }
 
 require_once('base/cubex.php');
+\Cubex\Cubex::boot();

@@ -7,38 +7,6 @@
  */
 namespace Cubex;
 
-$required_version = '5.4.0';
-$current_version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
-if(version_compare($current_version, $required_version) < 0)
-{
-  Cubex::fatal("You are running PHP '" . $current_version . "', version '{$required_version}' required");
-}
-
-$env = getenv('CUBEX_ENV'); // Apache Config
-if(!$env && isset($_ENV['CUBEX_ENV'])) $env = $_ENV['CUBEX_ENV'];
-if(!$env) Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
-
-register_shutdown_function('Cubex\Cubex::shutdown');
-set_error_handler('Cubex\Cubex::error_handler');
-
-/*
- * Define helpful bits :)
- */
-
-define("CUBEX_ENV", $env);
-define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
-define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-define("CUBEX_ROOT",
-substr(dirname(__FILE__), -5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
-);
-
-if(CUBEX_WEB && !isset($_REQUEST['__path__']))
-{
-  Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
-}
-
-define("CUBEX_START", microtime(true));
-
 /**
  * Cubex Framework
  */
@@ -52,6 +20,66 @@ final class Cubex
   private $_configuration = null;
   private $_connections = null;
   private $_locale = null;
+
+  final public static function boot()
+  {
+    $required_version = '5.4.0';
+    $current_version  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
+    if(version_compare($current_version, $required_version) < 0)
+    {
+      Cubex::fatal("You are running PHP '" . $current_version . "', version '{$required_version}' required");
+    }
+
+    $env = getenv('CUBEX_ENV'); // Apache Config
+    if(!$env && isset($_ENV['CUBEX_ENV'])) $env = $_ENV['CUBEX_ENV'];
+    if(!$env) Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
+
+    register_shutdown_function('Cubex\Cubex::shutdown');
+    set_error_handler('Cubex\Cubex::error_handler');
+
+    /*
+     * Define helpful bits :)
+     */
+
+    define("CUBEX_ENV", $env);
+    define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
+    define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
+    define("CUBEX_ROOT",
+    substr(dirname(__FILE__), -5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
+    );
+
+    if(CUBEX_WEB && !isset($_REQUEST['__path__']))
+    {
+      Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
+    }
+
+    define("CUBEX_START", microtime(true));
+
+    self::core(); //Construct Cubex
+
+    if(CUBEX_WEB)
+    {
+      Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
+      if(Cubex::config('locale')->getBool('enabled'))
+      {
+        Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
+      }
+
+      try
+      {
+        \Cubex\Application\Loader::load(Cubex::request());
+      }
+      catch(\Exception $e)
+      {
+        Cubex::fatal($e->getMessage());
+      }
+    }
+    else
+    {
+      Cubex::core();
+    }
+
+  }
 
   /**
    * Cubex singleton
@@ -409,26 +437,5 @@ final class Cubex
     echo $message . "\n";
     exit(1);
   }
-}
 
-if(CUBEX_WEB)
-{
-  Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
-  if(Cubex::config('locale')->getBool('enabled'))
-  {
-    Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
-  }
-
-  try
-  {
-    Application\Loader::load(Cubex::request());
-  }
-  catch(\Exception $e)
-  {
-    Cubex::fatal($e->getMessage());
-  }
-}
-else
-{
-  Cubex::core();
 }
