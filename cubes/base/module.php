@@ -8,7 +8,7 @@
 
 namespace Cubex\Base;
 
-class Module extends Translatable
+class Module extends \Cubex\Language\Translatable
 {
   final private function getModule()
   {

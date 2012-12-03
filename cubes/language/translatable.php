@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Base;
+namespace Cubex\Language;
 
 class Translatable
 {

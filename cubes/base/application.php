@@ -8,7 +8,7 @@
 
 namespace Cubex\Base;
 
-class Application extends Translatable
+class Application extends \Cubex\Language\Translatable
 {
 
   private $_uri_data = array();
