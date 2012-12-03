@@ -42,7 +42,11 @@ class Translatable
 
   public function textDomain()
   {
+    $path = str_replace(dirname(dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
+    $this->_textdomain = md5($path);
+
     if(!$this->_bound_td) $this->bindLanguage();
+
     return $this->_textdomain;
   }
 
@@ -55,6 +59,7 @@ class Translatable
   public function filePath()
   {
     $reflector = new \ReflectionClass(get_class($this));
+
     return dirname($reflector->getFileName());
   }
 }

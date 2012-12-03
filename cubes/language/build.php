@@ -51,6 +51,7 @@ class Build
 
   public function buildLanguagePo($language)
   {
+    $converter = new Mo();
     foreach($this->_analyse as $type)
     {
       $run_dir = $this->_project_dir . DIRECTORY_SEPARATOR . $type;
@@ -59,19 +60,24 @@ class Build
         while(false !== ($entry = readdir($handle)))
         {
           if(in_array($entry, array('.', '..', 'locale'))) continue;
+          $mfile = md5($type . DIRECTORY_SEPARATOR . $entry);
 
           if(is_dir($run_dir . DIRECTORY_SEPARATOR . $entry))
           {
             $locale_dir   = $run_dir . DIRECTORY_SEPARATOR . $entry . DIRECTORY_SEPARATOR . 'locale';
             $language_dir = $locale_dir . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR . 'LC_MESSAGES';
+
             if(!file_exists($language_dir))
             {
               mkdir($language_dir, 0777, true);
             }
+
             file_put_contents(
-              $language_dir . DIRECTORY_SEPARATOR . 'messages.po',
+              $language_dir . DIRECTORY_SEPARATOR . $mfile . '.po',
               file_get_contents($locale_dir . DIRECTORY_SEPARATOR . 'messages.po')
             );
+
+            $converter->phpmo_convert($language_dir . DIRECTORY_SEPARATOR . $mfile . '.po');
           }
         }
         closedir($handle);
