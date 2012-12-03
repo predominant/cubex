@@ -97,19 +97,9 @@ class Analyse
     }
   }
 
-  public function generatePO()
+  public function generatePO($language, Translator $translator, $source_language = 'en')
   {
     $result = '';
-
-    $result .= '
-msgid ""
-msgstr ""
-
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
-';
 
     foreach($this->_translations as $build_type => $translations)
     {
@@ -131,6 +121,7 @@ msgstr ""
         $result .= "\n";
         if($build_type == 'single')
         {
+          $translated = $translator->translate($message, $source_language, $language);
           if(strlen($message) < 80)
           {
             $result .= 'msgid "' . $message . '"';
@@ -141,11 +132,22 @@ msgstr ""
             $result .= '"' . $this->iconv_wordwrap($message, 76, " \"\n\"") . '"';
           }
           $result .= "\n";
-          $result .= 'msgstr ""';
+          if(strlen($translated) < 80)
+          {
+            $result .= 'msgstr "' . $translated . '"';
+          }
+          else
+          {
+            $result .= 'msgstr ""' . "\n";
+            $result .= '"' . $this->iconv_wordwrap($translated, 76, " \"\n\"") . '"';
+          }
           $result .= "\n\n";
         }
         else if($build_type == 'plural')
         {
+          $singular = $translator->translate($message[0], $source_language, $language);
+          $plural = $translator->translate($message[1], $source_language, $language);
+
           if(strlen($message[0]) < 80)
           {
             $result .= 'msgid "' . $message[0] . '"';
@@ -169,9 +171,9 @@ msgstr ""
           }
 
           $result .= "\n";
-          $result .= 'msgstr[0] ""';
+          $result .= 'msgstr[0] "'. $singular .'"';
           $result .= "\n";
-          $result .= 'msgstr[1] ""';
+          $result .= 'msgstr[1] "'. $plural .'"';
           $result .= "\n\n";
         }
       }
