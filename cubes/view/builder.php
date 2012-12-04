@@ -50,9 +50,9 @@ class Builder implements Renderable
     return $this;
   }
 
-  public function nest(Builder $sub_item)
+  public function nest(Renderable $item)
   {
-    $this->_nested[] = $sub_item;
+    $this->_nested[] = $item;
 
     return $this;
   }
