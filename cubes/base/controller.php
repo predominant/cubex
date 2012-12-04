@@ -146,6 +146,12 @@ abstract class Controller extends \Cubex\Data\Handler
 
     $action = $router->parseRoute($this->getRoutes(), $path);
     if($action !== null) return $this->processRouteReturn($action);
+
+    if($this->defaultAction() !== null)
+    {
+      return $this->processRouteReturn($this->defaultAction());
+    }
+
     return false;
   }
 
@@ -189,6 +195,11 @@ abstract class Controller extends \Cubex\Data\Handler
     }
 
     return false;
+  }
+
+  protected function defaultAction()
+  {
+    return null;
   }
 
   /* View Related Bits */
