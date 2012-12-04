@@ -124,63 +124,17 @@ class Application extends \Cubex\Language\Translatable
 
   protected function getController($path)
   {
-    return $this->parseRoute($this->getRoutes(), $path);
-  }
-
-  protected function parseRoute($routes, $path, $prepend = '')
-  {
-    if(!is_array($routes)) return $this->getDefaultController();
-    foreach($routes as $route => $control)
+    $router = new \Cubex\Routing\Router();
+    $controller = $router->parseRoute($this->getRoutes(), $path);
+    if(is_array($this->_uri_data))
     {
-      //Parse route
-      $attempt = $this->tryRoute($prepend . $route . (empty($route) ? '$' : ''), $path);
-
-      //Import any matched URI Data
-      if($attempt[0] && is_array($attempt[1]))
-      {
-        foreach($attempt[1] as $k => $v)
-        {
-          $this->_uri_data[$k] = $v;
-        }
-      }
-
-      if(is_array($control))
-      {
-        $this->_processed_route = $prepend . $route;
-
-        return $this->parseRoute($control, $path, $prepend . $route);
-      }
-      else if($attempt[0])
-      {
-        $this->_processed_route = $prepend . $route;
-
-        return $control;
-      }
+      $this->_uri_data = array_merge($this->_uri_data, $router->getRouteData());
     }
+    else $this->_uri_data = $router->getRouteData();
 
-    return $this->getDefaultController();
-  }
+    $this->_processed_route = $router->processedRoute();
 
-  protected function tryRoute($route, $path, $second = false)
-  {
-    if(substr($path, -1) != '/') $path = $path . '/';
-    $data  = $matches = array();
-    $match = preg_match("#^$route#", $path, $matches);
-    foreach($matches as $k => $v)
-    {
-      //Strip out all non declared matches
-      if(!is_numeric($k)) $data[$k] = $v;
-    }
-
-    /* Allow Simple Routes */
-    if(!$second && !$match && stristr($route, ':'))
-    {
-      $retry = preg_replace("/\:([a-zA-Z]+)/", "(?P<$1>[^\/]+)", $route);
-
-      return $this->tryRoute($retry, $path, true);
-    }
-
-    return array($match, $data);
+    return $controller === null ? $this->getDefaultController() : $controller;
   }
 
   public function processedRoute()

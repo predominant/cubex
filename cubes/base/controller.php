@@ -46,6 +46,8 @@ abstract class Controller extends \Cubex\Data\Handler
     return \Cubex\Base\Application::getApp();
   }
 
+  /* Handling the request */
+
   /*
    * @return Http\Request
    */
@@ -83,8 +85,11 @@ abstract class Controller extends \Cubex\Data\Handler
    */
   public function processRequest()
   {
-    $webpage = new \Cubex\Base\ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
-    new \Cubex\Http\Response($webpage);
+    if(!$this->route())
+    {
+      $webpage = new \Cubex\Base\ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
+      new \Cubex\Http\Response($webpage);
+    }
   }
 
   /*
@@ -93,6 +98,100 @@ abstract class Controller extends \Cubex\Data\Handler
   public function postProcess()
   {
   }
+
+  /* Routing */
+
+  public function getAjaxRoutes()
+  {
+    return array();
+  }
+
+  public function getPostRoutes()
+  {
+    return array();
+  }
+
+  public function getRoutes()
+  {
+    return array();
+  }
+
+  final public function getAllRoutes()
+  {
+    return array(
+      'post' => $this->postRoutes(),
+      'ajax' => $this->ajaxRoutes(),
+      'base' => $this->routes()
+    );
+  }
+
+  /*
+   * Look for ajax specific routes, then post specific routes, then all other routes
+   * */
+  public function routeRequest()
+  {
+    $path = $this->request()->getPath();
+    $router = new \Cubex\Routing\Router();
+    if($this->request()->isAjax())
+    {
+      $action = $router->parseRoute($this->getAjaxRoutes(), $path);
+      if($action !== null) return $this->processRouteReturn($action);
+    }
+
+    if($this->request()->isHTTPPost())
+    {
+      $action = $router->parseRoute($this->getPostRoutes(), $path);
+      if($action !== null) return $this->processRouteReturn($action);
+    }
+
+    $action = $router->parseRoute($this->getRoutes(), $path);
+    if($action !== null) return $this->processRouteReturn($action);
+    return false;
+  }
+
+  /*
+   * example action = index
+   *
+   * ajax requests will attempt: ajaxIndex()
+   * post requests will attempt: postIndex()
+   * final attempt will be to: renderIndex()
+   *
+   * */
+  protected function processRouteReturn($action)
+  {
+    if($action === null) return false;
+
+    if($this->request()->isAjax())
+    {
+      $attempt = 'ajax' . ucfirst($action);
+      if(method_exists($this,$attempt))
+      {
+        $this->$attempt();
+        return true;
+      }
+    }
+
+    if($this->request()->isHTTPPost())
+    {
+      $attempt = 'post' . ucfirst($action);
+      if(method_exists($this,$attempt))
+      {
+        $this->$attempt();
+        return true;
+      }
+    }
+
+    $attempt = 'render' . ucfirst($action);
+    if(method_exists($this,$attempt))
+    {
+      $this->$attempt();
+      return true;
+    }
+
+    return false;
+  }
+
+  /* View Related Bits */
 
   public function getLayout()
   {
@@ -108,7 +207,7 @@ abstract class Controller extends \Cubex\Data\Handler
 
   public function baseView()
   {
-    return new \Cubex\View\View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(),$this->app());
+    return new \Cubex\View\View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }
 
   /**
