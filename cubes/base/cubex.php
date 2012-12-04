@@ -67,7 +67,7 @@ final class Cubex
 
       try
       {
-        \Cubex\Application\Loader::load(Cubex::request());
+        \Cubex\Applications\Loader::load(Cubex::request());
       }
       catch(\Exception $e)
       {
@@ -307,7 +307,7 @@ final class Cubex
         $class = substr($class, 6);
       }
 
-      if(strpos($class, 'Module\\') === 0)
+      if(strpos($class, 'Modules\\') === 0)
       {
         //TODO: Add some module loaders to handle more complex modules
       }
@@ -315,7 +315,7 @@ final class Cubex
       {
         //TODO: Add some widget loaders
       }
-      else if(strpos($class, 'Application\\') === 0)
+      else if(strpos($class, 'Applications\\') === 0)
       {
         $parts = explode('\\', $class);
 

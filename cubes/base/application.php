@@ -27,7 +27,7 @@ class Application extends \Cubex\Language\Translatable
 
   final public static function initialise($application)
   {
-    $class_name = "\\Cubex\\Application\\$application\\Application";
+    $class_name = "\\Cubex\\Applications\\$application\\Application";
     if(class_exists($class_name))
     {
       self::$app = new $class_name;
