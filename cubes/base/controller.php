@@ -85,7 +85,7 @@ abstract class Controller extends \Cubex\Data\Handler
    */
   public function processRequest()
   {
-    if(!$this->route())
+    if(!$this->routeRequest())
     {
       $webpage = new \Cubex\Base\ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
       new \Cubex\Http\Response($webpage);
