@@ -13,12 +13,18 @@ class Build
 
   private $_analyse = array('application', 'module', 'widgets');
   private $_project_dir;
+  private $_msgfmt = "msgfmt -V";
   private $_languages = array();
 
   public function __construct($project_dir, $analyse = array('application', 'module', 'widgets'))
   {
     $this->_analyse     = $analyse;
     $this->_project_dir = $project_dir;
+  }
+
+  public function msgfmtPath($path = "msgfmt -V")
+  {
+    $this->_msgfmt = $path;
   }
 
   public function compile(Translator $translator)
@@ -61,7 +67,8 @@ class Build
                 $analyse->generatePO($language, $translator)
               );
 
-              $converter->phpmo_convert($language_dir . DIRECTORY_SEPARATOR . $mfile . '.po');
+              $tfile = $language_dir . DIRECTORY_SEPARATOR . $mfile;
+              shell_exec($this->_msgfmt . ' -o "' . $tfile . '.mo" "' . $tfile . '.po"');
             }
 
           }
