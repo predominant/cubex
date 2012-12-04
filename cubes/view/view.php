@@ -8,13 +8,14 @@
 
 namespace Cubex\View;
 
-class View extends \Cubex\Data\Handler
+class View extends \Cubex\Data\Handler implements Renderable
 {
+
   const VIEW_DYNAMIC     = 'dynamic';
   const VIEW_PRECOMPILED = 'precompiled';
 
   private $_base = '';
-  private $_nested_views = array();
+  private $_nested = array();
   private $_render_file = null;
   private $_view_type = self::VIEW_DYNAMIC;
   private $_compiled = '';
@@ -22,7 +23,7 @@ class View extends \Cubex\Data\Handler
   public static $ephemeral = array();
   public static $last_known_base = '';
 
-  public function __construct($file=null,$application=null)
+  public function __construct($file = null, $application = null)
   {
     if($application !== null && $application instanceof \Cubex\Base\Application)
     {
@@ -38,17 +39,18 @@ class View extends \Cubex\Data\Handler
   {
     $view = new View();
     $view->setOutput($from->render());
+
     return $view;
   }
 
-  public function addEphemeral($name,$value)
+  public function addEphemeral($name, $value)
   {
     self::$ephemeral[$name] = $value;
   }
 
   public function setBasePath($base)
   {
-    $this->_base = substr($base,-1) != DIRECTORY_SEPARATOR ? $base . DIRECTORY_SEPARATOR : $base;
+    $this->_base           = substr($base, -1) != DIRECTORY_SEPARATOR ? $base . DIRECTORY_SEPARATOR : $base;
     self::$last_known_base = $this->_base;
   }
 
@@ -57,14 +59,14 @@ class View extends \Cubex\Data\Handler
     return empty($this->_base) ? self::$last_known_base : $this->_base;
   }
 
-  final public function setViewFile($filepath,$ext = 'phtml')
+  final public function setViewFile($filepath, $ext = 'phtml')
   {
     $this->_render_file = $this->getBasePath() . $filepath . "." . $ext;
   }
 
-  final public function nest($name, View $view)
+  final public function nest($name, Renderable $view)
   {
-    $this->_nested_views[$name] = $view;
+    $this->_nested[$name] = $view;
   }
 
   final public function render($rerender = false)
@@ -72,9 +74,9 @@ class View extends \Cubex\Data\Handler
     if($rerender || $this->_view_type == self::VIEW_DYNAMIC)
     {
       $rendered = '';
-      foreach($this->_nested_views as $named => $nest)
+      foreach($this->_nested as $named => $nest)
       {
-        if($nest instanceof View)
+        if($nest instanceof Renderable)
         {
           $$named = $nest->render();
         }
@@ -133,7 +135,6 @@ class View extends \Cubex\Data\Handler
       return static::$cache[md5($this->_render_file)] = file_get_contents($this->_render_file);
     }
   }
-
 
   /**
    * Translate string to locale, wrapper for gettext
