@@ -119,9 +119,9 @@ abstract class Controller extends \Cubex\Data\Handler
   final public function getAllRoutes()
   {
     return array(
-      'post' => $this->postRoutes(),
-      'ajax' => $this->ajaxRoutes(),
-      'base' => $this->routes()
+      'post' => $this->getPostRoutes(),
+      'ajax' => $this->getAjaxRoutes(),
+      'base' => $this->getRoutes()
     );
   }
 
@@ -130,22 +130,34 @@ abstract class Controller extends \Cubex\Data\Handler
    * */
   public function routeRequest()
   {
-    $path = $this->request()->getPath();
+    $path   = $this->request()->getPath();
     $router = new \Cubex\Routing\Router();
-    if($this->request()->isAjax())
+    $action = null;
+
+    if($action === null && $this->request()->isAjax())
     {
       $action = $router->parseRoute($this->getAjaxRoutes(), $path);
-      if($action !== null) return $this->processRouteReturn($action);
     }
 
-    if($this->request()->isHTTPPost())
+    if($action === null && $this->request()->isHTTPPost())
     {
       $action = $router->parseRoute($this->getPostRoutes(), $path);
-      if($action !== null) return $this->processRouteReturn($action);
     }
 
-    $action = $router->parseRoute($this->getRoutes(), $path);
-    if($action !== null) return $this->processRouteReturn($action);
+    if($action === null)
+    {
+      $action = $router->parseRoute($this->getRoutes(), $path);
+    }
+
+    if($action !== null)
+    {
+      foreach($router->getRouteData() as $k => $v)
+      {
+        $this->setData($k, $v);
+      }
+
+      return $this->processRouteReturn($action);
+    }
 
     if($this->defaultAction() !== null)
     {
@@ -170,9 +182,10 @@ abstract class Controller extends \Cubex\Data\Handler
     if($this->request()->isAjax())
     {
       $attempt = 'ajax' . ucfirst($action);
-      if(method_exists($this,$attempt))
+      if(method_exists($this, $attempt))
       {
         $this->$attempt();
+
         return true;
       }
     }
@@ -180,17 +193,19 @@ abstract class Controller extends \Cubex\Data\Handler
     if($this->request()->isHTTPPost())
     {
       $attempt = 'post' . ucfirst($action);
-      if(method_exists($this,$attempt))
+      if(method_exists($this, $attempt))
       {
         $this->$attempt();
+
         return true;
       }
     }
 
     $attempt = 'render' . ucfirst($action);
-    if(method_exists($this,$attempt))
+    if(method_exists($this, $attempt))
     {
       $this->$attempt();
+
       return true;
     }
 
