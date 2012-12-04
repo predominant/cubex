@@ -325,7 +325,7 @@ final class Cubex
 
           if(substr($class, -10) === 'Controller')
           {
-            $end                      = 'controller\\' . substr($end, 0, -10);
+            $end                      = 'controllers\\' . substr($end, 0, -10);
             $parts[count($parts) - 1] = $end;
             $class                    = implode('\\', $parts);
           }
