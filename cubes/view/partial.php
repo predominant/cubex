@@ -61,6 +61,11 @@ class Partial implements Renderable
     return implode($this->_glue === null ? '' : $this->_glue, $this->_elements);
   }
 
+  public function __toString()
+  {
+    return $this->render();
+  }
+
   /**
    * Clear all elements added
    */

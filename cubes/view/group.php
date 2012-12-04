@@ -38,4 +38,9 @@ class Group implements Renderable
     }
     return $render;
   }
+
+  public function __toString()
+  {
+    return $this->render();
+  }
 }

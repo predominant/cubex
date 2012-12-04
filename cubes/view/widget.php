@@ -50,6 +50,11 @@ class Widget extends \Cubex\Language\Translatable implements Renderable
     return $this->_content;
   }
 
+  public function __toString()
+  {
+    return $this->render();
+  }
+
   public function setMeta($key, $value)
   {
     $this->_meta[$key] = $value;
