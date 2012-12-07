@@ -31,7 +31,7 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 
   public function testSimpleApplicationInitiator()
   {
-    if(!class_exists('Cubex\Application\Simple\Application'))
+    if(!class_exists('Cubex\Applications\Simple\Application'))
     {
       $this->markTestSkipped(
         "This test requires the cubex_example applications"
