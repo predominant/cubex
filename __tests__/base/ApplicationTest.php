@@ -7,19 +7,6 @@
  */
 class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 {
-  private $_original_current_working_dir;
-
-  protected function setUp()
-  {
-    $this->_original_current_working_dir = getcwd();
-    chdir('webroot');
-  }
-
-  protected function tearDown()
-  {
-    chdir($this->_original_current_working_dir);
-  }
-
   public function testExceptionThrownWhenBadParamPassedToInitiator()
   {
     $this->setExpectedException(
