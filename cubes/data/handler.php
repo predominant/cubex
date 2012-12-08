@@ -14,7 +14,7 @@ class Handler implements \IteratorAggregate
 
   public function __construct($data = null)
   {
-    if($data !== null && is_array($data))
+    if($data !== null && \is_array($data))
     {
       $this->_data = $data;
     }
@@ -47,7 +47,7 @@ class Handler implements \IteratorAggregate
 
   public function appendData(array $data)
   {
-    $this->_data = array_merge($this->_data, $data);
+    $this->_data = \array_merge($this->_data, $data);
   }
 
   final public function getInt($name, $default = null)
@@ -78,7 +78,7 @@ class Handler implements \IteratorAggregate
     if(isset($this->_data[$name]))
     {
       // Normalize newlines.
-      return str_replace(array("\r\n", "\r"), array("\n", "\n"), (string)$this->_data[$name]);
+      return \str_replace(array("\r\n", "\r"), array("\n", "\n"), (string)$this->_data[$name]);
     }
     else return $default;
   }
@@ -91,14 +91,14 @@ class Handler implements \IteratorAggregate
 
   final public function getArr($name, $default = null)
   {
-    if(isset($this->_data[$name]) && is_array($this->_data[$name])) return $this->_data[$name];
-    else if(is_string($this->_data[$name]) && stristr($this->_data[$name], ','))
+    if(isset($this->_data[$name]) && \is_array($this->_data[$name])) return $this->_data[$name];
+    else if(\is_string($this->_data[$name]) && \stristr($this->_data[$name], ','))
     {
-      return explode(',', $this->_data[$name]);
+      return \explode(',', $this->_data[$name]);
     }
     else if(empty($this->_data[$name])) return $default;
-    else if(is_scalar($this->_data[$name])) return array($this->_data[$name]);
-    else if(is_object($this->_data[$name])) return (array)$this->_data[$name];
+    else if(\is_scalar($this->_data[$name])) return array($this->_data[$name]);
+    else if(\is_object($this->_data[$name])) return (array)$this->_data[$name];
     else return $default;
   }
 
@@ -106,7 +106,7 @@ class Handler implements \IteratorAggregate
   {
     if(isset($this->_data[$name]))
     {
-      if(is_object($this->_data[$name])) return $this->_data[$name];
+      if(\is_object($this->_data[$name])) return $this->_data[$name];
       else return (object)$this->_data[$name];
     }
     else return $default;

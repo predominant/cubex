@@ -25,7 +25,7 @@ class Module extends Translatable
 
   public function moduleName()
   {
-    return str_replace('Cubex\\Module\\', '', get_class(static::getModule()));
+    return \str_replace('Cubex\\Module\\', '', \get_class(static::getModule()));
   }
 
   public function moduleDescription()

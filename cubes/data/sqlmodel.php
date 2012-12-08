@@ -24,21 +24,21 @@ abstract class SQLModel extends Model
 
   public function loadOneWhere($pattern /* , $arg, $arg, $arg ... */)
   {
-    $args = func_get_args();
-    array_unshift($args, true);
-    $data = call_user_func_array(array($this, 'loadRawWhere'), $args);
+    $args = \func_get_args();
+    \array_unshift($args, true);
+    $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
-    if(count($data) > 1) throw new \Exception("More than one result in loadOneWhere() $pattern");
-    $data = reset($data);
+    if(\count($data) > 1) throw new \Exception("More than one result in loadOneWhere() $pattern");
+    $data = \reset($data);
     if($data) return $this->loadFromArray($data);
     else return false;
   }
 
   public function loadAllWhere($pattern /* , $arg, $arg, $arg ... */)
   {
-    $args = func_get_args();
-    array_unshift($args, true);
-    $data = call_user_func_array(array($this, 'loadRawWhere'), $args);
+    $args = \func_get_args();
+    \array_unshift($args, true);
+    $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
     if($data) return $this->loadMultiFromArray($data);
     else return false;
@@ -58,33 +58,33 @@ abstract class SQLModel extends Model
 
   public function loadRawWhere($columns, $pattern /* , $arg, $arg, $arg ... */)
   {
-    $args = func_get_args();
-    array_shift($args);
-    array_shift($args);
-    array_unshift($args, $this->getTableName());
+    $args = \func_get_args();
+    \array_shift($args);
+    \array_shift($args);
+    \array_unshift($args, $this->getTableName());
 
     $column = '%LC';
-    if(is_bool($columns) || $columns === '*' || (is_array($columns) && $columns[0] == '*'))
+    if(\is_bool($columns) || $columns === '*' || (\is_array($columns) && $columns[0] == '*'))
     {
       $column = '*';
     }
-    else if(is_array($columns))
+    else if(\is_array($columns))
     {
-      array_unshift($args, $columns);
+      \array_unshift($args, $columns);
     }
-    else if(is_scalar($columns))
+    else if(\is_scalar($columns))
     {
-      $columns = explode(',', $columns);
-      if(!is_array($columns)) $columns = array($columns);
-      array_unshift($args, $columns);
+      $columns = \explode(',', $columns);
+      if(!\is_array($columns)) $columns = array($columns);
+      \array_unshift($args, $columns);
     }
     else
     {
-      throw new \Exception("Invalid columns in loadRawWhere()" . print_r($columns, true));
+      throw new \Exception("Invalid columns in loadRawWhere()" . \print_r($columns, true));
     }
 
     $pattern = 'SELECT ' . $column . ' FROM %T WHERE ' . $pattern;
-    array_unshift($args, $pattern);
+    \array_unshift($args, $pattern);
 
     try
     {
@@ -92,7 +92,7 @@ abstract class SQLModel extends Model
     }
     catch(\Exception $e)
     {
-      var_dump($e);
+      \var_dump($e);
       $query = false;
     }
 
@@ -116,7 +116,7 @@ abstract class SQLModel extends Model
     }
     if($data)
     {
-      $this->loadFromStdClass(current($data));
+      $this->loadFromStdClass(\current($data));
       return true;
     }
     else return false;

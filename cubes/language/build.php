@@ -32,23 +32,23 @@ class Build
     foreach($this->_analyse as $type)
     {
       $run_dir = $this->_project_dir . DIRECTORY_SEPARATOR . $type;
-      if($handle = opendir($run_dir))
+      if($handle = \opendir($run_dir))
       {
-        while(false !== ($entry = readdir($handle)))
+        while(false !== ($entry = \readdir($handle)))
         {
-          if(in_array($entry, array('.', '..', 'locale'))) continue;
+          if(\in_array($entry, array('.', '..', 'locale'))) continue;
 
-          if(is_dir($run_dir . DIRECTORY_SEPARATOR . $entry))
+          if(\is_dir($run_dir . DIRECTORY_SEPARATOR . $entry))
           {
-            $mfile   = md5($type . DIRECTORY_SEPARATOR . $entry);
+            $mfile   = \md5($type . DIRECTORY_SEPARATOR . $entry);
             $analyse = new Analyse();
             $analyse->processDirectory($run_dir . DIRECTORY_SEPARATOR . $entry, '');
             $locale_dir = $run_dir . DIRECTORY_SEPARATOR . $entry . DIRECTORY_SEPARATOR . 'locale';
-            if(!file_exists($locale_dir))
+            if(!\file_exists($locale_dir))
             {
-              mkdir($locale_dir);
+              \mkdir($locale_dir);
             }
-            file_put_contents(
+            \file_put_contents(
               $locale_dir . DIRECTORY_SEPARATOR . 'messages.po', $analyse->generatePO('', new Notranslator())
             );
 
@@ -56,23 +56,23 @@ class Build
             {
               $language_dir = $locale_dir . DIRECTORY_SEPARATOR . $language . DIRECTORY_SEPARATOR . 'LC_MESSAGES';
 
-              if(!file_exists($language_dir))
+              if(!\file_exists($language_dir))
               {
-                mkdir($language_dir, 0777, true);
+                \mkdir($language_dir, 0777, true);
               }
 
-              file_put_contents(
+              \file_put_contents(
                 $language_dir . DIRECTORY_SEPARATOR . $mfile . '.po',
                 $analyse->generatePO($language, $translator)
               );
 
               $tfile = $language_dir . DIRECTORY_SEPARATOR . $mfile;
-              shell_exec($this->_msgfmt . ' -o "' . $tfile . '.mo" "' . $tfile . '.po"');
+              \shell_exec($this->_msgfmt . ' -o "' . $tfile . '.mo" "' . $tfile . '.po"');
             }
 
           }
         }
-        closedir($handle);
+        \closedir($handle);
 
       }
     }

@@ -22,7 +22,7 @@ class ErrorPage extends WebPage
   public function getBody()
   {
     $response = parent::getBody();
-    if(is_array($this->_params))
+    if(\is_array($this->_params))
     {
       foreach($this->_params as $k => $v)
       {

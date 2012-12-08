@@ -114,9 +114,9 @@ class WebPage
     $head        = $this->getHead();
     $body        = $this->getBody();
     $closing     = $this->getClosing();
-    $method      = strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
+    $method      = \strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
     $request_url = Cubex::request()->getPath();
-    $request_url .= '?' . http_build_query(Cubex::request()->variables(), '', '&amp;');
+    $request_url .= '?' . \http_build_query(Cubex::request()->variables(), '', '&amp;');
 
     $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
     if(Cubex::request()->jsSupport() === false) $noscript = '';
@@ -140,7 +140,7 @@ EOHTML;
   final public function beginCapture()
   {
     $this->_captured = false;
-    ob_start();
+    \ob_start();
   }
 
   final public function capturedContent()
@@ -152,7 +152,7 @@ EOHTML;
   {
     if($this->_captured === false)
     {
-      $this->_captured_content = ob_get_clean();
+      $this->_captured_content = \ob_get_clean();
       $this->_captured         = true;
     }
     else $this->_captured = false;

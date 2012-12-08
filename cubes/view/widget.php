@@ -23,7 +23,7 @@ class Widget extends Translatable implements Renderable
   final public function begin()
   {
     $this->_captured = false;
-    ob_start();
+    \ob_start();
   }
 
   final public function getCapturedContent()
@@ -35,7 +35,7 @@ class Widget extends Translatable implements Renderable
   {
     if($this->_captured === false)
     {
-      $this->_content  = ob_get_clean();
+      $this->_content  = \ob_get_clean();
       $this->_captured = true;
     }
     else $this->_captured = false;

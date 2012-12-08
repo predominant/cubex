@@ -23,7 +23,8 @@ class Translatable
    */
   public function t($message)
   {
-    return dgettext($this->textDomain(), $message);
+    if(!\function_exists('\dgettext')) return $message;
+    return \dgettext($this->textDomain(), $message);
   }
 
   /**
@@ -37,13 +38,18 @@ class Translatable
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    return dngettext($this->textDomain(), $singular, $plural, $number);
+    if(!\function_exists('\dngettext'))
+    {
+      return $number == 1 ? $singular : $plural;
+    }
+    return \dngettext($this->textDomain(), $singular, $plural, $number);
   }
 
   public function textDomain()
   {
-    $path              = str_replace(dirname(dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
-    $this->_textdomain = md5($path);
+    $path = \str_replace(\dirname(\dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
+
+    $this->_textdomain = \md5($path);
 
     if(!$this->_bound_td) $this->bindLanguage();
 
@@ -53,14 +59,15 @@ class Translatable
   public function bindLanguage()
   {
     $this->_bound_td = true;
+    if(!\function_exists('bindtextdomain')) return false;
 
-    return bindtextdomain($this->textDomain(), $this->filePath() . '\\locale');
+    return \bindtextdomain($this->textDomain(), $this->filePath() . '\\locale');
   }
 
   public function filePath()
   {
-    $reflector = new \ReflectionClass(get_class($this));
+    $reflector = new \ReflectionClass(\get_class($this));
 
-    return dirname($reflector->getFileName());
+    return \dirname($reflector->getFileName());
   }
 }

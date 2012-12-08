@@ -85,7 +85,7 @@ abstract class Model implements \IteratorAggregate
       }
     }
 
-    return get_class($this) . " {" . implode(', ', $properties) . "}";
+    return \get_class($this) . " {" . implode(', ', $properties) . "}";
   }
 
   public function __call($method, $args)
@@ -98,10 +98,10 @@ abstract class Model implements \IteratorAggregate
 
   final protected function call($method, $args)
   {
-    switch(substr($method, 0, 3))
+    switch(\substr($method, 0, 3))
     {
       case 'set':
-        $attribute = strtolower(substr($method, 3));
+        $attribute = \strtolower(substr($method, 3));
         if($this->attributeExists($attribute))
         {
           $this->attribute($attribute)->setData($args[0]);
@@ -114,7 +114,7 @@ abstract class Model implements \IteratorAggregate
         }
         break;
       case 'get':
-        $attribute = strtolower(substr($method, 3));
+        $attribute = \strtolower(substr($method, 3));
         if($this->attributeExists($attribute))
         {
           return $this->attribute($attribute)->data();
@@ -130,18 +130,18 @@ abstract class Model implements \IteratorAggregate
 
   public function __get($name)
   {
-    return $this->call("get" . ucwords($name), null);
+    return $this->call("get" . \ucwords($name), null);
   }
 
   public function __set($name, $value)
   {
-    return $this->call("set" . ucwords($name), array($value));
+    return $this->call("set" . \ucwords($name), array($value));
   }
 
   public function getTableName()
   {
-    return str_replace(
-      '_model', '', str_replace('cubex_module_', '', strtolower(str_replace('\\', '_', get_class($this))))
+    return \str_replace(
+      '_model', '', \str_replace('cubex_module_', '', \strtolower(\str_replace('\\', '_', \get_class($this))))
     );
   }
 
@@ -237,10 +237,10 @@ abstract class Model implements \IteratorAggregate
     $valid = true;
     if($attributes === null)
     {
-      $attributes = array_keys($this->_attributes);
+      $attributes = \array_keys($this->_attributes);
     }
 
-    if(is_array($attributes))
+    if(\is_array($attributes))
     {
       foreach($attributes as $attribute)
       {
@@ -325,14 +325,14 @@ abstract class Model implements \IteratorAggregate
     foreach($rows as $row)
     {
       $object = clone $this;
-      if(is_object($row))
+      if(\is_object($row))
       {
         if($id && isset($row->$id))
         {
           $result[$row->$id] = $object->loadFromStdClass($row);
         }
       }
-      else if(is_array($row))
+      else if(\is_array($row))
       {
         if($id && isset($row[$id]))
         {

@@ -18,6 +18,6 @@ class Reversulator implements Translator
    */
   public function translate($text, $source_language, $target_language)
   {
-    return strrev($text);
+    return \strrev($text);
   }
 }

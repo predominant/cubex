@@ -29,27 +29,29 @@ class Application extends Translatable
     return self::$app;
   }
 
-  final public static function initialise($application)
+  final public static function initialise(Application $application)
   {
-    $class_name = "\\Cubex\\Applications\\$application\\Application";
-    if(class_exists($class_name))
+    try
     {
-      self::$app = new $class_name;
+      self::$app = $application;
       self::$app->launch();
     }
-    else throw new \Exception("Application '" . $application . "' is unavailable", 503);
+    catch(\Exception $e)
+    {
+      throw new \Exception("Application '" . $application->getName() . "' is unavailable", 503);
+    }
   }
 
   public function launch()
   {
     $this->registerAutoLoader();
-    $namespace = substr(get_called_class(), 0, -12);
+    $namespace = \substr(\get_called_class(), 0, -12);
 
     /*
      * Initiate Event Hooks
      */
     $events = $namespace . "\\Events";
-    if(class_exists($events) && is_subclass_of($events, '\\Cubex\\Events\\Events'))
+    if(\class_exists($events) && \is_subclass_of($events, '\\Cubex\\Events\\Events'))
     {
       $events::createHooks();
     }
@@ -60,7 +62,7 @@ class Application extends Translatable
      * Initiate Controller
      */
     $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
-    if(class_exists($controller))
+    if(\class_exists($controller))
     {
       Cubex::core()->setController(new $controller());
     }
@@ -128,9 +130,9 @@ class Application extends Translatable
   {
     $router     = new Router();
     $controller = $router->parseRoute($this->getRoutes(), $path);
-    if(is_array($this->_uri_data))
+    if(\is_array($this->_uri_data))
     {
-      $this->_uri_data = array_merge($this->_uri_data, $router->getRouteData());
+      $this->_uri_data = \array_merge($this->_uri_data, $router->getRouteData());
     }
     else $this->_uri_data = $router->getRouteData();
 

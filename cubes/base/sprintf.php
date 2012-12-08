@@ -32,7 +32,7 @@ class Sprintf
    *
    * Implode an array of the type
    * %Ld = implode int array
-   * %Lf = implode int array
+   * %Lf = implode float array
    * %Ls = implode string array
    * %LC = implode column names
    *
@@ -57,10 +57,10 @@ class Sprintf
 
   final public static function call($callback, $user_data, $argv)
   {
-    $argc    = count($argv);
+    $argc    = \count($argv);
     $arg     = 0;
     $pattern = $argv[0];
-    $len     = strlen($pattern);
+    $len     = \strlen($pattern);
     $conv    = false;
 
     for($pos = 0; $pos < $len; $pos++)
@@ -71,7 +71,7 @@ class Sprintf
       {
         //  We could make a greater effort to support formatting modifiers,
         //  but they really have no place in semantic string formatting.
-        if(strpos("'-0123456789.\$+", $c) !== false)
+        if(\strpos("'-0123456789.\$+", $c) !== false)
         {
           throw new \Exception("Sprintf::call() does not support the `%{$c}' modifier.");
         }
@@ -105,7 +105,7 @@ class Sprintf
 
     $argv[0] = $pattern;
 
-    return call_user_func_array('sprintf', $argv);
+    return \call_user_func_array('sprintf', $argv);
   }
 
   public function sprintfCheckType($value, $type, $query)
@@ -115,19 +115,19 @@ class Sprintf
       case 'Ld':
       case 'Ls':
       case 'LC':
-        if(!is_array($value))
+        if(!\is_array($value))
         {
           throw new \Exception("Expected array argument for %{$type} conversion in {$query}");
         }
         break;
       case 'QA':
-        if(!is_array($value))
+        if(!\is_array($value))
         {
           throw new \Exception("Expected array argument for %{$type} conversion in {$query}");
         }
         break;
       case 'QO':
-        if(!is_object($value))
+        if(!\is_object($value))
         {
           throw new \Exception("Expected array argument for %{$type} conversion in {$query}");
         }
@@ -139,7 +139,7 @@ class Sprintf
                                       &$length)
   {
     $type = $pattern[$pos];
-    $next = (strlen($pattern) > $pos + 1) ? $pattern[$pos + 1] : null;
+    $next = (\strlen($pattern) > $pos + 1) ? $pattern[$pos + 1] : null;
 
     $nullable = false;
     $done     = false;
@@ -154,8 +154,8 @@ class Sprintf
           case 'd':
           case 'f':
           case 's':
-            $pattern = substr_replace($pattern, '', $pos, 1);
-            $length  = strlen($pattern);
+            $pattern = \substr_replace($pattern, '', $pos, 1);
+            $length  = \strlen($pattern);
             $type    = 's';
             if($value === null)
             {
@@ -179,8 +179,8 @@ class Sprintf
           case 'd': //  ...integer.
           case 'f': //  ...float.
           case 's': //  ...string.
-            $pattern  = substr_replace($pattern, '', $pos, 1);
-            $length   = strlen($pattern);
+            $pattern  = \substr_replace($pattern, '', $pos, 1);
+            $length   = \strlen($pattern);
             $type     = $next;
             $nullable = true;
             break;
@@ -191,8 +191,8 @@ class Sprintf
 
       case 'Q': //Query...
         self::sprintfCheckType($value, "Q{$next}", $pattern);
-        $pattern = substr_replace($pattern, '', $pos, 1);
-        $length  = strlen($pattern);
+        $pattern = \substr_replace($pattern, '', $pos, 1);
+        $length  = \strlen($pattern);
         $type    = 's';
         $done    = true;
         switch($next)
@@ -202,9 +202,9 @@ class Sprintf
             $qu = array();
             foreach($value as $k => $v)
             {
-              if(is_int($v)) $val = (int)$v;
-              else if(is_float($v)) $val = (float)$v;
-              else if(is_bool($v)) $val = (int)$v;
+              if(\is_int($v)) $val = (int)$v;
+              else if(\is_float($v)) $val = (float)$v;
+              else if(\is_bool($v)) $val = (int)$v;
               else $val = "'" . $connection->escapeString($v) . "'";
 
               if($next == 'O' && $value instanceof SearchObject)
@@ -230,7 +230,7 @@ class Sprintf
                 $qu[] = $connection->escapeColumnName($k) . " = " . $val;
               }
             }
-            $value = implode(' AND ', $qu);
+            $value = \implode(' AND ', $qu);
             break;
           default:
             throw new \Exception("Unknown conversion %Q{$next}.");
@@ -239,32 +239,32 @@ class Sprintf
 
       case 'L': // List of..
         self::sprintfCheckType($value, "L{$next}", $pattern);
-        $pattern = substr_replace($pattern, '', $pos, 1);
-        $length  = strlen($pattern);
+        $pattern = \substr_replace($pattern, '', $pos, 1);
+        $length  = \strlen($pattern);
         $type    = 's';
         $done    = true;
 
         switch($next)
         {
           case 'd': //  ...integers.
-            $value = implode(', ', array_map('intval', $value));
+            $value = \implode(', ', \array_map('intval', $value));
             break;
           case 'f': //  ...floats.
-            $value = implode(', ', array_map('floatval', $value));
+            $value = \implode(', ', \array_map('floatval', $value));
             break;
           case 's': // ...strings.
             foreach($value as $k => $v)
             {
               $value[$k] = "'" . $connection->escapeString($v) . "'";
             }
-            $value = implode(', ', $value);
+            $value = \implode(', ', $value);
             break;
           case 'C': // ...columns.
             foreach($value as $k => $v)
             {
               $value[$k] = $connection->escapeColumnName($v);
             }
-            $value = implode(', ', $value);
+            $value = \implode(', ', $value);
             break;
           default:
             throw new \Exception("Unknown conversion %L{$next}.");

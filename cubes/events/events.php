@@ -23,9 +23,9 @@ class Events
 
   final protected function addHook($event_name, $callback)
   {
-    if(!is_callable($callback, true))
+    if(!\is_callable($callback, true))
     {
-      throw new \InvalidArgumentException(sprintf('Invalid callback: %s.', print_r($callback, true)));
+      throw new \InvalidArgumentException(\sprintf('Invalid callback: %s.', print_r($callback, true)));
     }
     $this->_hooks[$event_name][] = $callback;
   }
@@ -39,8 +39,8 @@ class Events
   {
     foreach($this->getCallbacks($event_name) as $callback)
     {
-      if(!is_callable($callback)) continue;
-      call_user_func($callback);
+      if(!\is_callable($callback)) continue;
+      \call_user_func($callback);
     }
   }
 

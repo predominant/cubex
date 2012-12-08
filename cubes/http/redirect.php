@@ -56,8 +56,8 @@ class Redirect
 
   public function redirect($from_response = false)
   {
-    if(!$from_response) header('Status: ' . $this->_http_status);
-    header('Location: ' . $this->_url);
+    if(!$from_response) \header('Status: ' . $this->_http_status);
+    \header('Location: ' . $this->_url);
     if(!$from_response && $this->_die_render) die;
   }
 }

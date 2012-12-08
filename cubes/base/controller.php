@@ -189,8 +189,8 @@ abstract class Controller extends Handler
 
     if($this->request()->isAjax())
     {
-      $attempt = 'ajax' . ucfirst($action);
-      if(method_exists($this, $attempt))
+      $attempt = 'ajax' . \ucfirst($action);
+      if(\method_exists($this, $attempt))
       {
         $this->$attempt();
 
@@ -200,8 +200,8 @@ abstract class Controller extends Handler
 
     if($this->request()->isHTTPPost())
     {
-      $attempt = 'post' . ucfirst($action);
-      if(method_exists($this, $attempt))
+      $attempt = 'post' . \ucfirst($action);
+      if(\method_exists($this, $attempt))
       {
         $this->$attempt();
 
@@ -209,8 +209,8 @@ abstract class Controller extends Handler
       }
     }
 
-    $attempt = 'render' . ucfirst($action);
-    if(method_exists($this, $attempt))
+    $attempt = 'render' . \ucfirst($action);
+    if(\method_exists($this, $attempt))
     {
       $this->$attempt();
 

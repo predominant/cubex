@@ -12,8 +12,14 @@ use \Cubex\Base\WebPage;
 class Response
 {
 
+  /**
+   * @var Redirect
+   */
   private $_redirect = null;
   private $_http_status = 200;
+  /**
+   * @var Webpage
+   */
   private $_webpage = null;
   private $_render_type = null;
   private $_die_render = false;
@@ -51,7 +57,7 @@ class Response
 
   public function render()
   {
-    if(!headers_sent()) header('Status: ' . $this->_http_status);
+    if(!\headers_sent()) \header('Status: ' . $this->_http_status);
 
     switch($this->_render_type)
     {
@@ -76,9 +82,9 @@ class Response
 
   public function sendHeader($header, $replace = false)
   {
-    if(!headers_sent())
+    if(!\headers_sent())
     {
-      header($header, $replace);
+      \header($header, $replace);
       return true;
     }
 

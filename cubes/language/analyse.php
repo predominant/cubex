@@ -14,31 +14,31 @@ class Analyse
 
   public function processDirectory($base, $directory)
   {
-    if($handle = opendir($base . $directory))
+    if($handle = \opendir($base . $directory))
     {
-      while(false !== ($entry = readdir($handle)))
+      while(false !== ($entry = \readdir($handle)))
       {
-        if(in_array($entry, array('.', '..', 'locale'))) continue;
+        if(\in_array($entry, array('.', '..', 'locale'))) continue;
 
-        if(is_dir($base . $directory . DIRECTORY_SEPARATOR . $entry))
+        if(\is_dir($base . $directory . DIRECTORY_SEPARATOR . $entry))
         {
           $this->processDirectory($base, $directory . DIRECTORY_SEPARATOR . $entry);
         }
-        else if(substr($entry, -4) == '.php' || substr($entry, -6) == '.phtml')
+        else if(\substr($entry, -4) == '.php' || \substr($entry, -6) == '.phtml')
         {
           $this->processFile($base, $directory . DIRECTORY_SEPARATOR . $entry);
         }
       }
 
-      closedir($handle);
+      \closedir($handle);
     }
   }
 
   public function processFile($base, $path)
   {
-    $content   = file_get_contents($base . $path);
-    $path      = ltrim($path, DIRECTORY_SEPARATOR);
-    $tokens    = token_get_all($content);
+    $content   = \file_get_contents($base . $path);
+    $path      = \ltrim($path, DIRECTORY_SEPARATOR);
+    $tokens    = \token_get_all($content);
     $startline = $building = 0;
     $msgid     = $type = $msgid_plural = '';
     $started   = false;
@@ -68,7 +68,7 @@ class Analyse
         $building = 1;
       }
 
-      if($started && is_scalar($token) && $token == ')')
+      if($started && \is_scalar($token) && $token == ')')
       {
         if($type == 'plural')
         {
@@ -87,11 +87,11 @@ class Analyse
       {
         if($building == 0)
         {
-          $msgid .= substr($token[1], 1, -1);
+          $msgid .= \substr($token[1], 1, -1);
         }
         else
         {
-          $msgid_plural .= substr($token[1], 1, -1);
+          $msgid_plural .= \substr($token[1], 1, -1);
         }
       }
     }
@@ -115,14 +115,14 @@ class Analyse
         $result .= '#:';
         foreach($appearances as $appearance)
         {
-          $result .= ' ' . implode(':', $appearance);
+          $result .= ' ' . \implode(':', $appearance);
         }
 
         $result .= "\n";
         if($build_type == 'single')
         {
           $translated = $translator->translate($message, $source_language, $language);
-          if(strlen($message) < 80)
+          if(\strlen($message) < 80)
           {
             $result .= 'msgid "' . $this->slash($message) . '"';
           }
@@ -132,7 +132,7 @@ class Analyse
             $result .= '"' . $this->iconv_wordwrap($message, 76, " \"\n\"") . '"';
           }
           $result .= "\n";
-          if(strlen($translated) < 80)
+          if(\strlen($translated) < 80)
           {
             $result .= 'msgstr "' . $this->slash($translated) . '"';
           }
@@ -148,7 +148,7 @@ class Analyse
           $singular = $translator->translate($message[0], $source_language, $language);
           $plural   = $translator->translate($message[1], $source_language, $language);
 
-          if(strlen($message[0]) < 80)
+          if(\strlen($message[0]) < 80)
           {
             $result .= 'msgid "' . $this->slash($message[0]) . '"';
           }
@@ -160,7 +160,7 @@ class Analyse
 
           $result .= "\n";
 
-          if(strlen($message[1]) < 80)
+          if(\strlen($message[1]) < 80)
           {
             $result .= 'msgid_plural "' . $this->slash($message[1]) . '"';
           }
@@ -187,7 +187,7 @@ class Analyse
     $string_width = \iconv_strlen($string, $charset);
     $break_width  = \iconv_strlen($break, $charset);
 
-    if(strlen($string) === 0)
+    if(\strlen($string) === 0)
     {
       return '';
     }
@@ -205,7 +205,7 @@ class Analyse
 
     for($current = 0; $current < $string_width; $current++)
     {
-      $char = iconv_substr($string, $current, 1, $charset);
+      $char = \iconv_substr($string, $current, 1, $charset);
 
       if($break_width === 1)
       {
@@ -213,12 +213,12 @@ class Analyse
       }
       else
       {
-        $possible_break = iconv_substr($string, $current, $break_width, $charset);
+        $possible_break = \iconv_substr($string, $current, $break_width, $charset);
       }
 
       if($possible_break === $break)
       {
-        $result .= iconv_substr($string, $last_start, $current - $last_start + $break_width, $charset);
+        $result .= \iconv_substr($string, $last_start, $current - $last_start + $break_width, $charset);
         $current += $break_width - 1;
         $last_start = $last_space = $current + 1;
       }
@@ -226,7 +226,7 @@ class Analyse
       {
         if($current - $last_start >= $width)
         {
-          $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
+          $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
           $last_start = $current + 1;
         }
 
@@ -234,19 +234,19 @@ class Analyse
       }
       elseif($current - $last_start >= $width && $cut && $last_start >= $last_space)
       {
-        $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
+        $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
         $last_start = $last_space = $current;
       }
       elseif($current - $last_start >= $width && $last_start < $last_space)
       {
-        $result .= $this->slash(iconv_substr($string, $last_start, $last_space - $last_start, $charset)) . $break;
+        $result .= $this->slash(\iconv_substr($string, $last_start, $last_space - $last_start, $charset)) . $break;
         $last_start = $last_space = $last_space + 1;
       }
     }
 
     if($last_start !== $current)
     {
-      $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset));
+      $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset));
     }
 
     return $result;
@@ -255,9 +255,9 @@ class Analyse
   public function slash($text)
   {
     $pattern = '/<span class="notranslate">([^<]*)<\/span>/';
-    $text    = preg_replace($pattern, '$1', urldecode($text));
+    $text    = \preg_replace($pattern, '$1', \urldecode($text));
 
-    return str_replace('"', '\"', $text);
+    return \str_replace('"', '\"', $text);
   }
 
 }

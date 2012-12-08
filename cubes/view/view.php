@@ -53,7 +53,7 @@ class View extends Handler implements Renderable
 
   public function setBasePath($base)
   {
-    $this->_base           = substr($base, -1) != DIRECTORY_SEPARATOR ? $base . DIRECTORY_SEPARATOR : $base;
+    $this->_base           = \substr($base, -1) != DIRECTORY_SEPARATOR ? $base . DIRECTORY_SEPARATOR : $base;
     self::$last_known_base = $this->_base;
   }
 
@@ -102,7 +102,7 @@ class View extends Handler implements Renderable
         }
 
         $view_content = $this->loadRawView();
-        ob_start();
+        \ob_start();
         try //Make sure the view does not cause the entire render to fail
         {
           /* Close PHP tags to allow for html and opening tags */
@@ -110,10 +110,10 @@ class View extends Handler implements Renderable
         }
         catch(\Exception $e)
         {
-          ob_get_clean();
+          \ob_get_clean();
         }
 
-        $rendered = ob_get_clean();
+        $rendered = \ob_get_clean();
       }
 
       $this->setOutput($rendered);
@@ -134,13 +134,13 @@ class View extends Handler implements Renderable
 
   public function loadRawView()
   {
-    if(isset(static::$cache[md5($this->_render_file)]))
+    if(isset(static::$cache[\md5($this->_render_file)]))
     {
-      return static::$cache[md5($this->_render_file)];
+      return static::$cache[\md5($this->_render_file)];
     }
     else
     {
-      return static::$cache[md5($this->_render_file)] = file_get_contents($this->_render_file);
+      return static::$cache[\md5($this->_render_file)] = \file_get_contents($this->_render_file);
     }
   }
 

@@ -15,7 +15,7 @@ class Group implements Renderable
 
   public function add(Renderable $item /*, $item, $item */)
   {
-    $items = func_get_args();
+    $items = \func_get_args();
     foreach($items as $itm)
     {
       if($itm instanceof Renderable)

@@ -54,7 +54,7 @@ class Attribute
 
   public function name($name = null)
   {
-    if(is_string($name))
+    if(\is_string($name))
     {
       $this->_name = $name;
 
@@ -66,12 +66,12 @@ class Attribute
 
   public function id()
   {
-    return str_replace('_', '-', $this->name());
+    return \str_replace('_', '-', $this->name());
   }
 
   public function required($set = null)
   {
-    if(is_bool($set))
+    if(\is_bool($set))
     {
       $this->_required = $set;
 
@@ -101,7 +101,7 @@ class Attribute
 
   public function data()
   {
-    if(!is_array($this->_filters)) return $this->_data;
+    if(!\is_array($this->_filters)) return $this->_data;
 
     $data = $this->_data;
     foreach($this->_filters as $filter)
@@ -143,17 +143,17 @@ class Attribute
 
   public function addFilters($filters)
   {
-    if(is_array($filters))
+    if(\is_array($filters))
     {
       foreach($filters as $filter)
       {
-        if(is_string($filter))
+        if(\is_string($filter))
         {
           $this->addFilter(Callback::_($filter, array(), 'filter'));
         }
-        else if(is_array($filter))
+        else if(\is_array($filter))
         {
-          if(isset($filter[0]) && is_array($filter[0]))
+          if(isset($filter[0]) && \is_array($filter[0]))
           {
             $this->addFilter(Callback::_($filter[0], $filter[1], 'filter'));
           }
@@ -164,7 +164,7 @@ class Attribute
         }
       }
     }
-    else if(is_string($filters))
+    else if(\is_string($filters))
     {
       $this->addFilter(Callback::_($filters, array(), 'filter'));
     }
@@ -176,7 +176,7 @@ class Attribute
 
   public function filters($replace_filters)
   {
-    if(!is_null($replace_filters) && is_array($replace_filters))
+    if($replace_filters !== null && \is_array($replace_filters))
     {
       $this->_filters = array();
       $this->addFilters($replace_filters);
@@ -196,17 +196,17 @@ class Attribute
 
   public function addValidators($validators)
   {
-    if(is_array($validators))
+    if(\is_array($validators))
     {
       foreach($validators as $validator)
       {
-        if(is_string($validator))
+        if(\is_string($validator))
         {
           $this->addValidator(Callback::_($validator, array(), "validator"));
         }
-        else if(is_array($validator))
+        else if(\is_array($validator))
         {
-          if(isset($validator[0]) && is_array($validator[0]))
+          if(isset($validator[0]) && \is_array($validator[0]))
           {
             $this->addValidator(Callback::_($validator[0], $validator[1], "validator"));
           }
@@ -217,7 +217,7 @@ class Attribute
         }
       }
     }
-    else if(is_string($validators))
+    else if(\is_string($validators))
     {
       $this->addValidator(Callback::_($validators, array(), "validator"));
     }
@@ -229,7 +229,7 @@ class Attribute
 
   public function validators($replace_validators = null)
   {
-    if(!is_null($replace_validators) && is_array($replace_validators))
+    if($replace_validators !== null && \is_array($replace_validators))
     {
       $this->_validators = array();
       $this->addValidators($replace_validators);
@@ -248,7 +248,7 @@ class Attribute
 
       return false;
     }
-    if(!is_array($this->_validators)) return true;
+    if(!\is_array($this->_validators)) return true;
 
     $valid = true;
     foreach($this->_validators as $validator)
@@ -281,7 +281,7 @@ class Attribute
 
   public function exceptions()
   {
-    return is_array($this->_exceptions) ? $this->_exceptions : array();
+    return \is_array($this->_exceptions) ? $this->_exceptions : array();
   }
 
   public function errors()

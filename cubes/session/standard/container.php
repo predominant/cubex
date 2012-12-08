@@ -12,7 +12,7 @@ class Container implements \Cubex\Session\Container
 
   public function __construct(array $config)
   {
-    session_start();
+    \session_start();
     if(!isset($_SESSION['cubex'])) $_SESSION['cubex'] = array();
   }
 
@@ -28,6 +28,6 @@ class Container implements \Cubex\Session\Container
 
   public function destroy()
   {
-    return session_destroy();
+    return \session_destroy();
   }
 }

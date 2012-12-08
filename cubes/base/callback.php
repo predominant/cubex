@@ -43,22 +43,22 @@ class Callback
 
   public function Process($input = null)
   {
-    if($this->_type == self::TYPE_FILTER && is_string($this->_method))
+    if($this->_type == self::TYPE_FILTER && \is_string($this->_method))
     {
-      if(!function_exists($this->_method) && method_exists("\\Cubex\\Data\\Filter", $this->_method))
+      if(!\function_exists($this->_method) && \method_exists("\\Cubex\\Data\\Filter", $this->_method))
       {
         $this->_method = array("\\Cubex\\Data\\Filter", $this->_method);
       }
     }
 
-    if($this->_type == self::TYPE_VALIDATOR && is_string($this->_method))
+    if($this->_type == self::TYPE_VALIDATOR && \is_string($this->_method))
     {
-      if(!function_exists($this->_method) && method_exists("\\Cubex\\Data\\Validate", $this->_method))
+      if(!\function_exists($this->_method) && \method_exists("\\Cubex\\Data\\Validate", $this->_method))
       {
         $this->_method = array("\\Cubex\\Data\\Validate", $this->_method);
       }
     }
 
-    return call_user_func_array($this->_method, array_merge(array($input), $this->_options));
+    return \call_user_func_array($this->_method, \array_merge(array($input), $this->_options));
   }
 }

@@ -15,7 +15,7 @@ abstract class Edge
 
   public static function edgeType()
   {
-    return strtolower(end(explode('\\', get_called_class()))) . ':' . substr(md5(get_called_class()), 22) . ':';
+    return \strtolower(\end(\explode('\\', \get_called_class()))) . ':' . \substr(\md5(\get_called_class()), 22) . ':';
   }
 
   abstract public function getEdges($source_id, $edge_type = null);

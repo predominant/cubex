@@ -12,6 +12,7 @@ namespace Cubex;
  */
 use Cubex\Base\Controller;
 use Cubex\Data\Handler;
+use Cubex\Http\Request;
 
 final class Cubex
 {
@@ -26,19 +27,22 @@ final class Cubex
 
   final public static function boot()
   {
-    $required_version = '5.4.0';
-    $current_version  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
-    if(version_compare($current_version, $required_version) < 0)
+    if(\defined('PHP_MAJOR_VERSION')) //Do not check version if running through a compiler
     {
-      Cubex::fatal("You are running PHP '" . $current_version . "', version '{$required_version}' required");
+      $required_version = '5.4.0';
+      $current_version  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
+      if($current_version < $required_version)
+      {
+        Cubex::fatal("You are running PHP '" . $current_version . "', version '{$required_version}' required");
+      }
     }
 
-    $env = getenv('CUBEX_ENV'); // Apache Config
+    $env = \getenv('CUBEX_ENV'); // Apache Config
     if(!$env && isset($_ENV['CUBEX_ENV'])) $env = $_ENV['CUBEX_ENV'];
     if(!$env) Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
 
-    register_shutdown_function('Cubex\Cubex::shutdown');
-    set_error_handler('Cubex\Cubex::error_handler');
+    \register_shutdown_function('Cubex\Cubex::shutdown');
+    \set_error_handler('Cubex\Cubex::error_handler');
 
     /*
      * Define helpful bits :)
@@ -47,21 +51,21 @@ final class Cubex
     define("CUBEX_ENV", $env);
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-    $dirname = dirname(dirname(__FILE__));
-    define("CUBEX_ROOT", substr(dirname(__FILE__), -5) == 'cache' ? $dirname : dirname($dirname));
+    $dirname = \dirname(\dirname(__FILE__));
+    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirname : \dirname($dirname));
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))
     {
       Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
     }
 
-    define("CUBEX_START", microtime(true));
+    define("CUBEX_START", \microtime(true));
 
     self::core(); //Construct Cubex
 
     if(CUBEX_WEB)
     {
-      Cubex::core()->setRequest(new Http\Request($_REQUEST['__path__']));
+      Cubex::core()->setRequest(new Request($_REQUEST['__path__']));
       if(Cubex::config('locale')->getBool('enabled'))
       {
         Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
@@ -69,15 +73,7 @@ final class Cubex
 
       try
       {
-        $loader = '\Cubex\Applications\Loader';
-        if(class_exists($loader))
-        {
-          $loader::load(Cubex::request());
-        }
-        else
-        {
-          throw new \Exception("No application loader could be found", 500);
-        }
+        \Cubex\Applications\Loader::load(Cubex::request());
       }
       catch(\Exception $e)
       {
@@ -110,8 +106,8 @@ final class Cubex
    */
   public static function register()
   {
-    set_include_path(get_include_path() . PATH_SEPARATOR . CUBEX_ROOT);
-    spl_autoload_register("Cubex\\Cubex::loadClass");
+    \set_include_path(\get_include_path() . PATH_SEPARATOR . CUBEX_ROOT);
+    \spl_autoload_register("Cubex\\Cubex::loadClass");
 
     if(!class_exists("Core", false))
     {
@@ -143,7 +139,7 @@ final class Cubex
    * @param Http\Request $request
    * @return \Cubex\Cubex
    */
-  public function setRequest(Http\Request $request)
+  public function setRequest(Request $request)
   {
     $this->_request = $request;
 
@@ -190,11 +186,11 @@ final class Cubex
   {
     try
     {
-      $this->_configuration = parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
+      $this->_configuration = \parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
       if(isset($this->_configuration['general']['include_path']))
       {
         $application_dir = $this->_configuration['general']['include_path'];
-        set_include_path(get_include_path() . PATH_SEPARATOR . $application_dir);
+        \set_include_path(\get_include_path() . PATH_SEPARATOR . $application_dir);
       }
     }
     catch(\Exception $e)
@@ -236,7 +232,7 @@ final class Cubex
     {
       if(!isset(self::core()->_connections[$type])) self::core()->_connections[$type] = array();
       $config = self::config($type . "\\" . $connection);
-      $layer  = "\\Cubex\\" . ucwords($type) . "\\";
+      $layer  = "\\Cubex\\" . \ucwords($type) . "\\";
       $layer .= $config->getStr("engine", self::config($type)->getStr("engine", "mysql"));
       $layer .= "\\Connection";
       //Store connection
@@ -294,11 +290,11 @@ final class Cubex
   public static function locale($locale = null)
   {
     if($locale === null) return self::core()->_locale;
-    $loc                  = explode(',', $locale);
+    $loc                  = \explode(',', $locale);
     self::core()->_locale = $loc[0];
-    putenv('LC_ALL=' . $loc[0]);
-    array_unshift($loc, LC_ALL);
-    call_user_func_array('setlocale', $loc);
+    \putenv('LC_ALL=' . $loc[0]);
+    \array_unshift($loc, LC_ALL);
+    \call_user_func_array('setlocale', $loc);
 
     return self::$cubex;
   }
@@ -310,34 +306,35 @@ final class Cubex
    */
   public static function loadClass($class)
   {
+    $class = \ltrim($class, '\\');
     try
     {
-      if(strpos($class, 'Cubex\\') === 0)
+      if(\strpos($class, 'Cubex\\') === 0)
       {
-        $class = substr($class, 6);
+        $class = \substr($class, 6);
       }
 
-      if(strpos($class, 'Modules\\') === 0)
+      if(\strpos($class, 'Modules\\') === 0)
       {
         //TODO: Add some module loaders to handle more complex modules
       }
-      else if(strpos($class, 'Widgets\\') === 0)
+      else if(\strpos($class, 'Widgets\\') === 0)
       {
         //TODO: Add some widget loaders
       }
-      else if(strpos($class, 'Applications\\') === 0)
+      else if(\strpos($class, 'Applications\\') === 0)
       {
-        $parts = explode('\\', $class);
+        $parts = \explode('\\', $class);
 
-        if(count($parts) > 2)
+        if(\count($parts) > 2)
         {
-          $end = $parts[count($parts) - 1];
+          $end = $parts[\count($parts) - 1];
 
-          if(substr($class, -10) === 'Controller')
+          if(\substr($class, -10) === 'Controller')
           {
-            $end                      = 'controllers\\' . substr($end, 0, -10);
-            $parts[count($parts) - 1] = $end;
-            $class                    = implode('\\', $parts);
+            $end                       = 'controllers\\' . \substr($end, 0, -10);
+            $parts[\count($parts) - 1] = $end;
+            $class                     = \implode('\\', $parts);
           }
           else if($end === 'Events')
           {
@@ -347,22 +344,22 @@ final class Cubex
           {
             $class .= '\\Constants';
           }
-          else if(substr($class, -6) === 'Events')
+          else if(\substr($class, -6) === 'Events')
           {
-            $end                      = 'events\\' . substr($end, 0, -6);
-            $parts[count($parts) - 1] = $end;
-            $class                    = implode('\\', $parts);
+            $end                       = 'events\\' . \substr($end, 0, -6);
+            $parts[\count($parts) - 1] = $end;
+            $class                     = \implode('\\', $parts);
           }
-          else if(substr($class, -9) === 'Constants')
+          else if(\substr($class, -9) === 'Constants')
           {
-            $end                      = 'constants\\' . substr($end, 0, -9);
-            $parts[count($parts) - 1] = $end;
-            $class                    = implode('\\', $parts);
+            $end                       = 'constants\\' . \substr($end, 0, -9);
+            $parts[\count($parts) - 1] = $end;
+            $class                     = \implode('\\', $parts);
           }
           else if($parts[2] !== 'Application')
           {
             $parts[2] = 'lib\\' . $parts[2];
-            $class    = implode('\\', $parts);
+            $class    = \implode('\\', $parts);
           }
         }
       }
@@ -371,7 +368,7 @@ final class Cubex
         $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
       }
 
-      $include_file = strtolower(str_replace('_', '/', str_replace('\\', '/', $class))) . '.php';
+      $include_file = \strtolower(\str_replace('_', '/', \str_replace('\\', '/', $class))) . '.php';
       include_once($include_file);
     }
     catch(\Exception $e)
@@ -385,7 +382,7 @@ final class Cubex
    */
   final public static function shutdown()
   {
-    $fatal = defined('CUBEX_FATAL_ERROR');
+    $fatal = \defined('CUBEX_FATAL_ERROR');
     if(CUBEX_WEB && !$fatal)
     {
       echo '<div id="cubex-shutdown-debug" style="
@@ -398,12 +395,12 @@ final class Cubex
       echo "\n";
     }
 
-    echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
-    echo " - " . number_format(((microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
+    echo "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec";
+    echo " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
 
     echo CUBEX_WEB && !$fatal ? '</div>' : '';
 
-    $event = error_get_last();
+    $event = \error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
     {
       return;
@@ -421,10 +418,10 @@ final class Cubex
    * @param       $message
    * @param       $file
    * @param       $line
-   * @param array $context
+   * @param       $context
    * @throws \Exception
    */
-  final public static function error_handler($code, $message, $file, $line, array $context)
+  final public static function error_handler($code, $message, $file, $line, $context)
   {
     switch($code)
     {
@@ -443,7 +440,7 @@ final class Cubex
    */
   final public static function fatal($message)
   {
-    header("Content-Type: text/plain; charset=utf-8", true, 500);
+    \header("Content-Type: text/plain; charset=utf-8", true, 500);
     echo "== Fatal Error ==\n\n";
     echo $message . "\n";
     define("CUBEX_FATAL_ERROR", $message);

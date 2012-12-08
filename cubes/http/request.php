@@ -62,11 +62,11 @@ class Request extends Handler
     if($this->_processed_host) return $this;
     $extra_tlds = Cubex::config("general")->getArr("tlds", array());
     $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
-    $parts      = array_reverse(explode('.', $host));
+    $parts      = \array_reverse(\explode('.', $host));
 
-    if(strstr($parts[0], ':') !== false)
+    if(\strstr($parts[0], ':') !== false)
     {
-      list($parts[0], $this->_port) = explode(':', $parts[0], 2);
+      list($parts[0], $this->_port) = \explode(':', $parts[0], 2);
     }
 
     foreach($parts as $i => $part)
@@ -78,9 +78,9 @@ class Request extends Handler
       else if(empty($this->_domain))
       {
         if($i < 2
-        && (strlen($part) == 2
-        || in_array($part . '.' . $this->_tld, $extra_tlds)
-        || in_array($part, $hard_tlds))
+        && (\strlen($part) == 2
+        || \in_array($part . '.' . $this->_tld, $extra_tlds)
+        || \in_array($part, $hard_tlds))
         )
         {
           $this->_tld = $part . '.' . $this->_tld;
@@ -161,7 +161,7 @@ class Request extends Handler
   public function isHTTPS()
   {
     if(empty($_SERVER['HTTPS'])) return false;
-    else if(!strcasecmp($_SERVER["HTTPS"], "off")) return false;
+    else if(!\strcasecmp($_SERVER["HTTPS"], "off")) return false;
     else return true;
   }
 
@@ -170,7 +170,7 @@ class Request extends Handler
     $variables = array();
     foreach($_REQUEST as $k => $v)
     {
-      if(substr($k, 0, 2) !== '__') $variables[$k] = $v;
+      if(\substr($k, 0, 2) !== '__') $variables[$k] = $v;
     }
 
     return $variables;
