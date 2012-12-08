@@ -67,6 +67,11 @@ class View extends Handler implements Renderable
     $this->_render_file = $this->getBasePath() . $filepath . "." . $ext;
   }
 
+  final public function isNested($name)
+  {
+    return isset($this->_nested[$name]);
+  }
+
   final public function nest($name, Renderable $view)
   {
     $this->_nested[$name] = $view;

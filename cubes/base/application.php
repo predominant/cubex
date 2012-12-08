@@ -92,7 +92,7 @@ class Application extends Translatable
 
   public function getDefaultController()
   {
-    return 'defaultController';
+    return 'DefaultController';
   }
 
   public function getRoutes()
