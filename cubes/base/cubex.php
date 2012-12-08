@@ -218,7 +218,7 @@ final class Cubex
   /**
    * @param $type
    * @param $connection
-   * @return \Cubex\Base\DataConnection
+   * @return \Cubex\Data\Connection
    */
   private static function getConnection($type, $connection)
   {

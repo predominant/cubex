@@ -132,7 +132,7 @@ class Sprintf
     }
   }
 
-  final private static function query(\Cubex\Base\DataConnection $connection, &$pattern, &$pos, &$value,
+  final private static function query(\Cubex\Data\Connection $connection, &$pattern, &$pos, &$value,
                                       &$length)
   {
     $type = $pattern[$pos];

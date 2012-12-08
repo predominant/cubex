@@ -158,7 +158,7 @@ abstract class Model implements \IteratorAggregate
   }
 
   /*
-   * @returns DataConnection
+   * @returns Cubex\Data\Connection
    */
   abstract protected function dataConnection();
 

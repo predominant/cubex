@@ -5,9 +5,9 @@
  * Time: 19:19
  * Description:
  */
-namespace Cubex\Base;
+namespace Cubex\Data;
 
-interface DataConnection
+interface Connection
 {
   public function __construct(\Cubex\Data\Handler $configuration);
 

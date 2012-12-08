@@ -8,7 +8,7 @@
 
 namespace Cubex\Database;
 
-interface Connection extends \Cubex\Base\DataConnection
+interface Connection extends \Cubex\Data\Connection
 {
 
   public function query($query);
