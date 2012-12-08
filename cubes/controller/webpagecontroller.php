@@ -34,6 +34,11 @@ abstract class WebpageController extends Controller
     $this->_webpage->beginCapture();
   }
 
+  public function setTitle($title)
+  {
+    $this->_webpage->setTitle($title);
+  }
+
   public function finaliseWebpage()
   {
     if(!$this->_view->isNested($this->_capture_nest))
