@@ -60,7 +60,7 @@ class Request extends Handler
   private function processHost($host)
   {
     if($this->_processed_host) return $this;
-    $extra_tlds = Cubex::config("general")->getArr("tlds");
+    $extra_tlds = Cubex::config("general")->getArr("tlds", array());
     $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
     $parts      = array_reverse(explode('.', $host));
 
