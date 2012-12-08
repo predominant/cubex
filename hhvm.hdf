@@ -1,0 +1,37 @@
+Server {
+  Port = 80
+  SourceRoot = /var/www/cubex/webroot
+}
+
+EnvVariables {
+    CUBEX_ENV=development
+}
+
+Eval {
+  Jit = true
+}
+
+Log {
+  Level = Error
+  UseLogFile = true
+  File = /var/log/hhvm/cubex-error.log
+  Access {
+    * {
+      File = /var/log/hhvm/cubex-access.log
+      Format = %h %l %u %t \"%r\" %>s %b
+    }
+  }
+}
+
+VirtualHost {
+  * {
+    Pattern = .*
+    RewriteRules {
+        * {
+          pattern = ^(.*)$
+          to = /index.php?__path__=$1
+          qsa = true
+        }
+     }
+  }
+}
