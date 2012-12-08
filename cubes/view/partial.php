@@ -53,7 +53,6 @@ class Partial implements Renderable
   }
 
   /**
-   * @param null $glue Glue for imploding all elements
    * @return string Rendered elements
    */
   public function render()

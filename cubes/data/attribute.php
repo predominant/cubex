@@ -8,6 +8,8 @@
 
 namespace Cubex\Data;
 
+use Cubex\Base\Callback;
+
 class Attribute
 {
 
@@ -104,7 +106,7 @@ class Attribute
     $data = $this->_data;
     foreach($this->_filters as $filter)
     {
-      if($filter instanceof \Cubex\Base\Callback)
+      if($filter instanceof Callback)
       {
         $data = $filter->process($data);
       }
@@ -132,7 +134,7 @@ class Attribute
     return $this->_options;
   }
 
-  public function addFilter(\Cubex\Base\Callback $filter)
+  public function addFilter(Callback $filter)
   {
     $this->_filters[] = $filter;
 
@@ -147,16 +149,16 @@ class Attribute
       {
         if(is_string($filter))
         {
-          $this->addFilter(\Cubex\Base\Callback::_($filter, array(), 'filter'));
+          $this->addFilter(Callback::_($filter, array(), 'filter'));
         }
         else if(is_array($filter))
         {
           if(isset($filter[0]) && is_array($filter[0]))
           {
-            $this->addFilter(\Cubex\Base\Callback::_($filter[0], $filter[1], 'filter'));
+            $this->addFilter(Callback::_($filter[0], $filter[1], 'filter'));
           }
         }
-        else if($filter instanceof \Cubex\Base\Callback)
+        else if($filter instanceof Callback)
         {
           $this->addFilter($filter);
         }
@@ -164,9 +166,9 @@ class Attribute
     }
     else if(is_string($filters))
     {
-      $this->addFilter(\Cubex\Base\Callback::_($filters, array(), 'filter'));
+      $this->addFilter(Callback::_($filters, array(), 'filter'));
     }
-    else if($filters instanceof \Cubex\Base\Callback)
+    else if($filters instanceof Callback)
     {
       $this->addFilter($filters);
     }
@@ -185,7 +187,7 @@ class Attribute
     return $this->_filters;
   }
 
-  public function addValidator(\Cubex\Base\Callback $validator)
+  public function addValidator(Callback $validator)
   {
     $this->_validators[] = $validator;
 
@@ -200,16 +202,16 @@ class Attribute
       {
         if(is_string($validator))
         {
-          $this->addValidator(\Cubex\Base\Callback::_($validator, array(), "validator"));
+          $this->addValidator(Callback::_($validator, array(), "validator"));
         }
         else if(is_array($validator))
         {
           if(isset($validator[0]) && is_array($validator[0]))
           {
-            $this->addValidator(\Cubex\Base\Callback::_($validator[0], $validator[1], "validator"));
+            $this->addValidator(Callback::_($validator[0], $validator[1], "validator"));
           }
         }
-        else if($validator instanceof \Cubex\Base\Callback)
+        else if($validator instanceof Callback)
         {
           $this->addValidator($validator);
         }
@@ -217,9 +219,9 @@ class Attribute
     }
     else if(is_string($validators))
     {
-      $this->addValidator(\Cubex\Base\Callback::_($validators, array(), "validator"));
+      $this->addValidator(Callback::_($validators, array(), "validator"));
     }
-    else if($validators instanceof \Cubex\Base\Callback)
+    else if($validators instanceof Callback)
     {
       $this->addValidator($validators);
     }
@@ -251,7 +253,7 @@ class Attribute
     $valid = true;
     foreach($this->_validators as $validator)
     {
-      if($validator instanceof \Cubex\Base\Callback)
+      if($validator instanceof Callback)
       {
         $passed = false;
         try

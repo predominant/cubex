@@ -6,19 +6,19 @@
  * Description:
  */
 
-
 namespace Cubex\Data;
 
 abstract class Edge
 {
+
   protected $_edge_type = null;
 
   public static function edgeType()
   {
-    return strtolower(end(explode('\\',get_called_class()))) . ':' . substr(md5(get_called_class()),22) . ':';
+    return strtolower(end(explode('\\', get_called_class()))) . ':' . substr(md5(get_called_class()), 22) . ':';
   }
 
-  abstract public static function getEdges($source_id, $edge_type=null);
+  abstract public function getEdges($source_id, $edge_type = null);
 
-  abstract public static function addEdge($source_id,$relation_id, $edge_type);
+  abstract public function addEdge($source_id, $relation_id, $edge_type);
 }

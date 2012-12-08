@@ -15,10 +15,10 @@ interface Translator
 {
 
   /**
-   * @param string $text Text to translate
+   * @param string $text            Text to translate
    * @param string $source_language original text language
    * @param string $target_language expected return language
    * @return string Translation
    */
-  public function translate($text,$source_language,$target_language);
+  public function translate($text, $source_language, $target_language);
 }

@@ -10,21 +10,22 @@ namespace Cubex\Data;
 
 class SearchObject
 {
+
   const MATCH_EXACT = '=';
-  const MATCH_LIKE = '~';
+  const MATCH_LIKE  = '~';
   const MATCH_START = '>';
-  const MATCH_END = '<';
+  const MATCH_END   = '<';
 
   private $_fields = array();
 
-  public function __set($field,$value)
+  public function __set($field, $value)
   {
-    $this->addSearch($field,$value);
+    $this->addSearch($field, $value);
   }
 
-  public function addSearch($field,$value,$match = self::MATCH_EXACT)
+  public function addSearch($field, $value, $match = self::MATCH_EXACT)
   {
-    $this->$field = $value;
+    $this->$field          = $value;
     $this->_fields[$field] = $match;
   }
 
@@ -33,7 +34,7 @@ class SearchObject
     return isset($this->_fields[$field]) ? $this->_fields[$field] : self::MATCH_EXACT;
   }
 
-  public function setMatchType($field,$type)
+  public function setMatchType($field, $type)
   {
     $this->_fields[$field] = $type;
   }

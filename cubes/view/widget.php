@@ -7,7 +7,9 @@
  */
 namespace Cubex\View;
 
-class Widget extends \Cubex\Language\Translatable implements Renderable
+use Cubex\Language\Translatable;
+
+class Widget extends Translatable implements Renderable
 {
   protected $_captured;
   protected $_content;

@@ -10,9 +10,10 @@ namespace Cubex\View;
 
 class Group implements Renderable
 {
+
   protected $_items = array();
 
-  public function add(Renderable $item/*, $item, $item */)
+  public function add(Renderable $item /*, $item, $item */)
   {
     $items = func_get_args();
     foreach($items as $itm)
@@ -36,6 +37,7 @@ class Group implements Renderable
         $render .= $item->render();
       }
     }
+
     return $render;
   }
 

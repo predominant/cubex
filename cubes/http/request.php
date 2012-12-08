@@ -8,11 +8,14 @@
 
 namespace Cubex\Http;
 
-class Request extends \Cubex\Data\Handler
+use Cubex\Data\Handler;
+use Cubex\Cubex;
+
+class Request extends Handler
 {
 
-  const TYPE_AJAX = '_cubex_ajax_';
-  const TYPE_FORM = '_cubex_form_';
+  const TYPE_AJAX     = '_cubex_ajax_';
+  const TYPE_FORM     = '_cubex_form_';
   const NO_JAVASCRIPT = '__noscript__';
 
   private $_path;
@@ -57,7 +60,7 @@ class Request extends \Cubex\Data\Handler
   private function processHost($host)
   {
     if($this->_processed_host) return $this;
-    $extra_tlds = \Cubex\Cubex::config("general")->getArr("tlds");
+    $extra_tlds = Cubex::config("general")->getArr("tlds");
     $hard_tlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
     $parts      = array_reverse(explode('.', $host));
 
@@ -75,9 +78,9 @@ class Request extends \Cubex\Data\Handler
       else if(empty($this->_domain))
       {
         if($i < 2
-          && (strlen($part) == 2
-            || in_array($part . '.' . $this->_tld, $extra_tlds)
-            || in_array($part, $hard_tlds))
+        && (strlen($part) == 2
+        || in_array($part . '.' . $this->_tld, $extra_tlds)
+        || in_array($part, $hard_tlds))
         )
         {
           $this->_tld = $part . '.' . $this->_tld;

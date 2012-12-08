@@ -8,6 +8,8 @@
 
 namespace Cubex\Data;
 
+use Cubex\Base\Callback;
+
 abstract class Model implements \IteratorAggregate
 {
 
@@ -188,7 +190,7 @@ abstract class Model implements \IteratorAggregate
     return isset($this->_attributes[$attribute]);
   }
 
-  final protected function addAttributeFilter($attribute, \Cubex\Base\Callback $filter)
+  final protected function addAttributeFilter($attribute, Callback $filter)
   {
     if(!isset($this->_attributes[$attribute])) return false;
     $attr = $this->_attributes[$attribute];
@@ -202,7 +204,7 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
-  final protected function addAttributeValidator($attribute, \Cubex\Base\Callback $filter)
+  final protected function addAttributeValidator($attribute, Callback $filter)
   {
     if(!isset($this->_attributes[$attribute])) return false;
     $attr = $this->_attributes[$attribute];

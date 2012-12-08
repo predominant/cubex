@@ -7,6 +7,8 @@
  */
 namespace Cubex\Database\MySQL;
 
+use Cubex\Data\Handler;
+
 class Connection implements \Cubex\Database\Connection
 {
 
@@ -20,7 +22,7 @@ class Connection implements \Cubex\Database\Connection
   protected $_config;
   private $_connected = false;
 
-  public function __construct(\Cubex\Data\Handler $config)
+  public function __construct(Handler $config)
   {
     $this->_config = $config;
 

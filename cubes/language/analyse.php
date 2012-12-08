@@ -184,14 +184,14 @@ class Analyse
 
   function iconv_wordwrap($string, $width = 75, $break = "\n", $cut = false, $charset = 'utf-8')
   {
-    $stringWidth = \iconv_strlen($string, $charset);
-    $breakWidth  = \iconv_strlen($break, $charset);
+    $string_width = \iconv_strlen($string, $charset);
+    $break_width  = \iconv_strlen($break, $charset);
 
     if(strlen($string) === 0)
     {
       return '';
     }
-    elseif($breakWidth === null)
+    elseif($break_width === null)
     {
       throw new \Exception('Break string cannot be empty');
     }
@@ -200,53 +200,53 @@ class Analyse
       throw new \Exception('Can\'t force cut when width is zero');
     }
 
-    $result    = '';
-    $lastStart = $lastSpace = 0;
+    $result     = '';
+    $last_start = $last_space = 0;
 
-    for($current = 0; $current < $stringWidth; $current++)
+    for($current = 0; $current < $string_width; $current++)
     {
       $char = iconv_substr($string, $current, 1, $charset);
 
-      if($breakWidth === 1)
+      if($break_width === 1)
       {
-        $possibleBreak = $char;
+        $possible_break = $char;
       }
       else
       {
-        $possibleBreak = iconv_substr($string, $current, $breakWidth, $charset);
+        $possible_break = iconv_substr($string, $current, $break_width, $charset);
       }
 
-      if($possibleBreak === $break)
+      if($possible_break === $break)
       {
-        $result .= iconv_substr($string, $lastStart, $current - $lastStart + $breakWidth, $charset);
-        $current += $breakWidth - 1;
-        $lastStart = $lastSpace = $current + 1;
+        $result .= iconv_substr($string, $last_start, $current - $last_start + $break_width, $charset);
+        $current += $break_width - 1;
+        $last_start = $last_space = $current + 1;
       }
       elseif($char === ' ')
       {
-        if($current - $lastStart >= $width)
+        if($current - $last_start >= $width)
         {
-          $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
-          $lastStart = $current + 1;
+          $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
+          $last_start = $current + 1;
         }
 
-        $lastSpace = $current;
+        $last_space = $current;
       }
-      elseif($current - $lastStart >= $width && $cut && $lastStart >= $lastSpace)
+      elseif($current - $last_start >= $width && $cut && $last_start >= $last_space)
       {
-        $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
-        $lastStart = $lastSpace = $current;
+        $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
+        $last_start = $last_space = $current;
       }
-      elseif($current - $lastStart >= $width && $lastStart < $lastSpace)
+      elseif($current - $last_start >= $width && $last_start < $last_space)
       {
-        $result .= $this->slash(iconv_substr($string, $lastStart, $lastSpace - $lastStart, $charset)) . $break;
-        $lastStart = $lastSpace = $lastSpace + 1;
+        $result .= $this->slash(iconv_substr($string, $last_start, $last_space - $last_start, $charset)) . $break;
+        $last_start = $last_space = $last_space + 1;
       }
     }
 
-    if($lastStart !== $current)
+    if($last_start !== $current)
     {
-      $result .= $this->slash(iconv_substr($string, $lastStart, $current - $lastStart, $charset));
+      $result .= $this->slash(iconv_substr($string, $last_start, $current - $last_start, $charset));
     }
 
     return $result;

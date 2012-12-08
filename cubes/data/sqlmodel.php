@@ -8,6 +8,9 @@
 
 namespace Cubex\Data;
 
+use Cubex\Cubex;
+use Cubex\Base\Sprintf;
+
 abstract class SQLModel extends Model
 {
 
@@ -16,7 +19,7 @@ abstract class SQLModel extends Model
    */
   public function dataConnection()
   {
-    return \Cubex\Cubex::db();
+    return Cubex::db();
   }
 
   public function loadOneWhere($pattern /* , $arg, $arg, $arg ... */)
@@ -85,7 +88,7 @@ abstract class SQLModel extends Model
 
     try
     {
-      $query = \Cubex\Base\Sprintf::parseQuery($this->dataConnection("r"), $args);
+      $query = Sprintf::parseQuery($this->dataConnection("r"), $args);
     }
     catch(\Exception $e)
     {

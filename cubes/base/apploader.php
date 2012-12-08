@@ -7,10 +7,14 @@
  */
 namespace Cubex\Base;
 
+use Cubex\Cubex;
+use \Cubex\Base\Application;
+use \Cubex\Http\Request;
+
 abstract class AppLoader
 {
 
-  public static function load(\Cubex\Http\Request $request)
+  public static function load(Request $request)
   {
     $application = static::getBySubAndPath($request->getSubDomain(), $request->getPath());
 
@@ -31,11 +35,11 @@ abstract class AppLoader
 
     if($application !== null)
     {
-      \Cubex\Base\Application::initialise($application);
+      Application::initialise($application);
     }
     else
     {
-      \Cubex\Cubex::fatal("No application has been defined");
+      Cubex::fatal("No application has been defined");
     }
   }
 

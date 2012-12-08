@@ -8,6 +8,10 @@
 
 namespace Cubex\Base;
 
+use \Cubex\Cubex;
+use Cubex\View\Renderable;
+use Cubex\View\View;
+
 class WebPage
 {
 
@@ -18,7 +22,7 @@ class WebPage
   private $_captured_content;
   private $_view;
 
-  public function setView(\Cubex\View\View $view)
+  public function setView(Renderable $view)
   {
     $this->_view = $view;
 
@@ -27,7 +31,7 @@ class WebPage
 
   public function controller()
   {
-    return \Cubex\Cubex::core()->controller();
+    return Cubex::core()->controller();
   }
 
   public function setHttpStatus($status = 200)
@@ -85,9 +89,10 @@ class WebPage
 
   public function getBody()
   {
-    if($this->_view instanceof \Cubex\View\View)
+    $view = $this->_view;
+    if($view instanceof Renderable)
     {
-      return $this->_view->render();
+      return $view->render();
     }
     else
     {
@@ -110,11 +115,11 @@ class WebPage
     $body        = $this->getBody();
     $closing     = $this->getClosing();
     $method      = strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
-    $request_url = \Cubex\Cubex::request()->getPath();
-    $request_url .= '?' . http_build_query(\Cubex\Cubex::request()->variables(), '', '&amp;');
+    $request_url = Cubex::request()->getPath();
+    $request_url .= '?' . http_build_query(Cubex::request()->variables(), '', '&amp;');
 
     $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
-    if(\Cubex\Cubex::request()->jsSupport() === false) $noscript = '';
+    if(Cubex::request()->jsSupport() === false) $noscript = '';
 
     //TODO: Handle popups / ajax / form requests
 
@@ -156,7 +161,7 @@ EOHTML;
   public function capturedView()
   {
     $this->endCapture();
-    $view = new \Cubex\View\View();
+    $view = new View();
     $view->setOutput($this->capturedContent());
     return $view;
   }

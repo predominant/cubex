@@ -8,8 +8,11 @@
 
 namespace Cubex\Base;
 
-class Module extends \Cubex\Language\Translatable
+use \Cubex\Language\Translatable;
+
+class Module extends Translatable
 {
+
   final private function getModule()
   {
     return $this;
@@ -22,7 +25,7 @@ class Module extends \Cubex\Language\Translatable
 
   public function moduleName()
   {
-    return str_replace('Cubex\\Module\\','',get_class(static::getModule()));
+    return str_replace('Cubex\\Module\\', '', get_class(static::getModule()));
   }
 
   public function moduleDescription()

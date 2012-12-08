@@ -8,6 +8,9 @@
 
 namespace Cubex\Base;
 
+use \Cubex\Data\Connection;
+use Cubex\Data\SearchObject;
+
 class Sprintf
 {
 
@@ -132,7 +135,7 @@ class Sprintf
     }
   }
 
-  final private static function query(\Cubex\Data\Connection $connection, &$pattern, &$pos, &$value,
+  final private static function query(Connection $connection, &$pattern, &$pos, &$value,
                                       &$length)
   {
     $type = $pattern[$pos];
@@ -196,8 +199,7 @@ class Sprintf
         {
           case 'O': //Object
           case 'A': //Array
-            $check_match = $next == 'O' && method_exists($value, 'getMatchType');
-            $qu          = array();
+            $qu = array();
             foreach($value as $k => $v)
             {
               if(is_int($v)) $val = (int)$v;
@@ -205,7 +207,7 @@ class Sprintf
               else if(is_bool($v)) $val = (int)$v;
               else $val = "'" . $connection->escapeString($v) . "'";
 
-              if($check_match)
+              if($next == 'O' && $value instanceof SearchObject)
               {
                 switch($value->getMatchType($k))
                 {

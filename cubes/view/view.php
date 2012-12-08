@@ -8,7 +8,10 @@
 
 namespace Cubex\View;
 
-class View extends \Cubex\Data\Handler implements Renderable
+use Cubex\Data\Handler;
+use Cubex\Base\Application;
+
+class View extends Handler implements Renderable
 {
 
   const VIEW_DYNAMIC     = 'dynamic';
@@ -25,7 +28,7 @@ class View extends \Cubex\Data\Handler implements Renderable
 
   public function __construct($file = null, $application = null)
   {
-    if($application !== null && $application instanceof \Cubex\Base\Application)
+    if($application !== null && $application instanceof Application)
     {
       $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR);
     }
@@ -145,7 +148,7 @@ class View extends \Cubex\Data\Handler implements Renderable
    */
   public function t($message)
   {
-    return \Cubex\Base\Application::$app->t($message);
+    return Application::$app->t($message);
   }
 
   /**
@@ -159,6 +162,6 @@ class View extends \Cubex\Data\Handler implements Renderable
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    return \Cubex\Base\Application::$app->p($singular, $plural, $number);
+    return Application::$app->p($singular, $plural, $number);
   }
 }

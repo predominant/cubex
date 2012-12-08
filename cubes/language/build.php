@@ -11,14 +11,14 @@ namespace Cubex\Language;
 class Build
 {
 
-  private $_analyse = array('application', 'module', 'widgets');
+  private $_analyse = array('applications', 'modules', 'widgets');
   private $_project_dir;
   private $_msgfmt = "msgfmt -V";
   private $_languages = array();
 
-  public function __construct($project_dir, $analyse = array('application', 'module', 'widgets'))
+  public function __construct($project_dir, $analyse = null)
   {
-    $this->_analyse     = $analyse;
+    if($analyse !== null) $this->_analyse = $analyse;
     $this->_project_dir = $project_dir;
   }
 
@@ -29,7 +29,6 @@ class Build
 
   public function compile(Translator $translator)
   {
-    $converter = new Mo();
     foreach($this->_analyse as $type)
     {
       $run_dir = $this->_project_dir . DIRECTORY_SEPARATOR . $type;

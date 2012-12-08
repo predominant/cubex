@@ -8,7 +8,15 @@
 
 namespace Cubex\Base;
 
-abstract class Controller extends \Cubex\Data\Handler
+use \Cubex\Cubex;
+use \Cubex\Base\Application;
+use \Cubex\Data\Handler;
+use \Cubex\Base\ErrorPage;
+use \Cubex\Http\Response;
+use \Cubex\Routing\Router;
+use \Cubex\View\View;
+
+abstract class Controller extends Handler
 {
 
   final public function __construct()
@@ -43,7 +51,7 @@ abstract class Controller extends \Cubex\Data\Handler
    */
   public function app()
   {
-    return \Cubex\Base\Application::getApp();
+    return Application::getApp();
   }
 
   /* Handling the request */
@@ -53,7 +61,7 @@ abstract class Controller extends \Cubex\Data\Handler
    */
   public function request()
   {
-    return \Cubex\Cubex::request();
+    return Cubex::request();
   }
 
   /*
@@ -69,8 +77,8 @@ abstract class Controller extends \Cubex\Data\Handler
    */
   public function failedProcess()
   {
-    $webpage = new \Cubex\Base\ErrorPage(500, "Failed to Process", array('path' => $this->request()->getPath()));
-    new \Cubex\Http\Response($webpage);
+    $webpage = new ErrorPage(500, "Failed to Process", array('path' => $this->request()->getPath()));
+    new Response($webpage);
   }
 
   /*
@@ -87,8 +95,8 @@ abstract class Controller extends \Cubex\Data\Handler
   {
     if(!$this->routeRequest())
     {
-      $webpage = new \Cubex\Base\ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
-      new \Cubex\Http\Response($webpage);
+      $webpage = new ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
+      new Response($webpage);
     }
   }
 
@@ -131,7 +139,7 @@ abstract class Controller extends \Cubex\Data\Handler
   public function routeRequest()
   {
     $path   = $this->request()->getPath();
-    $router = new \Cubex\Routing\Router();
+    $router = new Router();
     $action = null;
 
     if($action === null && $this->request()->isAjax())
@@ -233,7 +241,7 @@ abstract class Controller extends \Cubex\Data\Handler
 
   public function baseView()
   {
-    return new \Cubex\View\View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
+    return new View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }
 
   /**

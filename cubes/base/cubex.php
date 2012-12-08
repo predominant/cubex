@@ -10,6 +10,9 @@ namespace Cubex;
 /**
  * Cubex Framework
  */
+use Cubex\Base\Controller;
+use Cubex\Data\Handler;
+
 final class Cubex
 {
 
@@ -44,9 +47,8 @@ final class Cubex
     define("CUBEX_ENV", $env);
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-    define("CUBEX_ROOT",
-    substr(dirname(__FILE__), -5) == 'cache' ? dirname(dirname(__FILE__)) : dirname(dirname(dirname(__FILE__)))
-    );
+    $dirname = dirname(dirname(__FILE__));
+    define("CUBEX_ROOT", substr(dirname(__FILE__), -5) == 'cache' ? $dirname : dirname($dirname));
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))
     {
@@ -67,7 +69,15 @@ final class Cubex
 
       try
       {
-        \Cubex\Applications\Loader::load(Cubex::request());
+        $loader = '\Cubex\Applications\Loader';
+        if(class_exists($loader))
+        {
+          $loader::load(Cubex::request());
+        }
+        else
+        {
+          throw new \Exception("No application loader could be found", 500);
+        }
       }
       catch(\Exception $e)
       {
@@ -153,10 +163,10 @@ final class Cubex
   /**
    * Define active controller object for views to pull
    *
-   * @param \Cubex\Base\Controller $request
+   * @param \Cubex\Base\Controller $controller
    * @return \Cubex\Cubex
    */
-  public function setController(\Cubex\Base\Controller $controller)
+  public function setController(Controller $controller)
   {
     $this->_controller = $controller;
 
@@ -262,7 +272,7 @@ final class Cubex
    */
   public static function config($area)
   {
-    return new \Cubex\Data\Handler(self::core()->_configuration[$area]);
+    return new Handler(self::core()->_configuration[$area]);
   }
 
   /**
@@ -272,7 +282,7 @@ final class Cubex
    */
   public static function configuration()
   {
-    return new \Cubex\Data\Handler(self::core()->_configuration);
+    return new Handler(self::core()->_configuration);
   }
 
   /**
@@ -375,7 +385,8 @@ final class Cubex
    */
   final public static function shutdown()
   {
-    if(CUBEX_WEB)
+    $fatal = defined('CUBEX_FATAL_ERROR');
+    if(CUBEX_WEB && !$fatal)
     {
       echo '<div id="cubex-shutdown-debug" style="
       bottom:0; left:0; border:1px solid #666; padding:3px; border-left:0; border-bottom: 0;
@@ -390,7 +401,7 @@ final class Cubex
     echo "Completed in: " . number_format((microtime(true) - CUBEX_START), 4) . " sec";
     echo " - " . number_format(((microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
 
-    echo CUBEX_WEB ? '</div>' : '';
+    echo CUBEX_WEB && !$fatal ? '</div>' : '';
 
     $event = error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
@@ -435,6 +446,7 @@ final class Cubex
     header("Content-Type: text/plain; charset=utf-8", true, 500);
     echo "== Fatal Error ==\n\n";
     echo $message . "\n";
+    define("CUBEX_FATAL_ERROR", $message);
     exit(1);
   }
 

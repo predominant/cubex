@@ -42,7 +42,7 @@ class Translatable
 
   public function textDomain()
   {
-    $path = str_replace(dirname(dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
+    $path              = str_replace(dirname(dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
     $this->_textdomain = md5($path);
 
     if(!$this->_bound_td) $this->bindLanguage();
@@ -53,6 +53,7 @@ class Translatable
   public function bindLanguage()
   {
     $this->_bound_td = true;
+
     return bindtextdomain($this->textDomain(), $this->filePath() . '\\locale');
   }
 

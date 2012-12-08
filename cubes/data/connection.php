@@ -9,7 +9,7 @@ namespace Cubex\Data;
 
 interface Connection
 {
-  public function __construct(\Cubex\Data\Handler $configuration);
+  public function __construct(Handler $configuration);
 
   /*
    * @param $mode string Mode, either 'r' (reading) or 'w' (reading and writing)
