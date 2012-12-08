@@ -8,7 +8,11 @@
 
 namespace Cubex\Base;
 
-class Application extends \Cubex\Language\Translatable
+use \Cubex\Cubex;
+use \Cubex\Language\Translatable;
+use \Cubex\Routing\Router;
+
+class Application extends Translatable
 {
 
   private $_uri_data = array();
@@ -55,16 +59,14 @@ class Application extends \Cubex\Language\Translatable
     /*
      * Initiate Controller
      */
-    $controller = $namespace . "\\" . $this->getController(\Cubex\Cubex::request()->getPath());
+    $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
     if(class_exists($controller))
     {
-
-      \Cubex\Cubex::core()->setController(new $controller());
+      Cubex::core()->setController(new $controller());
     }
-
     else
     {
-      \Cubex\Cubex::fatal("No controller could be located for " . $this->getName());
+      Cubex::fatal("No controller could be located for " . $this->getName());
     }
   }
 
@@ -78,14 +80,14 @@ class Application extends \Cubex\Language\Translatable
     return "";
   }
 
-  public function requiredApplications()
-  {
-    return array();
-  }
-
   public function getBaseURI()
   {
     return "/";
+  }
+
+  public function getComponents()
+  {
+    return array();
   }
 
   public function getDefaultController()
@@ -124,7 +126,7 @@ class Application extends \Cubex\Language\Translatable
 
   protected function getController($path)
   {
-    $router = new \Cubex\Routing\Router();
+    $router     = new Router();
     $controller = $router->parseRoute($this->getRoutes(), $path);
     if(is_array($this->_uri_data))
     {
