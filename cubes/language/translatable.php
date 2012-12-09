@@ -24,6 +24,7 @@ class Translatable
   public function t($message)
   {
     if(!\function_exists('\dgettext')) return $message;
+
     return \dgettext($this->textDomain(), $message);
   }
 
@@ -40,9 +41,19 @@ class Translatable
   {
     if(!\function_exists('\dngettext'))
     {
-      return $number == 1 ? $singular : $plural;
+      $translated = $number == 1 ? $singular : $plural;
     }
-    return \dngettext($this->textDomain(), $singular, $plural, $number);
+    else
+    {
+      $translated = \dngettext($this->textDomain(), $singular, $plural, $number);
+    }
+
+    if(\substr_count($translated, '%d') == 1)
+    {
+      $translated = \sprintf($translated, $number);
+    }
+
+    return $translated;
   }
 
   public function textDomain()
