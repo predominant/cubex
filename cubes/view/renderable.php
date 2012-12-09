@@ -10,5 +10,8 @@ namespace Cubex\View;
 
 interface Renderable
 {
+
   public function render();
+
+  public function __tostring();
 }

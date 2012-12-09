@@ -144,6 +144,11 @@ class View extends Handler implements Renderable
     }
   }
 
+  public function __toString()
+  {
+    return $this->render();
+  }
+
   /**
    * Translate string to locale
    *
