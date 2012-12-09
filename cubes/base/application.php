@@ -44,32 +44,56 @@ class Application extends Translatable
 
   public function launch()
   {
-    $this->registerAutoLoader();
-    $namespace = \substr(\get_called_class(), 0, -12);
-
-    /*
-     * Initiate Event Hooks
-     */
-    $events = $namespace . "\\Events";
-    if(\class_exists($events) && \is_subclass_of($events, '\\Cubex\\Events\\Events'))
+    if($this->canLaunch())
     {
-      $events::createHooks();
-    }
+      $this->registerAutoLoader();
+      $namespace = \substr(\get_called_class(), 0, -12);
 
-    $this->bindLanguage();
+      /*
+       * Initiate Event Hooks
+       */
+      $events = $namespace . '\Events';
+      if(\class_exists($events) && \is_subclass_of($events, '\Cubex\Events\Events'))
+      {
+        $events::createHooks();
+      }
 
-    /*
-     * Initiate Controller
-     */
-    $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
-    if(\class_exists($controller))
-    {
-      Cubex::core()->setController(new $controller());
+      $this->bindLanguage();
+
+      /*
+       * Initiate Controller
+       */
+      $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
+      if(\class_exists($controller))
+      {
+        Cubex::core()->setController(new $controller());
+      }
+      else
+      {
+        Cubex::fatal("No controller could be located for " . $this->getName());
+      }
+
+      $this->launched();
     }
     else
     {
-      Cubex::fatal("No controller could be located for " . $this->getName());
+      $this->launchFailed();
     }
+  }
+
+  public function canLaunch()
+  {
+    return true;
+  }
+
+  public function launchFailed()
+  {
+
+  }
+
+  public function launched()
+  {
+
   }
 
   public function getName()
