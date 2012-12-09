@@ -31,7 +31,13 @@ abstract class WebpageController extends Controller
     $this->_webpage = new WebPage();
     $this->_view    = $this->baseView();
     $this->_webpage->setView($this->_view);
+    $this->initialisedPage();
     $this->_webpage->beginCapture();
+  }
+
+  public function initialisedPage()
+  {
+    return true;
   }
 
   public function setTitle($title)

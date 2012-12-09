@@ -8,6 +8,8 @@
 
 namespace Cubex\View;
 
+use Cubex\Base\Application;
+
 abstract class Aspect implements Renderable
 {
 
