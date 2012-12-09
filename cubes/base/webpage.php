@@ -106,14 +106,13 @@ class WebPage
     return '';
   }
 
-  public function render()
+  public function renderHead()
   {
     $this->preRender();
-    $charset     = $this->getCharset();
-    $title       = $this->getTitle();
-    $head        = $this->getHead();
-    $body        = $this->getBody();
-    $closing     = $this->getClosing();
+    $charset = $this->getCharset();
+    $title   = $this->getTitle();
+    $head    = $this->getHead();
+
     $method      = \strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
     $request_url = Cubex::request()->getPath();
     $request_url .= '?' . \http_build_query(Cubex::request()->variables(), '', '&amp;');
@@ -121,19 +120,32 @@ class WebPage
     $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
     if(Cubex::request()->jsSupport() === false) $noscript = '';
 
-    //TODO: Handle popups / ajax / form requests
-
     $response = <<<EOHTML
 <!DOCTYPE html>
 <html class="no_js"><head><meta charset="$charset" />
 <script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};window.Env = Env = window.Env || {};b(Env);};
 !function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);
 envPop({"method":"$method"});</script><noscript>{$noscript}</noscript>
-<title>{$title}</title>{$head}</head><body>{$body}{$closing}</body></html>
+<title>{$title}</title>{$head}</head><body>
 EOHTML;
 
     return $response;
+  }
 
+  public function renderBody()
+  {
+    return $this->getBody();
+  }
+
+  public function renderClosing()
+  {
+    return $this->getClosing() . '</body></html>';
+  }
+
+  public function render()
+  {
+    $this->preRender();
+    return $this->renderHead() . $this->renderBody() . $this->renderClosing();
   }
 
 
@@ -163,6 +175,7 @@ EOHTML;
     $this->endCapture();
     $view = new View();
     $view->setOutput($this->capturedContent());
+
     return $view;
   }
 

@@ -49,9 +49,9 @@ class Response
 
   public function redirect(Redirect $redirect)
   {
-    $this->_redirect = $redirect;
+    $this->_redirect    = $redirect;
     $this->_http_status = $redirect->getHttpStatus();
-    $this->_die_render = $redirect->getDieRender();
+    $this->_die_render  = $redirect->getDieRender();
     $this->_render_type = self::RENDER_REDIRECT;
   }
 
@@ -64,7 +64,14 @@ class Response
       case self::RENDER_WEBPAGE;
         if($this->_webpage instanceof WebPage)
         {
-          echo $this->_webpage->render();
+          /* Render header before content to allow browser to start loading css */
+          \ob_implicit_flush(true);
+          echo $this->_webpage->renderHead();
+          \ob_flush();
+          echo $this->_webpage->renderBody();
+          \ob_flush();
+          echo $this->_webpage->renderClosing();
+          \ob_flush();
         }
         break;
       case self::RENDER_REDIRECT:
@@ -85,6 +92,7 @@ class Response
     if(!\headers_sent())
     {
       \header($header, $replace);
+
       return true;
     }
 
