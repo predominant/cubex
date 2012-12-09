@@ -8,11 +8,27 @@
 
 namespace Cubex\Language;
 
+use Cubex\Language\Loader\Gettext;
+
 class Translatable
 {
 
   protected $_textdomain = 'messages';
   private $_bound_td = false;
+  /**
+   * @var Loader
+   */
+  private $_translator;
+
+  /**
+   * @return Loader
+   */
+  public function getTranslator()
+  {
+    $this->_translator = new Gettext();
+
+    return $this->_translator;
+  }
 
   /**
    * Translate string
@@ -22,9 +38,7 @@ class Translatable
    */
   public function t($message)
   {
-    if(!\function_exists('\dgettext')) return $message;
-
-    return \dgettext($this->textDomain(), $message);
+    return $this->getTranslator()->t($this->textDomain(), $message);
   }
 
   /**
@@ -51,14 +65,7 @@ class Translatable
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    if(!\function_exists('\dngettext'))
-    {
-      $translated = $number == 1 ? $singular : $plural;
-    }
-    else
-    {
-      $translated = \dngettext($this->textDomain(), $singular, $plural, $number);
-    }
+    $translated = $this->getTranslator()->p($this->textDomain(), $singular, $plural, $number);
 
     if(\substr_count($translated, '%d') == 1)
     {
@@ -82,9 +89,8 @@ class Translatable
   public function bindLanguage()
   {
     $this->_bound_td = true;
-    if(!\function_exists('bindtextdomain')) return false;
 
-    return \bindtextdomain($this->textDomain(), $this->filePath() . '\\locale');
+    return $this->getTranslator()->bindLanguage($this->textDomain(), $this->filePath() . '\\locale');
   }
 
   public function filePath()
