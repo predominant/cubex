@@ -15,15 +15,15 @@ class Response
   /**
    * @var Redirect
    */
-  private $_redirect = null;
-  private $_http_status = 200;
+  protected $_redirect = null;
+  protected $_http_status = 200;
   /**
    * @var Webpage
    */
-  private $_webpage = null;
-  private $_render_type = null;
-  private $_die_render = false;
-  private $_rendered = false;
+  protected $_webpage = null;
+  protected $_render_type = null;
+  protected $_die_render = false;
+  protected $_rendered = false;
 
   const RENDER_WEBPAGE  = 'webpage';
   const RENDER_REDIRECT = 'redirect';
