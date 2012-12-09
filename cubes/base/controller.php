@@ -245,9 +245,8 @@ abstract class Controller extends Handler
   }
 
   /**
-   * Translate string to locale, wrapper for gettext
+   * Translate string to locale
    *
-   * @link http://php.net/manual/en/function.gettext.php
    * @param $message string $string
    * @return string
    */
@@ -257,9 +256,8 @@ abstract class Controller extends Handler
   }
 
   /**
-   * Translate plural, using specific domain
+   * Translate plural
    *
-   * @link http://php.net/manual/en/function.dngettext.php
    * @param      $singular
    * @param null $plural
    * @param int  $number
@@ -268,5 +266,15 @@ abstract class Controller extends Handler
   public function p($singular, $plural = null, $number = 0)
   {
     return $this->app()->p($singular, $plural, $number);
+  }
+
+  /**
+   *
+   * Translate plural, converting (s) to '' or 's'
+   *
+   */
+  public function tp($text, $number)
+  {
+    $this->app()->tp($text, $number);
   }
 }

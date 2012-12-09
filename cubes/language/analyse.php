@@ -54,6 +54,15 @@ class Analyse
         $started   = true;
       }
 
+      if($token[0] == 307 && $token[1] == 'tp')
+      {
+        $building  = 0;
+        $msgid     = $msgid_plural = '';
+        $type      = 'singleplural';
+        $startline = $token[2];
+        $started   = true;
+      }
+
       if($token[0] == 307 && $token[1] == 'p')
       {
         $msgid     = $msgid_plural = '';
@@ -74,6 +83,14 @@ class Analyse
         {
           $this->_translations[$type][md5($msgid . $msgid_plural)]['data']    = array($msgid, $msgid_plural);
           $this->_translations[$type][md5($msgid . $msgid_plural)]['options'] = array($path, $startline);
+        }
+        else if($type == 'singleplural')
+        {
+          $msgid_plural = str_replace('(s)', 's', $msgid);
+          $msgid        = str_replace('(s)', '', $msgid);
+
+          $this->_translations['plural'][md5($msgid . $msgid_plural)]['data']    = array($msgid, $msgid_plural);
+          $this->_translations['plural'][md5($msgid . $msgid_plural)]['options'] = array($path, $startline);
         }
         else
         {

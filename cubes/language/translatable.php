@@ -15,9 +15,8 @@ class Translatable
   private $_bound_td = false;
 
   /**
-   * Translate string to locale, wrapper for gettext
+   * Translate string
    *
-   * @link http://php.net/manual/en/function.gettext.php
    * @param $message string $string
    * @return string
    */
@@ -29,9 +28,22 @@ class Translatable
   }
 
   /**
-   * Translate plural, using specific domain
    *
-   * @link http://php.net/manual/en/function.dngettext.php
+   * Translate plural, converting (s) to '' or 's'
+   *
+   */
+  public function tp($text, $number)
+  {
+    return $this->p(
+      str_replace('(s)', '', $text),
+      str_replace('(s)', 's', $text),
+      $number
+    );
+  }
+
+  /**
+   * Translate plural
+   *
    * @param      $singular
    * @param null $plural
    * @param int  $number
