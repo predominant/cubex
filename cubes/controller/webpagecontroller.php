@@ -52,7 +52,7 @@ abstract class WebpageController extends Controller
     $this->initialiseWebpage();
     if(!$this->routeRequest())
     {
-      return "Your request could not be routed";
+      echo "Your request could not be routed";
     }
     $this->finaliseWebpage();
 
