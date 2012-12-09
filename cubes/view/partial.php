@@ -33,15 +33,30 @@ class Partial implements Renderable
    */
   public function addElement()
   {
+    $this->addItem(\func_get_args());
+
+    return $this;
+  }
+
+  private function addItem($args)
+  {
     $element               = $this->_template;
-    $args                  = \func_get_args();
     $this->_element_data[] = $args; //Allow for changing the template at a later point in time, or handling in render
+
     foreach($this->_variables as $arg => $key)
     {
       $element = \str_replace('{#' . $key . '}', $args[$arg], $element);
     }
-    $element           = \vsprintf($element, $args);
-    $this->_elements[] = $element;
+
+    $this->_elements[] = \vsprintf($element, $args);
+  }
+
+  public function addElements(array $elements)
+  {
+    foreach($elements as $element)
+    {
+      $this->addItem($element);
+    }
 
     return $this;
   }
@@ -49,6 +64,7 @@ class Partial implements Renderable
   public function setGlue($glue = '')
   {
     $this->_glue = $glue;
+
     return $this;
   }
 
