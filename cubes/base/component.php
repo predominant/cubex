@@ -21,4 +21,15 @@ abstract class Component extends Translatable
   {
     return "";
   }
+
+  public function getAspect($aspect)
+  {
+    $reflector = new \ReflectionClass(\get_class($this));
+    $aspect = $reflector->getNamespaceName() . '\Aspects\\' . $aspect;
+    if(\class_exists($aspect))
+    {
+      return new $aspect();
+    }
+    return false;
+  }
 }
