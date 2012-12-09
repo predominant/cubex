@@ -356,11 +356,6 @@ final class Cubex
             $parts[\count($parts) - 1] = $end;
             $class                     = \implode('\\', $parts);
           }
-          else if($parts[2] !== 'Application')
-          {
-            $parts[2] = 'lib\\' . $parts[2];
-            $class    = \implode('\\', $parts);
-          }
         }
       }
       else
