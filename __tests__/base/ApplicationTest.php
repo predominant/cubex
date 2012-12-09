@@ -22,10 +22,13 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
     // even though we're running via the cli
     Cubex\Cubex::core()->setRequest(new Cubex\Http\Request());
 
-    // The response object that gets used to ouput a webpage flushes the page
-    // in stages for some good reasons, but it means that PHPUnit gets a bit
-    // confused so we'll just grab the whole output and echo it outselves
     $this->expectOutputRegex('/^<!DOCTYPE html>.*/');
     Cubex\Base\Application::initialise(new Application());
+  }
+
+  public function testGetName()
+  {
+    $this->assertEquals('', id(new \Cubex\Base\Application())->getName());
+    $this->assertEquals('Application', id(new Application())->getName());
   }
 }

@@ -23,6 +23,11 @@ final class Application extends \Cubex\Base\Application
   {
     \Cubex\Cubex::core()->setController(new Controller());
   }
+
+  public function getName()
+  {
+    return 'Application';
+  }
 }
 
 final class ApplicationFailTest extends \Cubex\Base\Application
