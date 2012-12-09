@@ -12,7 +12,7 @@ use \Cubex\Cubex;
 use \Cubex\Language\Translatable;
 use \Cubex\Routing\Router;
 
-class Application extends Translatable
+abstract class Application extends Translatable
 {
 
   private $_uri_data = array();
@@ -104,11 +104,6 @@ class Application extends Translatable
   public function getDescription()
   {
     return "";
-  }
-
-  public function getBaseURI()
-  {
-    return "/";
   }
 
   public function getComponents()

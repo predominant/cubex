@@ -322,7 +322,7 @@ final class Cubex
       {
         //TODO: Add some widget loaders
       }
-      else if(\strpos($class, 'Applications\\') === 0)
+      else if(\strpos($class, 'Applications\\') === 0 || \strpos($class, 'Components\\') === 0)
       {
         $parts = \explode('\\', $class);
 
