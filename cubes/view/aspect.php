@@ -17,4 +17,38 @@ abstract class Aspect implements Renderable
   {
     return $this->render();
   }
+
+  /**
+   * Translate string to locale
+   *
+   * @param $message string $string
+   * @return string
+   */
+  public function t($message)
+  {
+    return Application::$app->t($message);
+  }
+
+  /**
+   * Translate plural
+   *
+   * @param      $singular
+   * @param null $plural
+   * @param int  $number
+   * @return string
+   */
+  public function p($singular, $plural = null, $number = 0)
+  {
+    return Application::$app->p($singular, $plural, $number);
+  }
+
+  /**
+   *
+   * Translate plural, converting (s) to '' or 's'
+   *
+   */
+  public function tp($text, $number)
+  {
+    return Application::$app->tp($text, $number);
+  }
 }
