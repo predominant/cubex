@@ -25,6 +25,7 @@ class Build
   public function msgfmtPath($path = "msgfmt -V")
   {
     $this->_msgfmt = $path;
+    return $this;
   }
 
   public function compile(Translator $translator)
