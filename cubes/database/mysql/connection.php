@@ -125,7 +125,10 @@ class Connection implements \Cubex\Database\Connection
 
     try
     {
-      $result->close();
+      if($result)
+      {
+        $result->close();
+      }
     }
     catch(\Exception $e)
     {
@@ -168,7 +171,10 @@ class Connection implements \Cubex\Database\Connection
 
     try
     {
-      $result->close();
+      if($result)
+      {
+        $result->close();
+      }
     }
     catch(\Exception $e)
     {
@@ -194,7 +200,10 @@ class Connection implements \Cubex\Database\Connection
 
     try
     {
-      $result->close();
+      if($result)
+      {
+        $result->close();
+      }
     }
     catch(\Exception $e)
     {

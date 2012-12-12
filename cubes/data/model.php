@@ -141,11 +141,11 @@ abstract class Model implements \IteratorAggregate
   public function getTableName()
   {
     return \str_replace(
-      '_model', '', \str_replace('cubex_module_', '', \strtolower(\str_replace('\\', '_', \get_class($this))))
+      '_models', '', \str_replace('cubex_modules_', '', \strtolower(\str_replace('\\', '_', \get_class($this))))
     );
   }
 
-  /*
+  /**
    * Column Name for ID field
    * @return string Name of ID column
    */
