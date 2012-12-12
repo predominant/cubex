@@ -10,7 +10,7 @@ namespace Cubex\Base;
 
 use \Cubex\Cubex;
 use Cubex\View\Renderable;
-use Cubex\View\View;
+use Cubex\View\Template;
 
 class WebPage
 {
@@ -173,8 +173,8 @@ EOHTML;
   public function capturedView()
   {
     $this->endCapture();
-    $view = new View();
-    $view->setOutput($this->capturedContent());
+    $view = new Template();
+    $view->setCompiled($this->capturedContent());
 
     return $view;
   }

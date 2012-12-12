@@ -14,7 +14,7 @@ use \Cubex\Data\Handler;
 use \Cubex\Base\ErrorPage;
 use \Cubex\Http\Response;
 use \Cubex\Routing\Router;
-use \Cubex\View\View;
+use \Cubex\View\Template;
 
 abstract class Controller extends Handler
 {
@@ -304,7 +304,7 @@ abstract class Controller extends Handler
 
   public function baseView()
   {
-    return new View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
+    return new Template('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }
 
 

@@ -11,16 +11,16 @@ namespace Cubex\View;
 use Cubex\Data\Handler;
 use Cubex\Base\Application;
 
-class View extends Handler implements Renderable
+class Template extends Handler implements Renderable
 {
 
-  const VIEW_DYNAMIC     = 'dynamic';
-  const VIEW_PRECOMPILED = 'precompiled';
+  const STATE_DYNAMIC     = 'dynamic';
+  const STATE_PRECOMPILED = 'precompiled';
 
   private $_base = '';
   private $_nested = array();
   private $_render_file = null;
-  private $_view_type = self::VIEW_DYNAMIC;
+  private $_view_type = self::STATE_DYNAMIC;
   private $_compiled = '';
   public static $cache = array();
   public static $ephemeral = array();
@@ -30,11 +30,11 @@ class View extends Handler implements Renderable
   {
     if($application !== null && $application instanceof Application)
     {
-      $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR);
+      $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
     }
     if($file !== null)
     {
-      $this->setViewFile($file);
+      $this->setTemplateFile($file);
     }
   }
 
@@ -54,7 +54,7 @@ class View extends Handler implements Renderable
     return empty($this->_base) ? self::$last_known_base : $this->_base;
   }
 
-  final public function setViewFile($filepath, $ext = 'phtml')
+  final public function setTemplateFile($filepath, $ext = 'phtml')
   {
     $this->_render_file = $this->getBasePath() . $filepath . "." . $ext;
   }
@@ -69,18 +69,24 @@ class View extends Handler implements Renderable
     $this->_nested[$name] = $view;
   }
 
+  public function renderNest($name)
+  {
+    if(isset($this->_nested[$name]))
+    {
+      $nest = $this->_nested[$name];
+      if($nest instanceof Renderable)
+      {
+        return $nest->render();
+      }
+    }
+    return '';
+  }
+
   final public function render($rerender = false)
   {
-    if($rerender || $this->_view_type == self::VIEW_DYNAMIC)
+    if($rerender || $this->_view_type == self::STATE_DYNAMIC)
     {
       $rendered = '';
-      foreach($this->_nested as $named => $nest)
-      {
-        if($nest instanceof Renderable)
-        {
-          $$named = $nest->render();
-        }
-      }
 
       if($this->_render_file !== null)
       {
@@ -92,7 +98,7 @@ class View extends Handler implements Renderable
           }
         }
 
-        $view_content = $this->loadRawView();
+        $view_content = $this->loadRaw();
         \ob_start();
         try //Make sure the view does not cause the entire render to fail
         {
@@ -107,7 +113,7 @@ class View extends Handler implements Renderable
         $rendered = \ob_get_clean();
       }
 
-      $this->setOutput($rendered);
+      $this->setCompiled($rendered);
 
       return $rendered;
     }
@@ -115,15 +121,15 @@ class View extends Handler implements Renderable
     return $this->_compiled;
   }
 
-  public function setOutput($compiled_output)
+  public function setCompiled($compiled_output)
   {
     $this->_compiled  = $compiled_output;
-    $this->_view_type = self::VIEW_PRECOMPILED;
+    $this->_view_type = self::STATE_PRECOMPILED;
 
     return $this;
   }
 
-  public function loadRawView()
+  public function loadRaw()
   {
     if(isset(static::$cache[\md5($this->_render_file)]))
     {
