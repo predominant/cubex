@@ -122,7 +122,15 @@ class Connection implements \Cubex\Database\Connection
         $rows[] = $row;
       }
     }
-    $result->close();
+
+    try
+    {
+      $result->close();
+    }
+    catch(\Exception $e)
+    {
+      //Oh No
+    }
 
     return $rows;
   }
@@ -156,7 +164,16 @@ class Connection implements \Cubex\Database\Connection
         $rows[$row->$keyfield] = !$value_as_array && !empty($value_key) ? $row->$value_key : $row;
       }
     }
-    $result->close();
+
+
+    try
+    {
+      $result->close();
+    }
+    catch(\Exception $e)
+    {
+      //Oh No
+    }
 
     return $rows;
   }
@@ -174,7 +191,16 @@ class Connection implements \Cubex\Database\Connection
     $this->prepareConnection('r');
     $result = $this->doQuery($query);
     $rows = (int)$result->num_rows;
-    $result->close();
+
+    try
+    {
+      $result->close();
+    }
+    catch(\Exception $e)
+    {
+      //Oh No
+    }
+
     return $rows;
   }
 
