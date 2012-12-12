@@ -11,7 +11,6 @@ namespace Cubex\Controller;
 use Cubex\Base\Controller;
 use Cubex\Base\WebPage;
 use Cubex\Http\Response;
-use Cubex\Base\ErrorPage;
 use Cubex\View\Renderable;
 
 abstract class WebpageController extends Controller
@@ -31,7 +30,7 @@ abstract class WebpageController extends Controller
   public function initialiseWebpage()
   {
     $this->_webpage = new WebPage();
-    $this->_view    = $this->baseView();
+    $this->_view    = $this->baseTemplate();
     $this->_webpage->setView($this->_view);
     $this->initialisedPage();
     $this->_webpage->beginCapture();

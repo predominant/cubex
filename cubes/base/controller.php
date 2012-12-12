@@ -302,7 +302,7 @@ abstract class Controller extends Handler
     return $this;
   }
 
-  public function baseView()
+  public function baseTemplate()
   {
     return new Template('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }

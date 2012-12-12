@@ -74,11 +74,13 @@ abstract class Application extends Translatable
       }
 
       $this->launched();
+      Cubex::core()->controller()->getResponse()->respond();
     }
     else
     {
       $this->launchFailed();
     }
+    $this->shutdown();
   }
 
   public function canLaunch()
@@ -163,6 +165,11 @@ abstract class Application extends Translatable
   public function processedRoute()
   {
     return $this->_processed_route;
+  }
+
+  public function shutdown()
+  {
+
   }
 
 }

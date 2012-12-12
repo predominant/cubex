@@ -56,7 +56,7 @@ final class Controller extends \Cubex\Base\Controller
 
 final class Response extends \Cubex\Http\Response
 {
-  public function render()
+  public function respond()
   {
     echo $this->_webpage->renderHead();
     echo $this->_webpage->renderBody();

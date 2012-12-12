@@ -55,7 +55,7 @@ class Response
     $this->_render_type = self::RENDER_REDIRECT;
   }
 
-  public function render()
+  public function respond()
   {
     if(!\headers_sent()) \header('Status: ' . $this->_http_status);
 
@@ -101,6 +101,6 @@ class Response
 
   public function __destruct()
   {
-    if(!$this->_rendered) $this->render();
+    if(!$this->_rendered) $this->respond();
   }
 }
