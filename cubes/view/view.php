@@ -146,7 +146,15 @@ class View extends Handler implements Renderable
 
   public function __toString()
   {
-    return $this->render();
+    try
+    {
+      $output = $this->render();
+      return $output;
+    }
+    catch(\Exception $e)
+    {
+      return $e->getMessage();
+    }
   }
 
   /**

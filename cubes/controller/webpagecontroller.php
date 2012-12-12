@@ -11,6 +11,7 @@ namespace Cubex\Controller;
 use Cubex\Base\Controller;
 use Cubex\Base\WebPage;
 use Cubex\Http\Response;
+use Cubex\Base\ErrorPage;
 
 abstract class WebpageController extends Controller
 {
@@ -55,13 +56,22 @@ abstract class WebpageController extends Controller
 
   public function processRequest()
   {
-    $this->initialiseWebpage();
-    if(!$this->routeRequest())
+    try
     {
-      echo "Your request could not be routed";
+      $this->initialiseWebpage();
+      $response = $this->routeRequest();
+      if(!$this->_delegated)
+      {
+        $this->finaliseWebpage();
+        $response = $this->_webpage;
+      }
     }
-    $this->finaliseWebpage();
+    catch(\Exception $e)
+    {
+      $webpage  = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
+      $response = new Response($webpage);
+    }
 
-    return new Response($this->_webpage);
+    return $response;
   }
 }

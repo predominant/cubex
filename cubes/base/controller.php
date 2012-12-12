@@ -19,6 +19,13 @@ use \Cubex\View\View;
 abstract class Controller extends Handler
 {
 
+  /** @var Response */
+  protected $_response;
+  /** @var \Exception */
+  protected $_exception;
+
+  protected $_delegated = false;
+
   final public function __construct()
   {
     /* Populate data set with routes */
@@ -34,19 +41,26 @@ abstract class Controller extends Handler
     $this->setData('_route', $this->app()->processedRoute());
     $this->setData('_path', $this->request()->getPath());
 
-    if($this->canProcess())
+    try
     {
+      $can_process = $this->canProcess();
+      if(!$can_process)
+      {
+        throw new \Exception("Unable to process request");
+      }
+
       $this->preProcess();
-      $this->processRequest();
+      $this->setResponse($this->processRequest());
       $this->postProcess();
     }
-    else
+    catch(\Exception $e)
     {
-      $this->failedProcess();
+      $this->_exception = $e;
+      $this->setResponse($this->failedProcess($e));
     }
   }
 
-  /*
+  /**
    * @return Application
    */
   public function app()
@@ -56,58 +70,93 @@ abstract class Controller extends Handler
 
   /* Handling the request */
 
-  /*
-   * @return Http\Request
+  /**
+   * @return \Cubex\Http\Request
    */
   public function request()
   {
     return Cubex::request();
   }
 
-  /*
+  public function getResponse()
+  {
+    return $this->_response;
+  }
+
+  public function setResponse($response)
+  {
+    if($response instanceof Response)
+    {
+      $this->_response = $response;
+    }
+    else
+    {
+      $this->_response = new Response($response);
+    }
+
+    return $this;
+  }
+
+  /**
    * Should the continue process, or run failedProcess()
+   *
+   * @return bool
+   * @throws \Exception
    */
   public function canProcess()
   {
     return true;
   }
 
-  /*
+
+  /**
+   * /**
    * response when canProcess() returns false
+   *
+   * @param \Exception $e
+   * @return Response
    */
-  public function failedProcess()
+  public function failedProcess(\Exception $e)
   {
-    $webpage = new ErrorPage(500, "Failed to Process", array('path' => $this->request()->getPath()));
-    new Response($webpage);
+    $webpage = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
+    return new Response($webpage);
   }
 
-  /*
+  /**
    * Any pre filtering
    */
   public function preProcess()
   {
   }
 
-  /*
+  /**
    * Main method for handling the request
+   *
+   * @return Response
    */
   public function processRequest()
   {
-    if(!$this->routeRequest())
+    try
     {
-      $webpage = new ErrorPage(500, "Unhandled Request", array('path' => $this->request()->getPath()));
-      new Response($webpage);
+      $response = $this->routeRequest();
     }
+    catch(\Exception $e)
+    {
+      $webpage  = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
+      $response = new Response($webpage);
+    }
+
+    return $response;
   }
 
-  /*
+  /**
    * Any post processing
    */
   public function postProcess()
   {
   }
 
-  /* Routing */
+  /** Routing */
 
   public function getAjaxRoutes()
   {
@@ -133,9 +182,12 @@ abstract class Controller extends Handler
     );
   }
 
-  /*
+  /**
    * Look for ajax specific routes, then post specific routes, then all other routes
-   * */
+   *
+   * @returns Response
+   * @throws \Exception
+   **/
   public function routeRequest()
   {
     $path   = $this->request()->getPath();
@@ -157,6 +209,11 @@ abstract class Controller extends Handler
       $action = $router->parseRoute($this->getRoutes(), $path);
     }
 
+    if($action === null)
+    {
+      $action = $this->defaultAction();
+    }
+
     if($action !== null)
     {
       foreach($router->getRouteData() as $k => $v)
@@ -167,34 +224,33 @@ abstract class Controller extends Handler
       return $this->processRouteReturn($action);
     }
 
-    if($this->defaultAction() !== null)
-    {
-      return $this->processRouteReturn($this->defaultAction());
-    }
-
-    return false;
+    throw new \Exception("Unable to route request");
   }
 
-  /*
+  /**
    * example action = index
    *
    * ajax requests will attempt: ajaxIndex()
    * post requests will attempt: postIndex()
    * final attempt will be to: renderIndex()
    *
+   * @returns Response
+   * @throws \Exception
+   *
    * */
   protected function processRouteReturn($action)
   {
-    if($action === null) return false;
+    if($action === null)
+    {
+      throw new \Exception("No action specified");
+    }
 
     if($this->request()->isAjax())
     {
       $attempt = 'ajax' . \ucfirst($action);
       if(\method_exists($this, $attempt))
       {
-        $this->$attempt();
-
-        return true;
+        return $this->$attempt();
       }
     }
 
@@ -203,26 +259,35 @@ abstract class Controller extends Handler
       $attempt = 'post' . \ucfirst($action);
       if(\method_exists($this, $attempt))
       {
-        $this->$attempt();
-
-        return true;
+        return $this->$attempt();
       }
     }
 
     $attempt = 'render' . \ucfirst($action);
     if(\method_exists($this, $attempt))
     {
-      $this->$attempt();
-
-      return true;
+      return $this->$attempt();
     }
 
-    return false;
+    throw new \Exception("Invalid action specified");
   }
 
   protected function defaultAction()
   {
     return null;
+  }
+
+  /**
+   * Delegate control to a new controller
+   * @param Controller $new_controller
+   * @return bool
+   */
+  public function delegate(Controller $new_controller)
+  {
+    \ob_get_clean();
+    $this->_delegated = true;
+    Cubex::core()->setController($new_controller);
+    return $new_controller->getResponse();
   }
 
   /* View Related Bits */
@@ -243,6 +308,7 @@ abstract class Controller extends Handler
   {
     return new View('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }
+
 
   /**
    * Translate string to locale
