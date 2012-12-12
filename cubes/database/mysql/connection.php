@@ -75,7 +75,6 @@ class Connection implements \Cubex\Database\Connection
    */
   protected function doQuery($query)
   {
-    //echo "\n<strong>Processing $query</strong>\n";
     return $this->_connection->query($query);
   }
 
@@ -106,7 +105,6 @@ class Connection implements \Cubex\Database\Connection
   {
     $this->prepareConnection('r');
     $result = $this->doQuery($query);
-
     return $result->fetch_object();
   }
 

@@ -47,7 +47,7 @@ abstract class WebpageController extends Controller
     $this->_webpage->setTitle($title);
   }
 
-  public function finaliseWebpage($response=null)
+  public function finaliseWebpage($response = null)
   {
     if(!$this->_view->isNested($this->_capture_nest))
     {
@@ -57,27 +57,19 @@ abstract class WebpageController extends Controller
       }
       else if($response instanceof Renderable)
       {
-        $this->_view->nest($this->_capture_nest,$response);
+        $this->_view->nest($this->_capture_nest, $response);
       }
     }
   }
 
   public function processRequest()
   {
-    try
+    $this->initialiseWebpage();
+    $response = $this->routeRequest();
+    if(!$this->_delegated)
     {
-      $this->initialiseWebpage();
-      $response = $this->routeRequest();
-      if(!$this->_delegated)
-      {
-        $this->finaliseWebpage($response);
-        $response = $this->_webpage;
-      }
-    }
-    catch(\Exception $e)
-    {
-      $webpage  = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
-      $response = new Response($webpage);
+      $this->finaliseWebpage($response);
+      $response = $this->_webpage;
     }
 
     return $response;

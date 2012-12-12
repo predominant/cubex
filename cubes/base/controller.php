@@ -118,7 +118,14 @@ abstract class Controller extends Handler
    */
   public function failedProcess(\Exception $e)
   {
-    $webpage = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
+    $webpage = new ErrorPage(
+      500, $e->getMessage(),
+      array(
+           'path' => $this->request()->getPath(),
+           'exception' => $e->getMessage(),
+           'exception_code' => $e->getCode(),
+      )
+    );
     return new Response($webpage);
   }
 
@@ -136,16 +143,7 @@ abstract class Controller extends Handler
    */
   public function processRequest()
   {
-    try
-    {
-      $response = $this->routeRequest();
-    }
-    catch(\Exception $e)
-    {
-      $webpage  = new ErrorPage(500, $e->getMessage(), array('path' => $this->request()->getPath()));
-      $response = new Response($webpage);
-    }
-
+    $response = $this->routeRequest();
     return $response;
   }
 

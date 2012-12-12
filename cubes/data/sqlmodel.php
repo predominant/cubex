@@ -86,15 +86,7 @@ abstract class SQLModel extends Model
     $pattern = 'SELECT ' . $column . ' FROM %T WHERE ' . $pattern;
     \array_unshift($args, $pattern);
 
-    try
-    {
-      $query = Sprintf::parseQuery($this->dataConnection("r"), $args);
-    }
-    catch(\Exception $e)
-    {
-      \var_dump($e);
-      $query = false;
-    }
+    $query = Sprintf::parseQuery($this->dataConnection("r"), $args);
 
     if($query !== false)
     {
