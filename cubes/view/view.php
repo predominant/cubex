@@ -9,8 +9,9 @@
 namespace Cubex\View;
 
 use Cubex\Base\Application;
+use Cubex\Language\Translatable;
 
-abstract class Aspect implements Renderable
+abstract class View extends Translatable implements Renderable
 {
 
   abstract public function render();
