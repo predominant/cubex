@@ -38,14 +38,6 @@ class View extends Handler implements Renderable
     }
   }
 
-  public static function create(Renderable $from)
-  {
-    $view = new View();
-    $view->setOutput($from->render());
-
-    return $view;
-  }
-
   public function addEphemeral($name, $value)
   {
     self::$ephemeral[$name] = $value;
@@ -92,7 +84,6 @@ class View extends Handler implements Renderable
 
       if($this->_render_file !== null)
       {
-
         foreach(self::$ephemeral as $k => $v)
         {
           if(!isset($this->$k))
