@@ -190,7 +190,7 @@ final class Cubex
       if(isset($this->_configuration['general']['include_path']))
       {
         $application_dir = $this->_configuration['general']['include_path'];
-        \set_include_path(\get_include_path() . PATH_SEPARATOR . $application_dir);
+        \set_include_path(\get_include_path() . PATH_SEPARATOR . realpath($application_dir));
       }
     }
     catch(\Exception $e)
