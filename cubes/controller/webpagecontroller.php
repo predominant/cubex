@@ -12,6 +12,7 @@ use Cubex\Base\Controller;
 use Cubex\Base\WebPage;
 use Cubex\Http\Response;
 use Cubex\Base\ErrorPage;
+use Cubex\View\Renderable;
 
 abstract class WebpageController extends Controller
 {
@@ -46,11 +47,18 @@ abstract class WebpageController extends Controller
     $this->_webpage->setTitle($title);
   }
 
-  public function finaliseWebpage()
+  public function finaliseWebpage($response=null)
   {
     if(!$this->_view->isNested($this->_capture_nest))
     {
-      $this->_view->nest($this->_capture_nest, $this->_webpage->capturedView());
+      if($response === null)
+      {
+        $this->_view->nest($this->_capture_nest, $this->_webpage->capturedView());
+      }
+      else if($response instanceof Renderable)
+      {
+        $this->_view->nest($this->_capture_nest,$response);
+      }
     }
   }
 
@@ -62,7 +70,7 @@ abstract class WebpageController extends Controller
       $response = $this->routeRequest();
       if(!$this->_delegated)
       {
-        $this->finaliseWebpage();
+        $this->finaliseWebpage($response);
         $response = $this->_webpage;
       }
     }

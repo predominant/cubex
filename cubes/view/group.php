@@ -13,6 +13,14 @@ class Group implements Renderable
 
   protected $_items = array();
 
+  public function __construct()
+  {
+    foreach(func_get_args() as $arg)
+    {
+      $this->add($arg);
+    }
+  }
+
   public function add(Renderable $item /*, $item, $item */)
   {
     $items = \func_get_args();
