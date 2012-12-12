@@ -17,7 +17,14 @@ abstract class Aspect implements Renderable
 
   public function __tostring()
   {
-    return $this->render();
+    try
+    {
+      return $this->render();
+    }
+    catch(\Exception $e)
+    {
+      return $e->getMessage();
+    }
   }
 
   /**
