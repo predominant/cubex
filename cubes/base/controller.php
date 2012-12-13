@@ -15,6 +15,7 @@ use \Cubex\Base\ErrorPage;
 use \Cubex\Http\Response;
 use \Cubex\Routing\Router;
 use \Cubex\View\Template;
+use \Exception;
 
 abstract class Controller extends Handler
 {
@@ -116,7 +117,7 @@ abstract class Controller extends Handler
    * @param \Exception $e
    * @return Response
    */
-  public function failedProcess(\Exception $e)
+  public function failedProcess(Exception $e)
   {
     $webpage = new ErrorPage(
       500, $e->getMessage(),

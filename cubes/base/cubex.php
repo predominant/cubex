@@ -188,7 +188,7 @@ final class Cubex
       if(isset($this->_configuration['general']['include_path']))
       {
         $application_dir = $this->_configuration['general']['include_path'];
-        \set_include_path(\get_include_path() . PATH_SEPARATOR . realpath($application_dir));
+        \set_include_path(\get_include_path() . PATH_SEPARATOR . \realpath($application_dir));
       }
     }
     catch(\Exception $e)
@@ -420,13 +420,16 @@ final class Cubex
     }
   }
 
-  final public static function exception_handler(\Exception $e)
+  final public static function exception_handler($e)
   {
-    Cubex::fatal(
-      ($e->getCode() > 0 ? "[" . $e->getCode() . "] " : '')
-      . $e->getMessage() . "\n" .
-      "In: " . $e->getFile() . ':' . $e->getLine()
-    );
+    if($e instanceof \Exception)
+    {
+      Cubex::fatal(
+        ($e->getCode() > 0 ? "[" . $e->getCode() . "] " : '')
+        . $e->getMessage() . "\n" .
+        "In: " . $e->getFile() . ':' . $e->getLine()
+      );
+    }
   }
 
   /**

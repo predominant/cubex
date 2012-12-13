@@ -71,7 +71,7 @@ class HTMLElement implements Renderable
       $attributes[] = ' ' . $attr . '="' . self::escape($attr_v) . '"';
     }
 
-    return implode(' ', $attributes);
+    return \implode(' ', $attributes);
   }
 
   public function render()
@@ -97,6 +97,6 @@ class HTMLElement implements Renderable
 
   public static function escape($content)
   {
-    return htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+    return \htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
   }
 }
