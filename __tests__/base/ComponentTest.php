@@ -27,11 +27,13 @@ class Base_ComponentTest extends \PHPUnit_Framework_TestCase
     $this->assertTrue($this->_component->getDescription() === '');
   }
 
-  public function testGetViewReturnsTestViewObject()
+  public function testGetView()
   {
     $this->assertEquals(
       new ViewTest(),
       $this->_component->getView('ViewTest')
     );
+
+    $this->assertFalse($this->_component->getView('iDontExist'));
   }
 }
