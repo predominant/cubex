@@ -333,19 +333,9 @@ final class Cubex
             $parts[\count($parts) - 1] = $end;
             $class                     = \implode('\\', $parts);
           }
-          else if($end === 'Events')
-          {
-            $class .= '\\Events';
-          }
           else if($end === 'Constants')
           {
             $class .= '\\Constants';
-          }
-          else if(\substr($class, -6) === 'Events')
-          {
-            $end                       = 'events\\' . \substr($end, 0, -6);
-            $parts[\count($parts) - 1] = $end;
-            $class                     = \implode('\\', $parts);
           }
           else if(\substr($class, -9) === 'Constants')
           {
