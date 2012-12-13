@@ -6,7 +6,8 @@
  * @author: gareth.evans
  */
 
-require_once dirname(dirname(__FILE__)) .'/cubes/boot.php';
+require_once dirname(dirname(__FILE__)) .'/cubes/base/cubex.php';
+\Cubex\Cubex::boot();
 
 final class Setup {
 
