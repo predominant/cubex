@@ -22,13 +22,13 @@ abstract class Component extends Translatable
     return "";
   }
 
-  public function getAspect($aspect)
+  public function getViews($view)
   {
     $reflector = new \ReflectionClass(\get_class($this));
-    $aspect = $reflector->getNamespaceName() . '\Aspects\\' . $aspect;
-    if(\class_exists($aspect))
+    $view = $reflector->getNamespaceName() . '\Views\\' . $view;
+    if(\class_exists($view))
     {
-      return new $aspect();
+      return new $view();
     }
     return false;
   }
