@@ -13,12 +13,14 @@ use Cubex\Base\Callback;
 class Attribute
 {
 
+  private $_modified;
   private $_name;
   private $_required;
   private $_validators;
   private $_filters;
   private $_options;
   private $_data;
+  private $_original_data;
   private $_exceptions;
   private $_populated = false;
 
@@ -35,6 +37,7 @@ class Attribute
     $this->addFilters($filters);
     $this->setData($data);
     $this->setOptions($options);
+    $this->_modified = false;
   }
 
   public function __toString()
@@ -88,8 +91,13 @@ class Attribute
 
   public function setData($data)
   {
+    if(!$this->isModified())
+    {
+      $this->_original_data = $this->_data;
+    }
     $this->_populated = $data !== null;
     $this->_data      = $data;
+    $this->_modified = true;
 
     return $this;
   }
@@ -297,5 +305,34 @@ class Attribute
     }
 
     return $errors;
+  }
+
+  public function originalData()
+  {
+    return $this->_original_data;
+  }
+
+  public function revert()
+  {
+    $this->setData($this->_original_data);
+    $this->unsetModified();
+    return true;
+  }
+
+  public function isModified()
+  {
+    return $this->_modified;
+  }
+
+  public function setModified()
+  {
+    $this->_modified = true;
+    return $this;
+  }
+
+  public function unsetModified()
+  {
+    $this->_modified = false;
+    return $this;
   }
 }

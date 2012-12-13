@@ -147,6 +147,7 @@ abstract class Model implements \IteratorAggregate
 
   /**
    * Column Name for ID field
+   *
    * @return string Name of ID column
    */
   public function getIDKey()
@@ -275,6 +276,7 @@ abstract class Model implements \IteratorAggregate
   public function reload()
   {
     $this->clearEphemeral($this->getID());
+
     return $this->load($this->getID());
   }
 
@@ -300,6 +302,7 @@ abstract class Model implements \IteratorAggregate
         $this->$set($v);
       }
     }
+    $this->unmodifyAttributes();
 
     return $this;
   }
@@ -314,6 +317,8 @@ abstract class Model implements \IteratorAggregate
         $this->$set($v);
       }
     }
+
+    $this->unmodifyAttributes();
 
     return $this;
   }
@@ -354,17 +359,66 @@ abstract class Model implements \IteratorAggregate
   public function clearEphemeral($id)
   {
     unset(self::$_ephemeral_datastore[$id]);
+
     return true;
   }
 
-  public function addEphemeral($id,$data)
+  public function addEphemeral($id, $data)
   {
     self::$_ephemeral_datastore[$id] = $data;
+
     return $this;
   }
 
   public function getEphemeral($id)
   {
     return self::$_ephemeral_datastore[$id];
+  }
+
+  protected function unmodifyAttributes()
+  {
+    foreach($this->_attributes as $attr)
+    {
+      if($attr instanceof Attribute)
+      {
+        $attr->unsetModified();
+      }
+    }
+  }
+
+  public function getModifiedAttributes()
+  {
+    $modified = array();
+    foreach($this->_attributes as $attr)
+    {
+      if($attr instanceof Attribute)
+      {
+        if($attr->isModified())
+        {
+          $modified[] = $attr;
+        }
+      }
+    }
+
+    return $modified;
+  }
+
+  public function revert($name=null)
+  {
+    if($name !== null)
+    {
+      $this->attribute($name)->revert();
+    }
+    else
+    {
+      foreach($this->_attributes as $attr)
+      {
+        if($attr instanceof Attribute)
+        {
+          $attr->revert();
+        }
+      }
+    }
+    return $this;
   }
 }
