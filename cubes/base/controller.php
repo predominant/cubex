@@ -121,11 +121,13 @@ abstract class Controller extends Handler
     $webpage = new ErrorPage(
       500, $e->getMessage(),
       array(
-           'path' => $this->request()->getPath(),
-           'exception' => $e->getMessage(),
-           'exception_code' => $e->getCode(),
+           'path'             => $this->request()->getPath(),
+           'exception'        => $e->getMessage(),
+           'exception_code'   => $e->getCode(),
+           'exception_source' => $e->getFile() . ':' . $e->getLine(),
       )
     );
+
     return new Response($webpage);
   }
 
@@ -144,6 +146,7 @@ abstract class Controller extends Handler
   public function processRequest()
   {
     $response = $this->routeRequest();
+
     return $response;
   }
 
@@ -240,7 +243,7 @@ abstract class Controller extends Handler
   {
     if($action === null)
     {
-      throw new \Exception("No action specified");
+      throw new \Exception("No action specified on " . $this->controllerName());
     }
 
     if($this->request()->isAjax())
@@ -267,7 +270,14 @@ abstract class Controller extends Handler
       return $this->$attempt();
     }
 
-    throw new \Exception("Invalid action specified");
+    throw new \Exception("Invalid action $action specified on " . $this->controllerName());
+  }
+
+  protected function controllerName()
+  {
+    $reflector = new \ReflectionClass(\get_class($this));
+
+    return $reflector->getShortName();
   }
 
   protected function defaultAction()
@@ -277,6 +287,7 @@ abstract class Controller extends Handler
 
   /**
    * Delegate control to a new controller
+   *
    * @param Controller $new_controller
    * @return bool
    */
@@ -285,6 +296,7 @@ abstract class Controller extends Handler
     \ob_get_clean();
     $this->_delegated = true;
     Cubex::core()->setController($new_controller);
+
     return $new_controller->getResponse();
   }
 
