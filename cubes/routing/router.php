@@ -11,6 +11,7 @@ namespace Cubex\Routing;
 class Router
 {
 
+  const ROUTE_DYNAMIC = 'route:dynamic';
   protected $_processed_route = '';
   protected $_route_data = array();
 
@@ -41,6 +42,12 @@ class Router
       {
         $this->_processed_route = $prepend . $route;
 
+        if($control == self::ROUTE_DYNAMIC && isset($this->_route_data["_dynamic"]))
+        {
+          $control = ltrim($this->_route_data["_dynamic"], '/');
+          $control = str_replace(' ', '', ucwords(str_replace('/', ' ', $control)));
+        }
+
         return $control;
       }
     }
@@ -62,7 +69,7 @@ class Router
     /* Allow Simple Routes */
     if(!$second && !$match && \stristr($route, ':'))
     {
-      $retry = \preg_replace("/\:([a-zA-Z]+)/", "(?P<$1>[^\/]+)", $route);
+      $retry = \preg_replace("/\:(_?[a-zA-Z]+)/", "(?P<$1>[^\/]+)", $route);
 
       return $this->tryRoute($retry, $path, true);
     }
