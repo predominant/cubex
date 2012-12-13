@@ -9,7 +9,8 @@
 define('RUN_PROFILER', false);
 if(RUN_PROFILER && function_exists('xhprof_enable')) xhprof_enable(XHPROF_FLAGS_NO_BUILTINS);
 
-require_once(dirname(dirname(__FILE__)) . '/cubes/boot.php');
+require_once(dirname(dirname(__FILE__)) . '/cubes/base/cubex.php');
+\Cubex\Cubex::boot();
 
 if(RUN_PROFILER && function_exists("xhprof_disable"))
 {
