@@ -61,13 +61,17 @@ class HTMLElement implements Renderable
 
   public function renderAttributes()
   {
-    $out = '';
+    $attributes = array();
     foreach($this->_attributes as $attr => $attr_v)
     {
-      $out .= " $attr=\"$attr_v\"";
+      if($attr_v === null)
+      {
+        continue;
+      }
+      $attributes[] = ' ' . $attr . '="' . self::escape($attr_v) . '"';
     }
 
-    return $out;
+    return implode(' ', $attributes);
   }
 
   public function render()
@@ -89,5 +93,10 @@ class HTMLElement implements Renderable
   public function __toString()
   {
     return $this->render();
+  }
+
+  public static function escape($content)
+  {
+    return htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
   }
 }

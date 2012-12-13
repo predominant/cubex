@@ -18,7 +18,10 @@ class TemplatedView extends View
   /** @var Template */
   protected $_template;
 
-  public function __construct($template_file = null)
+  /**
+   * Automated way to pick out the correct views folder
+   */
+  /*public function __construct($template_file = null)
   {
     if($template_file !== null)
     {
@@ -33,7 +36,7 @@ class TemplatedView extends View
       }
       $this->_template_file = $template_file;
     }
-  }
+  }*/
 
   public function setTemplatesPath($path)
   {

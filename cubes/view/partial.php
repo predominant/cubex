@@ -48,7 +48,7 @@ class Partial implements Renderable
       $element = \str_replace('{#' . $key . '}', $args[$arg], $element);
     }
 
-    $this->_elements[] = \vsprintf($element, $args);
+    $this->_elements[] = \vsprintf($element, array_map(array('\Cubex\View\HTMLElement', 'escape'), $args));
   }
 
   public function addElements(array $elements)
