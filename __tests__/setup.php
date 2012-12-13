@@ -19,13 +19,6 @@ final class Application extends \Cubex\Base\Application
     return 'Controller';
   }
 
-  public function launch()
-  {
-    \Cubex\Cubex::core()->setController(new Controller());
-
-    parent::launch();
-  }
-
   public function getName()
   {
     return 'Application';
