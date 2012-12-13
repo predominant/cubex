@@ -80,7 +80,8 @@ abstract class Model implements \IteratorAggregate
       {
         if(!$attr->isEmpty())
         {
-          $properties[] = $attr->getName() . ' = ' . $attr->data();
+          $properties[] = $attr->getName() . ' = ' .
+          (is_scalar($attr->data()) ? $attr->data() : print_r($attr->data(), true));
         }
       }
     }
@@ -299,7 +300,7 @@ abstract class Model implements \IteratorAggregate
       if($this->attributeExists($k))
       {
         $set = "set$k";
-        $this->$set($v);
+        $this->$set($this->attribute($k)->unserialize($v));
       }
     }
     $this->unmodifyAttributes();
@@ -309,16 +310,7 @@ abstract class Model implements \IteratorAggregate
 
   public function loadFromStdClass(\stdClass $data)
   {
-    foreach($data as $k => $v)
-    {
-      if($this->attributeExists($k))
-      {
-        $set = "set$k";
-        $this->$set($v);
-      }
-    }
-
-    $this->unmodifyAttributes();
+    $this->loadFromArray((array)$data);
 
     return $this;
   }
@@ -403,7 +395,7 @@ abstract class Model implements \IteratorAggregate
     return $modified;
   }
 
-  public function revert($name=null)
+  public function revert($name = null)
   {
     if($name !== null)
     {
@@ -419,6 +411,7 @@ abstract class Model implements \IteratorAggregate
         }
       }
     }
+
     return $this;
   }
 }

@@ -13,7 +13,12 @@ use Cubex\Base\Callback;
 class Attribute
 {
 
+  const SERIALIZATION_NONE = 'id';
+  const SERIALIZATION_JSON = 'json';
+  const SERIALIZATION_PHP  = 'php';
+
   private $_modified;
+  private $_serializer;
   private $_name;
   private $_required;
   private $_validators;
@@ -29,7 +34,8 @@ class Attribute
                               $validators = null,
                               $filters = null,
                               $options = null,
-                              $data = null)
+                              $data = null,
+                              $serializer = self::SERIALIZATION_NONE)
   {
     $this->name($name);
     $this->required($required ? true : false);
@@ -37,6 +43,7 @@ class Attribute
     $this->addFilters($filters);
     $this->setData($data);
     $this->setOptions($options);
+    $this->setSerializer($serializer);
     $this->_modified = false;
   }
 
@@ -97,7 +104,7 @@ class Attribute
     }
     $this->_populated = $data !== null;
     $this->_data      = $data;
-    $this->_modified = true;
+    $this->_modified  = true;
 
     return $this;
   }
@@ -316,6 +323,7 @@ class Attribute
   {
     $this->setData($this->_original_data);
     $this->unsetModified();
+
     return true;
   }
 
@@ -327,12 +335,55 @@ class Attribute
   public function setModified()
   {
     $this->_modified = true;
+
     return $this;
   }
 
   public function unsetModified()
   {
     $this->_modified = false;
+
     return $this;
+  }
+
+  public function setSerializer($serializer)
+  {
+    $this->_serializer = $serializer;
+
+    return $this;
+  }
+
+  public function getSerializer()
+  {
+    return $this->_serializer;
+  }
+
+  public function serialize()
+  {
+    switch($this->getSerializer())
+    {
+      case self::SERIALIZATION_JSON:
+        return json_encode($this->rawData());
+        break;
+      case self::SERIALIZATION_PHP:
+        return serialize($this->rawData());
+        break;
+    }
+    return $this->rawData();
+  }
+
+  public function unserialize($data)
+  {
+    switch($this->getSerializer())
+    {
+      case self::SERIALIZATION_JSON:
+        return json_decode($data);
+        break;
+      case self::SERIALIZATION_PHP:
+        return unserialize($data);
+        break;
+    }
+
+    return $data;
   }
 }

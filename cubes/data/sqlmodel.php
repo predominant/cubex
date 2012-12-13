@@ -97,20 +97,53 @@ abstract class SQLModel extends Model
 
   public function load($id, $columns = array("*"))
   {
-    $config = $this->getConfiguration();
-    if($config[self::CONFIG_IDS] == self::ID_AUTOINCREMENT)
-    {
-      $data = $this->loadRawWhere($columns, "%C = %d", $this->getIDKey(), $id);
-    }
-    else
-    {
-      $data = $this->loadRawWhere($columns, "%C = %s", $this->getIDKey(), $id);
-    }
-    if($data)
+    $data = $this->loadRawWhere($columns, $this->idPattern(), $this->getIDKey(), $id);
+    if(is_array($data))
     {
       $this->loadFromStdClass(\current($data));
+
       return true;
     }
     else return false;
+  }
+
+  protected function idPattern()
+  {
+    $config = $this->getConfiguration();
+    if($config[self::CONFIG_IDS] == self::ID_AUTOINCREMENT)
+    {
+      return "%C = %d";
+    }
+    else
+    {
+      return "%C = %s";
+    }
+  }
+
+  public function saveChanges()
+  {
+    $modified = $this->getModifiedAttributes();
+    $updates  = array();
+    foreach($modified as $attr)
+    {
+      if($attr instanceof Attribute)
+      {
+        if($attr->isModified())
+        {
+          /*echo "\n<br/>";
+          echo "Setting: " . $attr->getName() . "\n<br/>";
+          echo "Changing from " . $attr->originalData() . " to " . $attr->rawData() . "\n<br/>";*/
+          $updates[] = Sprintf::parseQuery(
+            $this->dataConnection("w"), array("%C = %ns", $attr->getName(), $attr->serialize())
+          );
+          $attr->unsetModified();
+        }
+      }
+    }
+
+    $pattern = 'UPDATE %T SET ' . implode(', ', $updates) . ' WHERE ' . $this->idPattern();
+    $args    = array($pattern, $this->getTableName(), $this->getIDKey(), $this->getID());
+    $query = Sprintf::parseQuery($this->dataConnection("w"), $args);
+    return $this->dataConnection()->query($query);
   }
 }
