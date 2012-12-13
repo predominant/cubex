@@ -22,7 +22,7 @@ abstract class Component extends Translatable
     return "";
   }
 
-  public function getViews($view)
+  public function getView($view)
   {
     $reflector = new \ReflectionClass(\get_class($this));
     $view = $reflector->getNamespaceName() . '\Views\\' . $view;
