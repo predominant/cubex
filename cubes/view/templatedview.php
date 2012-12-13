@@ -12,6 +12,7 @@ use Cubex\Base\Application;
 
 class TemplatedView extends View
 {
+
   private $_template_file;
   /** @var Template */
   protected $_template;
@@ -27,18 +28,25 @@ class TemplatedView extends View
     $replace     = substr($app_reflect->getName(), 0, -11) . 'Views\\';
     $reflector   = new \ReflectionClass(\get_class($this));
     $this->setTemplateFile(str_replace($replace, '', $reflector->getName()));
+
     return $this;
   }
 
   protected function setTemplateFile($template)
   {
     $this->_template_file = $template;
-    $this->_template = new Template($template);
+
     return $this;
   }
 
   public function render()
   {
+    $this->_template = new Template($this->_template_file);
+    foreach($this as $k => $v)
+    {
+      $this->_template->setData($k, $v);
+    }
+
     return $this->_template->render();
   }
 }
