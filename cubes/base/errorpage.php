@@ -8,11 +8,14 @@
 
 namespace Cubex\Base;
 
+use Cubex\View\HTMLElement;
+
 class ErrorPage extends WebPage
 {
+
   private $_params;
 
-  public function __construct($code=404,$message="Page Not Found",$params=null)
+  public function __construct($code = 404, $message = "Page Not Found", $params = null)
   {
     $this->setHttpStatus($code);
     $this->setTitle($code . ": " . $message);
@@ -29,6 +32,7 @@ class ErrorPage extends WebPage
         $response .= "$k = $v\n<br/>";
       }
     }
-    return $response;
+
+    return HTMLElement::create('', $response);
   }
 }
