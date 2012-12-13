@@ -10,6 +10,7 @@ namespace Cubex\View;
 
 use Cubex\Data\Handler;
 use Cubex\Base\Application;
+use Cubex\Language\Translatable;
 
 class Template extends Handler implements Renderable
 {
@@ -26,12 +27,20 @@ class Template extends Handler implements Renderable
   public static $ephemeral = array();
   public static $last_known_base = '';
 
-  public function __construct($file = null, $application = null)
+  public function __construct($file = null, $base = null)
   {
-    if($application !== null && $application instanceof Application)
+    if($base !== null && $base instanceof Translatable)
     {
-      $this->setBasePath($application->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
+      $this->setBasePath($base->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
     }
+    else if($base !== null)
+    {
+      if(is_dir($base))
+      {
+        $this->setBasePath($base);
+      }
+    }
+
     if($file !== null)
     {
       $this->setTemplateFile($file);
