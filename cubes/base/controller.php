@@ -236,14 +236,14 @@ abstract class Controller extends Handler
    * final attempt will be to: renderIndex()
    *
    * @returns Response
-   * @throws \Exception
+   * @throws \BadMethodCallException
    *
    * */
   protected function processRouteReturn($action)
   {
     if($action === null)
     {
-      throw new \Exception("No action specified on " . $this->controllerName());
+      throw new \BadMethodCallException("No action specified on " . $this->controllerName());
     }
 
     if($this->request()->isAjax())
@@ -270,7 +270,7 @@ abstract class Controller extends Handler
       return $this->$attempt();
     }
 
-    throw new \Exception("Invalid action $action specified on " . $this->controllerName());
+    throw new \BadMethodCallException("Invalid action $action specified on " . $this->controllerName());
   }
 
   protected function controllerName()
