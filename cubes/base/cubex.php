@@ -439,7 +439,10 @@ final class Cubex
    */
   final public static function fatal($message)
   {
-    \header("Content-Type: text/plain; charset=utf-8", true, 500);
+    if(!\headers_sent())
+    {
+      \header("Content-Type: text/plain; charset=utf-8", true, 500);
+    }
     echo "== Fatal Error ==\n\n";
     echo $message . "\n";
     define("CUBEX_FATAL_ERROR", $message);
