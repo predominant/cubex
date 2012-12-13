@@ -78,28 +78,32 @@ class Template extends Handler implements Renderable
     $this->_nested[$name] = $view;
   }
 
-  public function renderNest($name,$contain_div_id=true)
+  public function renderNest($name, $contain_div_id = true)
   {
+    $rendered = '';
     if(isset($this->_nested[$name]))
     {
       $nest = $this->_nested[$name];
       if($nest instanceof Renderable)
       {
-        if($contain_div_id === false)
-        {
-          return $nest->render();
-        }
-        else
-        {
-          if(\is_string($contain_div_id))
-          {
-            $name = $contain_div_id;
-          }
-          return (new HTMLElement('div',$nest->render(),array('id' => $name)))->render();
-        }
+        $rendered = $nest->render();
       }
     }
-    return '';
+
+    if($contain_div_id === false)
+    {
+      return $rendered;
+    }
+    else
+    {
+      if(\is_string($contain_div_id))
+      {
+        $name = $contain_div_id;
+      }
+
+      return (new HTMLElement('div', $rendered, array('id' => $name)))->render();
+    }
+
   }
 
   final public function render($rerender = false)
@@ -166,6 +170,7 @@ class Template extends Handler implements Renderable
     try
     {
       $output = $this->render();
+
       return $output;
     }
     catch(\Exception $e)
