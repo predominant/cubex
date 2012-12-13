@@ -11,6 +11,7 @@ namespace Cubex\Base;
 use \Cubex\Cubex;
 use \Cubex\Language\Translatable;
 use \Cubex\Routing\Router;
+use Cubex\Events\Events;
 
 abstract class Application extends Translatable
 {
@@ -53,18 +54,9 @@ abstract class Application extends Translatable
       $this->registerAutoLoader();
       $namespace = \substr(\get_called_class(), 0, -12);
 
-      /*
-       * Initiate Event Hooks
-       */
-      $events = $namespace . '\Events';
-      if(\class_exists($events) && \is_subclass_of($events, '\Cubex\Events\Events'))
-      {
-        $events::createHooks();
-      }
-
       $this->bindLanguage();
 
-      /*
+      /**
        * Initiate Controller
        */
       $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
@@ -78,7 +70,9 @@ abstract class Application extends Translatable
       }
 
       $this->launched();
+      Events::Trigger(Events::CUBEX_RESPONSE_START);
       Cubex::core()->controller()->getResponse()->respond();
+      Events::Trigger(Events::CUBEX_RESPONSE_SENT);
     }
     else
     {

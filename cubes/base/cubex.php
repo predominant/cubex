@@ -13,6 +13,7 @@ namespace Cubex;
 use Cubex\Base\Controller;
 use Cubex\Data\Handler;
 use Cubex\Http\Request;
+use Cubex\Events\Events;
 
 final class Cubex
 {
@@ -78,6 +79,8 @@ final class Cubex
     {
       Cubex::core();
     }
+
+    Events::Trigger(Events::CUBEX_SHUTDOWN);
 
   }
 

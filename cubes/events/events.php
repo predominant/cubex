@@ -8,53 +8,35 @@
 
 namespace Cubex\Events;
 
-class Events
+final class Events
 {
 
-  private static $_coathook = null;
-  private $_hooks;
+  const CUBEX_LAUNCH   = 'cubex.launch';
+  const CUBEX_SHUTDOWN = 'cubex.shutdown';
 
-  final protected static function Hook()
+  const CUBEX_RESPONSE_START = 'cubex.response.start';
+  const CUBEX_RESPONSE_SENT  = 'cubex.response.sent';
+
+  const CUBEX_DEBUG = 'cubex.debug';
+
+  private static $_listeners = array();
+
+  public static function Listen($event_name, callable $callback)
   {
-    if(self::$_coathook === null) self::$_coathook = new Events();
-
-    return self::$_coathook;
-  }
-
-  final protected function addHook($event_name, $callback)
-  {
-    if(!\is_callable($callback, true))
+    if(!isset(self::$_listeners[$event_name]))
     {
-      throw new \InvalidArgumentException(\sprintf('Invalid callback: %s.', print_r($callback, true)));
+      self::$_listeners[$event_name] = array();
     }
-    $this->_hooks[$event_name][] = $callback;
+    self::$_listeners[$event_name][] = $callback;
   }
 
-  final protected function getCallbacks($event_name)
+  public static function Trigger($event_name, $args = array())
   {
-    return isset($this->_hooks[$event_name]) ? $this->_hooks[$event_name] : array();
-  }
-
-  final protected function fire($event_name)
-  {
-    foreach($this->getCallbacks($event_name) as $callback)
+    $listeners = isset(self::$_listeners[$event_name]) ? self::$_listeners[$event_name] : array();
+    foreach($listeners as $listen)
     {
-      if(!\is_callable($callback)) continue;
-      \call_user_func($callback);
+      if(!\is_callable($listen)) continue;
+      \call_user_func_array($listen, $args);
     }
-  }
-
-  public static function fireEvent($name)
-  {
-    self::Hook()->fire($name);
-  }
-
-  final public static function hookEvent($name, callable $callback)
-  {
-    self::Hook()->addHook($name, $callback);
-  }
-
-  public static function createHooks()
-  {
   }
 }

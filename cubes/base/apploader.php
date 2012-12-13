@@ -10,6 +10,7 @@ namespace Cubex\Base;
 use Cubex\Cubex;
 use \Cubex\Base\Application;
 use \Cubex\Http\Request;
+use Cubex\Events\Events;
 
 abstract class AppLoader
 {
@@ -33,8 +34,9 @@ abstract class AppLoader
       $application = static::defaultApplication();
     }
 
-    if($application !== null)
+    if($application !== null && $application instanceof Application)
     {
+      Events::Trigger(Events::CUBEX_LAUNCH);
       Application::initialise($application);
     }
     else
