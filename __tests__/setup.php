@@ -9,11 +9,12 @@
 require_once dirname(dirname(__FILE__)) .'/cubes/base/cubex.php';
 \Cubex\Cubex::boot();
 
-final class Setup {
+final class Setup
+{
 
 }
 
-final class Application extends \Cubex\Base\Application
+class Application extends \Cubex\Base\Application
 {
   public function getDefaultController()
   {
@@ -26,7 +27,7 @@ final class Application extends \Cubex\Base\Application
   }
 }
 
-final class ApplicationFailTest extends \Cubex\Base\Application
+class ApplicationFailTest extends \Cubex\Base\Application
 {
   public function launch()
   {
@@ -39,7 +40,7 @@ final class ApplicationFailTest extends \Cubex\Base\Application
   }
 }
 
-final class Controller extends \Cubex\Base\Controller
+class Controller extends \Cubex\Base\Controller
 {
   public function processRequest()
   {
@@ -50,7 +51,7 @@ final class Controller extends \Cubex\Base\Controller
   }
 }
 
-final class Response extends \Cubex\Http\Response
+class Response extends \Cubex\Http\Response
 {
   public function respond()
   {
