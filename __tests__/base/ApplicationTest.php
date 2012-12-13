@@ -26,6 +26,6 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 
   public function testGetName()
   {
-    $this->assertEquals('Application', id(new Application())->getName());
+    $this->assertEquals('Application', (new Application())->getName());
   }
 }
