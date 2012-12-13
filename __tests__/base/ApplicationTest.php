@@ -9,9 +9,7 @@ class Base_ApplicationTest extends PHPUnit_Framework_TestCase
 {
   public function testExceptionThrownWhenBadParamPassedToInitiator()
   {
-    $this->setExpectedException(
-      'Exception', 'Application \'ApplicationFailTest\' is unavailable'
-    );
+    $this->setExpectedException('Exception');
 
     Cubex\Base\Application::initialise(new ApplicationFailTest());
   }
