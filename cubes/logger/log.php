@@ -26,37 +26,40 @@ class Log
   const TYPE_QUERY       = 'query';
   const TYPE_API         = 'api';
 
-  public static function Info($message, $type, $code, $source_file, $source_line)
+  public static function Info($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::Log(self::LEVEL_INFO, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_INFO, $message, $type, $code);
   }
 
-  public static function Success($message, $type, $code, $source_file, $source_line)
+  public static function Success($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::Log(self::LEVEL_SUCCESS, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_SUCCESS, $message, $type, $code);
   }
 
-  public static function Warning($message, $type, $code, $source_file, $source_line)
+  public static function Warning($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::Log(self::LEVEL_WARNING, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_WARNING, $message, $type, $code);
   }
 
-  public static function Critical($message, $type, $code, $source_file, $source_line)
+  public static function Critical($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::Log(self::LEVEL_CRITICAL, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_CRITICAL, $message, $type, $code);
   }
 
-  public static function Fatal($message, $type, $code, $source_file, $source_line)
+  public static function Fatal($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::Log(self::LEVEL_FATAL, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_FATAL, $message, $type, $code);
   }
 
-  public static function ParseError($message, $type, $code, $source_file, $source_line)
+  public static function ParseError($message, $type, $code)
   {
-    self::Log(self::LEVEL_PARSE, $message, $type, $code, $source_file, $source_line);
+    self::Log(self::LEVEL_PARSE, $message, $type, $code);
   }
 
-  protected static function Log($level, $message, $type, $code, $source_file, $source_line)
+  protected static function Log($level, $message, $type, $code)
   {
+    $backtrace   = debug_backtrace();
+    $source_line = $backtrace[1]['line'];
+    $source_file = $backtrace[1]['file'];
   }
 }
