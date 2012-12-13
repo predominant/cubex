@@ -98,9 +98,4 @@ class Response
 
     return false;
   }
-
-  public function __destruct()
-  {
-    if(!$this->_rendered) $this->respond();
-  }
 }
