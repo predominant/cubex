@@ -5,7 +5,8 @@
  * Time: 13:45
  * @author: gareth.evans <gareth.evans@jdiuk.com>
  */
-class Base_CubexTest extends PHPUnit_Framework_TestCase
+namespace Cubex\Tests;
+class Base_CubexTest extends \PHPUnit_Framework_TestCase
 {
   public function testCubexHasLoaded()
   {

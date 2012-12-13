@@ -5,7 +5,8 @@
  * Time: 19:26
  * @author: gareth.evans
  */
-class Base_ErrorPageTest extends PHPUnit_Framework_TestCase
+namespace Cubex\Tests;
+class Base_ErrorPageTest extends \PHPUnit_Framework_TestCase
 {
   /**
    * @var \Cubex\Base\ErrorPage $_error_page

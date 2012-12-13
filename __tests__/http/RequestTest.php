@@ -5,7 +5,8 @@
  * Time: 18:57
  * @author: gareth.evans <gareth.evans@jdiuk.com>
  */
-class Http_RequestTest extends PHPUnit_Framework_TestCase
+namespace Cubex\Tests;
+class Http_RequestTest extends \PHPUnit_Framework_TestCase
 {
   /**
    * @var Cubex\Http\Request
@@ -21,8 +22,8 @@ class Http_RequestTest extends PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
-    $this->_empty_request = new Cubex\Http\Request();
-    $this->_built_request = new Cubex\Http\Request(
+    $this->_empty_request = new \Cubex\Http\Request();
+    $this->_built_request = new \Cubex\Http\Request(
       static::REQUEST_PATH, static::REQUEST_HOST
     );
   }

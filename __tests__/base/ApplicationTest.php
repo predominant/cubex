@@ -5,23 +5,24 @@
  * Time: 17:46
  * @author: gareth.evans <gareth.evans@jdiuk.com>
  */
-class Base_ApplicationTest extends PHPUnit_Framework_TestCase
+namespace Cubex\Tests;
+class Base_ApplicationTest extends \PHPUnit_Framework_TestCase
 {
   public function testExceptionThrownWhenBadParamPassedToInitiator()
   {
     $this->setExpectedException('Exception');
 
-    Cubex\Base\Application::initialise(new ApplicationFailTest());
+    \Cubex\Base\Application::initialise(new ApplicationFailTest());
   }
 
   public function testApplicationInitiator()
   {
     // We need to set the request object here as we are mocking a http request
     // even though we're running via the cli
-    Cubex\Cubex::core()->setRequest(new Cubex\Http\Request());
+    \Cubex\Cubex::core()->setRequest(new \Cubex\Http\Request());
 
     $this->expectOutputRegex('/^<!DOCTYPE html>.*/');
-    Cubex\Base\Application::initialise(new Application());
+    \Cubex\Base\Application::initialise(new Application());
   }
 
   public function testGetName()

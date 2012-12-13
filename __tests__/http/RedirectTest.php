@@ -5,7 +5,8 @@
  * Time: 17:27
  * @author: gareth.evans
  */
-class Http_RedirectTest extends PHPUnit_Framework_TestCase
+namespace Cubex\Tests;
+class Http_RedirectTest extends \PHPUnit_Framework_TestCase
 {
   /**
    * @var Cubex\Http\Redirect
