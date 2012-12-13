@@ -14,6 +14,7 @@ use Cubex\Base\Controller;
 use Cubex\Data\Handler;
 use Cubex\Http\Request;
 use Cubex\Events\Events;
+use Cubex\View\HTMLElement;
 
 final class Cubex
 {
@@ -367,20 +368,24 @@ final class Cubex
     $fatal = \defined('CUBEX_FATAL_ERROR');
     if(CUBEX_WEB && !$fatal)
     {
-      echo '<div id="cubex-shutdown-debug" style="
-      bottom:0; left:0; border:1px solid #666; padding:3px; border-left:0; border-bottom: 0;
-      background:#FFFFFF; position:fixed;
-      ">';
+      $shutdown_debug = new HTMLElement(
+        'div', '',
+        array(
+             'id'    => 'cubex-shutdown-debug',
+             'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+             'padding:3px; background:#FFFFFF; position:fixed;',
+        )
+      );
     }
     else
     {
-      echo "\n";
+      $shutdown_debug = new HTMLElement("");
     }
 
-    echo "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec";
-    echo " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
-
-    echo CUBEX_WEB && !$fatal ? '</div>' : '';
+    echo $shutdown_debug->setContent(
+      "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+      " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
+    );
 
     $event = \error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
