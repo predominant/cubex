@@ -22,7 +22,7 @@ class TemplatedView extends View
   {
     if($template_file !== null)
     {
-      $backtrace = debug_backtrace();
+      $backtrace = debug_backtrace(2);
       if(isset($backtrace[1]))
       {
         $this->calculateTemplate($backtrace[1]['class']);
