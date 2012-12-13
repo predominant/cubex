@@ -35,18 +35,18 @@ class HTMLElement implements Renderable
     return $this;
   }
 
-  public function nestTag($tag, $content, $attributes = array())
+  public function nestElement($tag, $content, $attributes = array())
   {
     $this->_nested[] = new HTMLElement($tag, $content, $attributes);
 
     return $this;
   }
 
-  public function nestTagArray($tag, array $values, $attributes = array())
+  public function nestElements($tag, array $values, $attributes = array())
   {
     foreach($values as $value)
     {
-      $this->nestTag($tag, $value, $attributes);
+      $this->nestElement($tag, $value, $attributes);
     }
 
     return $this;
