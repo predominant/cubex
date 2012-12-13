@@ -38,7 +38,11 @@ abstract class Application extends Translatable
     }
     catch(\Exception $e)
     {
-      throw new \Exception("Application '" . $application->getName() . "' is unavailable", 503);
+      throw new \Exception(
+        "Application '" . $application->getName() . "' is unstable\n\n" .
+        'From: ' . $e->getFile() . ':' . $e->getLine() . "\n\n" .
+        "Message: " . $e->getMessage() . "\n", 503
+      );
     }
   }
 

@@ -43,6 +43,7 @@ final class Cubex
 
     \register_shutdown_function('Cubex\Cubex::shutdown');
     \set_error_handler('Cubex\Cubex::error_handler');
+    \set_exception_handler('Cubex\Cubex::exception_handler');
 
     /*
      * Define helpful bits :)
@@ -71,14 +72,7 @@ final class Cubex
         Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
       }
 
-      try
-      {
-        \Cubex\Applications\Loader::load(Cubex::request());
-      }
-      catch(\Exception $e)
-      {
-        Cubex::fatal($e->getMessage());
-      }
+      \Cubex\Applications\Loader::load(Cubex::request());
     }
     else
     {
@@ -426,6 +420,15 @@ final class Cubex
       default:
         break;
     }
+  }
+
+  final public static function exception_handler(\Exception $e)
+  {
+    Cubex::fatal(
+      ($e->getCode() > 0 ? "[" . $e->getCode() . "] " : '')
+      . $e->getMessage() . "\n" .
+      "In: " . $e->getFile() . ':' . $e->getLine()
+    );
   }
 
   /**
