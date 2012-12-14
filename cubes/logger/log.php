@@ -26,37 +26,37 @@ class Log
   const TYPE_QUERY       = 'query';
   const TYPE_API         = 'api';
 
-  public static function Info($message, $code, $type = self::TYPE_GENERIC)
+  public static function info($message, $code, $type = self::TYPE_GENERIC)
   {
     self::Log(self::LEVEL_INFO, $message, $type, $code);
   }
 
-  public static function Success($message, $code, $type = self::TYPE_GENERIC)
+  public static function success($message, $code, $type = self::TYPE_GENERIC)
   {
     self::Log(self::LEVEL_SUCCESS, $message, $type, $code);
   }
 
-  public static function Warning($message, $code, $type = self::TYPE_GENERIC)
+  public static function warning($message, $code, $type = self::TYPE_GENERIC)
   {
     self::Log(self::LEVEL_WARNING, $message, $type, $code);
   }
 
-  public static function Critical($message, $code, $type = self::TYPE_GENERIC)
+  public static function critical($message, $code, $type = self::TYPE_GENERIC)
   {
     self::Log(self::LEVEL_CRITICAL, $message, $type, $code);
   }
 
-  public static function Fatal($message, $code, $type = self::TYPE_GENERIC)
+  public static function fatal($message, $code, $type = self::TYPE_GENERIC)
   {
     self::Log(self::LEVEL_FATAL, $message, $type, $code);
   }
 
-  public static function ParseError($message, $type, $code)
+  public static function parseError($message, $type, $code)
   {
     self::Log(self::LEVEL_PARSE, $message, $type, $code);
   }
 
-  protected static function Log($level, $message, $type, $code)
+  protected static function log($level, $message, $type, $code)
   {
     $backtrace   = debug_backtrace();
     $source_line = $backtrace[1]['line'];

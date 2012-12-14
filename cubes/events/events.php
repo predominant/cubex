@@ -21,7 +21,7 @@ final class Events
 
   private static $_listeners = array();
 
-  public static function Listen($event_name, callable $callback)
+  public static function listen($event_name, callable $callback)
   {
     if(!isset(self::$_listeners[$event_name]))
     {
@@ -30,7 +30,7 @@ final class Events
     self::$_listeners[$event_name][] = $callback;
   }
 
-  public static function Trigger($event_name, $args = array())
+  public static function trigger($event_name, $args = array())
   {
     $listeners = isset(self::$_listeners[$event_name]) ? self::$_listeners[$event_name] : array();
     foreach($listeners as $listen)
