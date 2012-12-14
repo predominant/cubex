@@ -28,35 +28,35 @@ class Log
 
   public static function info($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::log(self::LEVEL_INFO, $message, $type, $code);
+    static::_log(self::LEVEL_INFO, $message, $type, $code);
   }
 
   public static function success($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::log(self::LEVEL_SUCCESS, $message, $type, $code);
+    static::_log(self::LEVEL_SUCCESS, $message, $type, $code);
   }
 
   public static function warning($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::log(self::LEVEL_WARNING, $message, $type, $code);
+    static::_log(self::LEVEL_WARNING, $message, $type, $code);
   }
 
   public static function critical($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::log(self::LEVEL_CRITICAL, $message, $type, $code);
+    static::_log(self::LEVEL_CRITICAL, $message, $type, $code);
   }
 
   public static function fatal($message, $code, $type = self::TYPE_GENERIC)
   {
-    self::log(self::LEVEL_FATAL, $message, $type, $code);
+    static::_log(self::LEVEL_FATAL, $message, $type, $code);
   }
 
   public static function parseError($message, $type, $code)
   {
-    self::log(self::LEVEL_PARSE, $message, $type, $code);
+    static::_log(self::LEVEL_PARSE, $message, $type, $code);
   }
 
-  protected static function log($level, $message, $type, $code)
+  protected static function _log($level, $message, $type, $code)
   {
     $backtrace   = debug_backtrace();
     $source_line = $backtrace[1]['line'];
