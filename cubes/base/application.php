@@ -8,11 +8,14 @@
 
 namespace Cubex\Base;
 
-use \Cubex\Cubex;
-use \Cubex\Language\Translatable;
-use \Cubex\Routing\Router;
+use Cubex\Cubex;
+use Cubex\Language\Translatable;
+use Cubex\Routing\Router;
 use Cubex\Events\Events;
 
+/**
+ * Applications are a base class to group all logic for specific entry points
+ */
 abstract class Application extends Translatable
 {
 
@@ -30,6 +33,13 @@ abstract class Application extends Translatable
     return self::$app;
   }
 
+  /**
+   * Application initialiser
+   *
+   * @param Application $application
+   *
+   * @throws \Exception
+   */
   final public static function initialise(Application $application)
   {
     try
@@ -47,6 +57,12 @@ abstract class Application extends Translatable
     }
   }
 
+  /**
+   * Launch process for your application
+   *
+   * Recommended to not override for standard functionality
+   *
+   */
   public function launch()
   {
     if($this->canLaunch())
@@ -81,56 +97,107 @@ abstract class Application extends Translatable
     $this->shutdown();
   }
 
+  /**
+   * Logic for handling application availability
+   *
+   * @return bool
+   */
   public function canLaunch()
   {
     return true;
   }
 
+  /**
+   * Called if the launch of your application fails
+   */
   public function launchFailed()
   {
-
   }
 
+  /**
+   * Called after the application has been launched
+   */
   public function launched()
   {
-
   }
 
+  /**
+   * Name of your application
+   *
+   * @return string
+   */
   public function getName()
   {
     return "";
   }
 
+  /**
+   * Description of your application
+   *
+   * @return string
+   */
   public function getDescription()
   {
     return "";
   }
 
+  /**
+   * Available components to be used by the application
+   *
+   * @return array Component Names
+   */
   public function getComponents()
   {
     return array();
   }
 
+  /**
+   * Default controller classname
+   *
+   * @return string
+   */
   public function getDefaultController()
   {
     return 'DefaultController';
   }
 
+  /**
+   * Access routes to be used by the router
+   *
+   * @return array
+   */
   public function getRoutes()
   {
     return array();
   }
 
+  /**
+   * Register an application specific auto loader
+   *
+   * @return null
+   */
   public function registerAutoLoader()
   {
     return null;
   }
 
+  /**
+   * Get the default application layout
+   *
+   * @return string
+   */
   public function getLayout()
   {
     return $this->_layout;
   }
 
+  /**
+   * Set layout file for your application to fall back to if not setup within a controller
+   *
+   * @param $layout
+   *
+   * @return Application
+   */
   public function setLayout($layout)
   {
     $this->_layout = $layout;
@@ -138,13 +205,35 @@ abstract class Application extends Translatable
     return $this;
   }
 
+  /**
+   * Get data set by the routes
+   * Null will return all data, or a specific key can be used to access a specific attribute
+   *
+   * @param null|string $key
+   *
+   * @return mixed
+   */
   public function getURIData($key = null)
   {
-    if($key === null) return $this->_uri_data;
-    else if(isset($this->_uri_data[$key])) return $this->_uri_data[$key];
+    if($key === null)
+    {
+      return $this->_uri_data;
+    }
+    else if(isset($this->_uri_data[$key]))
+    {
+      return $this->_uri_data[$key];
+    }
     else return array();
   }
 
+  /**
+   * Return the controller classname for the application to process the request with
+   * Accepts the request path for routing
+   *
+   * @param $path
+   *
+   * @return null|string
+   */
   protected function getController($path)
   {
     $router     = new Router();
@@ -160,14 +249,20 @@ abstract class Application extends Translatable
     return $controller === null ? $this->getDefaultController() : $controller;
   }
 
+  /**
+   * Matching route for the request being processed
+   *
+   * @return string
+   */
   public function processedRoute()
   {
     return $this->_processed_route;
   }
 
+  /**
+   * Called on application shutdown
+   */
   public function shutdown()
   {
-
   }
-
 }

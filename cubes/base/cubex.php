@@ -16,6 +16,9 @@ use Cubex\Http\Request;
 use Cubex\Events\Events;
 use Cubex\View\HTMLElement;
 
+/**
+ * Cubex Framework Core
+ */
 final class Cubex
 {
 
@@ -27,6 +30,9 @@ final class Cubex
   private $_connections = null;
   private $_locale = null;
 
+  /**
+   * Verify and setup the environment for cubex to run in
+   */
   final public static function boot()
   {
     if(\defined('PHP_MAJOR_VERSION')) //Do not check version if running through a compiler
@@ -47,7 +53,7 @@ final class Cubex
     \set_error_handler('Cubex\Cubex::error_handler');
     \set_exception_handler('Cubex\Cubex::exception_handler');
 
-    /*
+    /**
      * Define helpful bits :)
      */
 
@@ -82,7 +88,6 @@ final class Cubex
     }
 
     Events::trigger(Events::CUBEX_SHUTDOWN);
-
   }
 
   /**
@@ -135,6 +140,7 @@ final class Cubex
    * Define request object for applications to pull
    *
    * @param Http\Request $request
+   *
    * @return \Cubex\Cubex
    */
   public function setRequest(Request $request)
@@ -158,6 +164,7 @@ final class Cubex
    * Define active controller object for views to pull
    *
    * @param \Cubex\Base\Controller $controller
+   *
    * @return \Cubex\Cubex
    */
   public function setController(Controller $controller)
@@ -201,6 +208,7 @@ final class Cubex
    * Database Connection
    *
    * @param string $connection
+   *
    * @return \Cubex\Database\Connection
    */
   public static function db($connection = 'db')
@@ -212,6 +220,7 @@ final class Cubex
    * Cache Connection
    *
    * @param string $connection
+   *
    * @return \Cubex\Cache\Connection
    */
   public static function cache($connection = 'local')
@@ -222,6 +231,7 @@ final class Cubex
   /**
    * @param $type
    * @param $connection
+   *
    * @return \Cubex\Data\Connection
    */
   private static function getConnection($type, $connection)
@@ -262,6 +272,7 @@ final class Cubex
    * Get configuration object, within specific area
    *
    * @param $area
+   *
    * @return Data\Handler
    */
   public static function config($area)
@@ -283,6 +294,7 @@ final class Cubex
    * Set locale and return Cubex or get locale
    *
    * @param null|string $locale
+   *
    * @return Cubex|string
    */
   public static function locale($locale = null)
@@ -314,11 +326,11 @@ final class Cubex
 
       if(\strpos($class, 'Modules\\') === 0)
       {
-        //TODO: Add some module loaders to handle more complex modules
+        //Add some module loaders to handle more complex modules
       }
       else if(\strpos($class, 'Widgets\\') === 0)
       {
-        //TODO: Add some widget loaders
+        //Add some widget loaders
       }
       else if(\strpos($class, 'Applications\\') === 0 || \strpos($class, 'Components\\') === 0)
       {
@@ -406,6 +418,7 @@ final class Cubex
    * @param       $file
    * @param       $line
    * @param       $context
+   *
    * @throws \Exception
    */
   final public static function error_handler($code, $message, $file, $line, $context)
@@ -420,6 +433,10 @@ final class Cubex
     }
   }
 
+  /**
+   * Basic exception handler
+   * @param \Exception $e
+   */
   final public static function exception_handler($e)
   {
     if($e instanceof \Exception)
@@ -448,5 +465,4 @@ final class Cubex
     define("CUBEX_FATAL_ERROR", $message);
     exit(1);
   }
-
 }

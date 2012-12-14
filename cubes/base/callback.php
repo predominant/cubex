@@ -8,39 +8,89 @@
 
 namespace Cubex\Base;
 
+/**
+ * Standard callback handler
+ */
 class Callback
 {
 
-  const TYPE_GENERIC   = 'generic';
-  const TYPE_FILTER    = 'filter';
+  /**
+   * Generic callback type
+   */
+  const TYPE_GENERIC = 'generic';
+  /**
+   * Callback to a filter
+   */
+  const TYPE_FILTER = 'filter';
+  /**
+   * Callback to a validator
+   */
   const TYPE_VALIDATOR = 'validator';
 
   private $_method;
   private $_options;
   private $_type;
 
-  public function __construct($method, $options = array(), $callback_type = null)
+  /**
+   *
+   * @param        $method
+   * @param array  $options
+   * @param string $callback_type
+   */
+  public function __construct($method, $options = array(), $callback_type = self::TYPE_GENERIC)
   {
     $this->_method  = $method;
     $this->_options = $options;
     $this->_type    = $callback_type;
   }
 
-  public static function _($method, $options = array(), $callback_type = null)
+  /**
+   * create a new callback statically
+   *
+   * @param        $method
+   * @param array  $options
+   * @param string $callback_type
+   *
+   * @return Callback
+   */
+  public static function _($method, $options = array(), $callback_type = self::TYPE_GENERIC)
   {
     return new callback($method, $options, $callback_type);
   }
 
+  /**
+   * Create a new validator callback
+   *
+   * @param       $method
+   * @param array $options
+   *
+   * @return Callback
+   */
   public static function validator($method, $options = array())
   {
     return new callback($method, $options, self::TYPE_VALIDATOR);
   }
 
+  /**
+   * Create a new filter callback
+   *
+   * @param       $method
+   * @param array $options
+   *
+   * @return Callback
+   */
   public static function filter($method, $options = array())
   {
     return new callback($method, $options, self::TYPE_FILTER);
   }
 
+  /**
+   * Process a callback with input
+   *
+   * @param null $input
+   *
+   * @return mixed
+   */
   public function Process($input = null)
   {
     if($this->_type == self::TYPE_FILTER && \is_string($this->_method))

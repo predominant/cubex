@@ -10,24 +10,39 @@ namespace Cubex\Base;
 
 use \Cubex\Language\Translatable;
 
-class Module extends Translatable
+/**
+ * Base module
+ */
+abstract class Module extends Translatable
 {
 
+  /**
+   * @return Module
+   */
   final private function getModule()
   {
     return $this;
   }
 
+  /**
+   * @return string
+   */
   public function moduleVersion()
   {
     return '1.0';
   }
 
+  /**
+   * @return string
+   */
   public function moduleName()
   {
     return \str_replace('Cubex\\Module\\', '', \get_class(static::getModule()));
   }
 
+  /**
+   * @return string
+   */
   public function moduleDescription()
   {
     return "";

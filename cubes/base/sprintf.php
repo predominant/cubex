@@ -14,7 +14,7 @@ use Cubex\Data\SearchObject;
 class Sprintf
 {
 
-  /*
+  /**
    * Query Patterns
    *
    * LIKE Query

@@ -12,9 +12,21 @@ use \Cubex\Base\Application;
 use \Cubex\Http\Request;
 use Cubex\Events\Events;
 
+/**
+ * The app loader is essentiall a "project" router, defining which application should handle a request
+ */
 abstract class AppLoader
 {
 
+  /**
+   * Initialise the correct application for the request, processing sub methods to calculate the correct application
+   *
+   * Processed in order: getBySubAndPath, getBySubDomain, getByPath, defaultApplication
+   *
+   * If an application cannot be found, a cubex fatal be triggered
+   *
+   * @param \Cubex\Http\Request $request
+   */
   public static function load(Request $request)
   {
     $application = static::getBySubAndPath($request->getSubDomain(), $request->getPath());
@@ -45,11 +57,24 @@ abstract class AppLoader
     }
   }
 
+  /**
+   * Provide a default application for the project if no specific application can be found.
+   *
+   * @return Application|null
+   */
   public static function defaultApplication()
   {
-    return '';
+    return null;
   }
 
+  /**
+   * Calculate the application based on the sub domain and path in the request
+   *
+   * @param $subdomain
+   * @param $path
+   *
+   * @return Application|null
+   */
   public static function getBySubAndPath($subdomain, $path)
   {
     switch($subdomain)
@@ -63,6 +88,13 @@ abstract class AppLoader
     return null;
   }
 
+  /**
+   * Calculate the application based on the sub domain from the request
+   *
+   * @param $subdomain
+   *
+   * @return Application|null
+   */
   public static function getBySubDomain($subdomain)
   {
     switch($subdomain)
@@ -71,6 +103,13 @@ abstract class AppLoader
     return null;
   }
 
+  /**
+   * Calculate the application based on the path from the request
+   *
+   * @param $path
+   *
+   * @return Application|null
+   */
   public static function getByPath($path)
   {
     switch($path)
