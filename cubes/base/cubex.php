@@ -81,7 +81,7 @@ final class Cubex
       Cubex::core();
     }
 
-    Events::Trigger(Events::CUBEX_SHUTDOWN);
+    Events::trigger(Events::CUBEX_SHUTDOWN);
 
   }
 

@@ -36,7 +36,7 @@ abstract class AppLoader
 
     if($application !== null && $application instanceof Application)
     {
-      Events::Trigger(Events::CUBEX_LAUNCH);
+      Events::trigger(Events::CUBEX_LAUNCH);
       Application::initialise($application);
     }
     else

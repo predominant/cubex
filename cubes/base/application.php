@@ -70,9 +70,9 @@ abstract class Application extends Translatable
       }
 
       $this->launched();
-      Events::Trigger(Events::CUBEX_RESPONSE_START);
+      Events::trigger(Events::CUBEX_RESPONSE_START);
       Cubex::core()->controller()->getResponse()->respond();
-      Events::Trigger(Events::CUBEX_RESPONSE_SENT);
+      Events::trigger(Events::CUBEX_RESPONSE_SENT);
     }
     else
     {
