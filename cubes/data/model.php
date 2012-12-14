@@ -15,9 +15,22 @@ abstract class Model implements \IteratorAggregate
 
   const CONFIG_IDS = 'id-mechanism';
 
+  /**
+   * Auto Incrementing ID
+   */
   const ID_AUTOINCREMENT = 'auto';
-  const ID_MANUAL        = 'manual';
-  const ID_COMPOSITE     = 'composite';
+  /**
+   * Manual ID Assignment
+   */
+  const ID_MANUAL = 'manual';
+  /**
+   * Combine multiple keys to a single key for store
+   */
+  const ID_COMPOSITE = 'composite';
+  /**
+   * Base ID on multiple keys
+   */
+  const ID_COMPOSITE_SPLIT = 'compositesplit';
 
   private $_attributes;
   private $_invalid_attributes;
@@ -174,7 +187,7 @@ abstract class Model implements \IteratorAggregate
     $config = $this->getConfiguration();
     if(isset($config[self::CONFIG_IDS]))
     {
-      if($config[self::CONFIG_IDS] == self::ID_COMPOSITE)
+      if(\in_array($config[self::CONFIG_IDS], array(self::ID_COMPOSITE, self::ID_COMPOSITE_SPLIT)))
       {
         return true;
       }
@@ -218,6 +231,7 @@ abstract class Model implements \IteratorAggregate
 
   /**
    * @param $name
+   *
    * @return Attribute
    */
   final protected function attribute($name)
