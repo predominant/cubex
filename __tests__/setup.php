@@ -68,6 +68,21 @@ namespace Cubex\Tests
 
   }
 
+  class Log extends \Cubex\Logger\Log
+  {
+    public static $log_arguments = array();
+
+    public function _callStatic()
+    {
+
+    }
+
+    protected static function _log()
+    {
+      self::$log_arguments = func_get_args();
+    }
+  }
+
 }
 
 namespace Cubex\Tests\Views
