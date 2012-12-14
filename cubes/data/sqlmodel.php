@@ -97,6 +97,11 @@ abstract class SQLModel extends Model
 
   public function load($id, $columns = array("*"))
   {
+    if(\is_array($id))
+    {
+      $id = $this->composeID($id);
+    }
+
     $data = $this->loadRawWhere($columns, $this->idPattern(), $this->getIDKey(), $id);
     if(is_array($data))
     {
@@ -143,7 +148,8 @@ abstract class SQLModel extends Model
 
     $pattern = 'UPDATE %T SET ' . implode(', ', $updates) . ' WHERE ' . $this->idPattern();
     $args    = array($pattern, $this->getTableName(), $this->getIDKey(), $this->getID());
-    $query = Sprintf::parseQuery($this->dataConnection("w"), $args);
+    $query   = Sprintf::parseQuery($this->dataConnection("w"), $args);
+
     return $this->dataConnection()->query($query);
   }
 }

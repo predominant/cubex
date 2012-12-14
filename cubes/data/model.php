@@ -17,6 +17,7 @@ abstract class Model implements \IteratorAggregate
 
   const ID_AUTOINCREMENT = 'auto';
   const ID_MANUAL        = 'manual';
+  const ID_COMPOSITE     = 'composite';
 
   private $_attributes;
   private $_invalid_attributes;
@@ -158,7 +159,49 @@ abstract class Model implements \IteratorAggregate
 
   public function getID()
   {
-    return $this->attribute($this->getIDKey())->rawData();
+    if($this->isCompositeID())
+    {
+      return $this->getCompositeID();
+    }
+    else
+    {
+      return $this->attribute($this->getIDKey())->rawData();
+    }
+  }
+
+  public function isCompositeID()
+  {
+    $config = $this->getConfiguration();
+    if(isset($config[self::CONFIG_IDS]))
+    {
+      if($config[self::CONFIG_IDS] == self::ID_COMPOSITE)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  protected function getCompositeID()
+  {
+    $result = array();
+    foreach($this->getCompositeKeys() as $key)
+    {
+      $result[] = $this->attribute($key)->rawData();
+    }
+
+    return implode('|', $result);
+  }
+
+  protected function getCompositeKeys()
+  {
+    return array();
+  }
+
+  public function composeID( /*$key1,$key2*/)
+  {
+    return \implode("|", \func_get_args());
   }
 
   /*
@@ -283,8 +326,21 @@ abstract class Model implements \IteratorAggregate
 
   public function load($id, $columns = array("*"))
   {
+    if(\is_array($id))
+    {
+      $id = $this->composeID($id);
+    }
+
     //Load single model
     return false;
+  }
+
+  public function loadComposite($columns = array("*") /*,$key1,$key2*/)
+  {
+    $args = \func_get_args();
+    \array_shift($args);
+
+    return $this->load(array($args), $columns);
   }
 
   public function loadAll($columns = array("*"))
