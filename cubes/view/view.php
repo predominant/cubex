@@ -14,6 +14,21 @@ use Cubex\Language\Translatable;
 abstract class View extends Translatable implements Renderable
 {
 
+  public function requireCss($css)
+  {
+    //require_resource($css);
+  }
+
+  public function requireJs($js)
+  {
+    //require_resource($js);
+  }
+
+  public function imageUrl($src)
+  {
+    return 'http://www.google.com/' . $src;
+  }
+
   abstract public function render();
 
   public function __tostring()
@@ -32,6 +47,7 @@ abstract class View extends Translatable implements Renderable
    * Translate string to locale
    *
    * @param $message string $string
+   *
    * @return string
    */
   public function t($message)
@@ -45,6 +61,7 @@ abstract class View extends Translatable implements Renderable
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
   public function p($singular, $plural = null, $number = 0)
