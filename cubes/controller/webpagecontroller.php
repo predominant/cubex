@@ -67,6 +67,11 @@ abstract class WebpageController extends Controller
     $response = $this->routeRequest();
     if(!$this->_delegated)
     {
+      if($response instanceof Response)
+      {
+        return $response;
+      }
+
       $this->finaliseWebpage($response);
       $response = $this->_webpage;
     }
