@@ -4,6 +4,11 @@
  * Date: 28/10/12
  * Time: 01:11
  * Description: Script Loader
+ *
+ *
+ * USAGE:
+ * php /path_to_cubex/bin/cli.php "class_name" --env=ENVIRONENT
+ *
  */
 
 $script    = $_REQUEST['__path__'] = '';
@@ -26,7 +31,9 @@ foreach($argv as $argi => $arg)
   }
 }
 
-require_once(dirname(dirname(__FILE__)) . '/cubes/boot.php');
+require_once(dirname(dirname(__FILE__)) . '/cubes/base/cubex.php');
+chdir(dirname(__FILE__));
+\Cubex\Cubex::boot();
 
 if(class_exists($script))
 {
