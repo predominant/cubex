@@ -15,6 +15,7 @@ use Cubex\Data\Handler;
 use Cubex\Http\Request;
 use Cubex\Events\Events;
 use Cubex\View\HTMLElement;
+use Cubex\Http\Response;
 
 /**
  * Cubex Framework Core
@@ -377,27 +378,49 @@ final class Cubex
    */
   final public static function shutdown()
   {
-    $fatal = \defined('CUBEX_FATAL_ERROR');
-    if(CUBEX_WEB && !$fatal)
+    $render_type = '';
+    if(Cubex::core()->controller() instanceof Controller)
     {
-      $shutdown_debug = new HTMLElement(
-        'div', '',
-        array(
-             'id'    => 'cubex-shutdown-debug',
-             'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
-             'padding:3px; background:#FFFFFF; position:fixed;',
-        )
-      );
-    }
-    else
-    {
-      $shutdown_debug = new HTMLElement("");
+      if(Cubex::core()->controller()->getResponse() instanceof Response)
+      {
+        $render_type = Cubex::core()->controller()->getResponse()->getRenderType();
+      }
     }
 
-    echo $shutdown_debug->setContent(
-      "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-      " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
-    );
+    if(\in_array(
+      $render_type,
+      array(
+           '',
+           Response::RENDER_RENDERABLE,
+           Response::RENDER_TEXT,
+           Response::RENDER_WEBPAGE,
+      )
+    )
+    )
+    {
+
+      $fatal = \defined('CUBEX_FATAL_ERROR');
+      if(CUBEX_WEB && !$fatal && $render_type != Response::RENDER_TEXT)
+      {
+        $shutdown_debug = new HTMLElement(
+          'div', '',
+          array(
+               'id'    => 'cubex-shutdown-debug',
+               'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+               'padding:3px; background:#FFFFFF; position:fixed;',
+          )
+        );
+      }
+      else
+      {
+        $shutdown_debug = new HTMLElement("");
+      }
+
+      echo $shutdown_debug->setContent(
+        "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
+      );
+    }
 
     $event = \error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
@@ -435,6 +458,7 @@ final class Cubex
 
   /**
    * Basic exception handler
+   *
    * @param \Exception $e
    */
   final public static function exception_handler($e)

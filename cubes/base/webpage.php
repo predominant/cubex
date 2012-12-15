@@ -16,7 +16,7 @@ class WebPage
 {
 
   private $_title;
-  private $_http_status;
+  private $_http_status = 200;
   private $_meta;
   private $_captured;
   private $_captured_content;
