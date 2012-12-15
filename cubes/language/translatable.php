@@ -9,8 +9,12 @@
 namespace Cubex\Language;
 
 use Cubex\Language\Loader\Gettext;
+use Cubex\Dispatch\Dispatcher;
 
-class Translatable
+/**
+ * Create a translatable class
+ */
+abstract class Translatable extends Dispatcher
 {
 
   protected $_textdomain = 'messages';
@@ -34,6 +38,7 @@ class Translatable
    * Translate string
    *
    * @param $message string $string
+   *
    * @return string
    */
   public function t($message)
@@ -61,6 +66,7 @@ class Translatable
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
   public function p($singular, $plural = null, $number = 0)
@@ -93,6 +99,11 @@ class Translatable
     return $this->getTranslator()->bindLanguage($this->textDomain(), $this->filePath() . '\\locale');
   }
 
+  /**
+   * File path for the current class
+   *
+   * @return string
+   */
   public function filePath()
   {
     $reflector = new \ReflectionClass(\get_class($this));

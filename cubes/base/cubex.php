@@ -16,6 +16,7 @@ use Cubex\Http\Request;
 use Cubex\Events\Events;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
+use Cubex\Dispatch\Respond;
 
 /**
  * Cubex Framework Core
@@ -30,6 +31,10 @@ final class Cubex
   private $_configuration = null;
   private $_connections = null;
   private $_locale = null;
+
+  private $_project_base = '';
+
+  private $_allow_shutdown_details = true;
 
   /**
    * Verify and setup the environment for cubex to run in
@@ -76,12 +81,27 @@ final class Cubex
     if(CUBEX_WEB)
     {
       Cubex::core()->setRequest(new Request($_REQUEST['__path__']));
-      if(Cubex::config('locale')->getBool('enabled'))
-      {
-        Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
-      }
+      list($verify, $dispatch_path) = explode('/', ltrim($_REQUEST['__path__'], '/'), 2);
 
-      \Cubex\Applications\Loader::load(Cubex::request());
+      if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
+      {
+        $dispatch = new Respond(
+          Cubex::config("dispatch")->getArr("entity_map"),
+          Cubex::config("dispatch")->getArr("domain_map")
+        );
+        $response = $dispatch->getResponse($dispatch_path);
+        $response->respond();
+        self::core()->_allow_shutdown_details = false;
+      }
+      else
+      {
+        if(Cubex::config('locale')->getBool('enabled'))
+        {
+          Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
+        }
+
+        \Cubex\Applications\Loader::load(Cubex::request());
+      }
     }
     else
     {
@@ -195,8 +215,9 @@ final class Cubex
       $this->_configuration = \parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
       if(isset($this->_configuration['general']['include_path']))
       {
-        $application_dir = $this->_configuration['general']['include_path'];
-        \set_include_path(\get_include_path() . PATH_SEPARATOR . \realpath($application_dir));
+        $application_dir     = $this->_configuration['general']['include_path'];
+        $this->_project_base = \realpath($application_dir);
+        \set_include_path(\get_include_path() . PATH_SEPARATOR . $this->_project_base);
       }
     }
     catch(\Exception $e)
@@ -372,54 +393,66 @@ final class Cubex
     }
   }
 
+  /**
+   * Get full path to project
+   *
+   * @return string
+   */
+  public function projectBasePath()
+  {
+    return $this->_project_base;
+  }
 
   /**
    * Shutdown handler
    */
   final public static function shutdown()
   {
-    $render_type = '';
-    if(Cubex::core()->controller() instanceof Controller)
+    if(self::core()->_allow_shutdown_details)
     {
-      if(Cubex::core()->controller()->getResponse() instanceof Response)
+      $render_type = '';
+      if(Cubex::core()->controller() instanceof Controller)
       {
-        $render_type = Cubex::core()->controller()->getResponse()->getRenderType();
+        if(Cubex::core()->controller()->getResponse() instanceof Response)
+        {
+          $render_type = Cubex::core()->controller()->getResponse()->getRenderType();
+        }
       }
-    }
 
-    if(\in_array(
-      $render_type,
-      array(
-           '',
-           Response::RENDER_RENDERABLE,
-           Response::RENDER_TEXT,
-           Response::RENDER_WEBPAGE,
+      if(\in_array(
+        $render_type,
+        array(
+             '',
+             Response::RENDER_RENDERABLE,
+             Response::RENDER_TEXT,
+             Response::RENDER_WEBPAGE,
+        )
       )
-    )
-    )
-    {
-
-      $fatal = \defined('CUBEX_FATAL_ERROR');
-      if(CUBEX_WEB && !$fatal && $render_type != Response::RENDER_TEXT)
+      )
       {
-        $shutdown_debug = new HTMLElement(
-          'div', '',
-          array(
-               'id'    => 'cubex-shutdown-debug',
-               'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
-               'padding:3px; background:#FFFFFF; position:fixed;',
-          )
+
+        $fatal = \defined('CUBEX_FATAL_ERROR');
+        if(CUBEX_WEB && !$fatal && $render_type != Response::RENDER_TEXT)
+        {
+          $shutdown_debug = new HTMLElement(
+            'div', '',
+            array(
+                 'id'    => 'cubex-shutdown-debug',
+                 'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+                 'padding:3px; background:#FFFFFF; position:fixed;',
+            )
+          );
+        }
+        else
+        {
+          $shutdown_debug = new HTMLElement("");
+        }
+
+        echo $shutdown_debug->setContent(
+          "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+          " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
         );
       }
-      else
-      {
-        $shutdown_debug = new HTMLElement("");
-      }
-
-      echo $shutdown_debug->setContent(
-        "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
-      );
     }
 
     $event = \error_get_last();

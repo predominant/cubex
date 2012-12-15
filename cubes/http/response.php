@@ -53,6 +53,9 @@ class Response
    */
   public function __construct($source = null)
   {
+    $this->addHeader("X-Powered-By", "Cubex");
+    $this->addHeader("X-Frame-Options", "deny");
+
     if($source instanceof WebPage)
     {
       $this->webpage($source);
@@ -97,6 +100,16 @@ class Response
    */
   public function addHeader($header, $data, $replace = true)
   {
+    if(!$replace)
+    {
+      foreach($this->_headers as $h)
+      {
+        if(strtolower($h[0]) == strtolower($header))
+        {
+          return $this;
+        }
+      }
+    }
     $this->_headers[] = array($header, $data, $replace);
     return $this;
   }
@@ -184,10 +197,13 @@ class Response
    */
   public function respond()
   {
+    $this->addHeader("X-Cubex-Render", $this->_render_type);
+    $this->addHeader("Status", $this->_http_status);
+
     switch($this->_render_type)
     {
       case self::RENDER_WEBPAGE;
-        $this->addHeader("Content-Type", "text/html; charset=UTF-8");
+        $this->addHeader("Content-Type", "text/html; charset=UTF-8", false);
         $this->sendHeaders();
 
         if($this->_source instanceof WebPage)
@@ -211,7 +227,7 @@ class Response
         break;
       case self::RENDER_RENDERABLE:
 
-        $this->addHeader("Content-Type", "text/html; charset=UTF-8");
+        $this->addHeader("Content-Type", "text/html; charset=UTF-8", false);
         $this->sendHeaders();
 
         /* Render header before content to allow browser to start loading css */
@@ -223,7 +239,7 @@ class Response
         break;
       case self::RENDER_JSON:
 
-        $this->addHeader("Content-Type", "application/json");
+        $this->addHeader("Content-Type", "application/json", false);
         $this->sendHeaders();
 
         $response = json_encode($this->_source);
@@ -237,7 +253,7 @@ class Response
         break;
       case self::RENDER_TEXT:
 
-        $this->addHeader("Content-Type", "text/plain");
+        $this->addHeader("Content-Type", "text/plain", false);
         $this->sendHeaders();
         echo $this->_source;
 
@@ -261,11 +277,6 @@ class Response
     if(!\headers_sent())
     {
       \header("HTTP/1.1 " . $this->_http_status . ' ' . $this->getStatusReason());
-
-      $this->addHeader("X-Frame-Options", "deny");
-      $this->addHeader("X-Powered-By", "Cubex");
-      $this->addHeader("X-Cubex-Render", $this->_render_type);
-      $this->addHeader("Status", $this->_http_status);
 
       if($this->_last_modified)
       {
@@ -340,6 +351,16 @@ class Response
   {
     $this->_last_modified = false;
     return $this;
+  }
+
+  /**
+   * Set HTTP status code
+   *
+   * @param $code
+   */
+  public function setStatus($code)
+  {
+    $this->_http_status = $code;
   }
 
   /**
