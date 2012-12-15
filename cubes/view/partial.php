@@ -31,7 +31,7 @@ class Partial implements Renderable
   /**
    * Add element, args used in same order as defined in the constructor
    */
-  public function addElement(/*$element,$element,...*/)
+  public function addElement( /*$element,$element,...*/)
   {
     $this->addItem(\func_get_args());
 
@@ -89,10 +89,10 @@ class Partial implements Renderable
     $this->_elements = array();
   }
 
-  public static function Single($template/*$element,$element,...*/)
+  public static function Single($template /*$element,$element,...*/)
   {
     $partial = new Partial($template);
-    $args = \func_get_args();
+    $args    = \func_get_args();
     \array_shift($args);
     $partial->addItem($args);
     return $partial;
