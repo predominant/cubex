@@ -13,14 +13,35 @@ namespace Cubex\Dispatch;
 abstract class Dispatcher
 {
   private $_fabrication;
+  protected $_entity_dispatch_name;
+
+  public function dispatcherEntityName()
+  {
+    if($this->_entity_dispatch_name !== null)
+    {
+      return $this->_entity_dispatch_name;
+    }
+
+    $reflector = new \ReflectionClass(\get_class($this));
+    $parts     = \explode('\\', $reflector->getName());
+    \array_shift($parts);
+    $parts                       = \array_chunk($parts, 1, false);
+    $this->_entity_dispatch_name = strtolower($parts[1][0]);
+    return $this->_entity_dispatch_name;
+  }
+
+  public function requirePackage($type = 'css')
+  {
+    Prop::requirePackage($this, $this->dispatcherEntityName(), $type);
+  }
 
   public function requireCss($file)
   {
-    if(\substr($file,-4) != '.css')
+    if(\substr($file, -4) != '.css')
     {
       $file = $file . '.css';
     }
-    if(\substr($file,0,1) == '/')
+    if(\substr($file, 0, 1) == '/')
     {
       $file = '/css' . $file;
     }
@@ -34,11 +55,11 @@ abstract class Dispatcher
 
   public function requireJs($file)
   {
-    if(\substr($file,-3) != '.js')
+    if(\substr($file, -3) != '.js')
     {
       $file = $file . '.js';
     }
-    if(\substr($file,0,1) == '/')
+    if(\substr($file, 0, 1) == '/')
     {
       $file = '/js' . $file;
     }
@@ -52,7 +73,7 @@ abstract class Dispatcher
 
   public function imgUri($file)
   {
-    if(\substr($file,0,1) == '/')
+    if(\substr($file, 0, 1) == '/')
     {
       $file = '/img' . $file;
     }
@@ -111,10 +132,6 @@ abstract class Dispatcher
    */
   public function packageUri($type = 'css')
   {
-    $reflector = new \ReflectionClass(\get_class($this));
-    $parts     = \explode('\\', $reflector->getName());
-    \array_shift($parts);
-    $parts = \array_chunk($parts, 1, false);
-    return $this->getDispatchFabricator()->package(strtolower($parts[1][0]), $type);
+    return $this->getDispatchFabricator()->package($this->dispatcherEntityName(), $type);
   }
 }

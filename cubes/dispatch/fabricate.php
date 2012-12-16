@@ -31,9 +31,20 @@ class Fabricate
    */
   public function __construct($entity_base = null)
   {
-    $entity_base      = rtrim($entity_base, '/') . '/';
-    $this->_real_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_base . 'src';
-    $this->_path      = $entity_base . 'src';
+    $entity_base        = rtrim($entity_base, '/') . '/';
+    $this->_real_path   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_base . 'src';
+    $this->_path        = $entity_base . 'src';
+    $this->_entity_hash = $this->generateEntityHash($this->_path);
+  }
+
+  /**
+   * Get the entity hash for current dispatcher
+   *
+   * @return string
+   */
+  public function getEntityHash()
+  {
+    return $this->_entity_hash;
   }
 
   /**
