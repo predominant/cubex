@@ -31,6 +31,8 @@ foreach($argv as $argi => $arg)
   }
 }
 
+$_SERVER['CUBEX_CLI'] = true;
+
 require_once(dirname(dirname(__FILE__)) . '/cubes/base/cubex.php');
 chdir(dirname(__FILE__));
 \Cubex\Cubex::boot();

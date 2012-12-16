@@ -65,6 +65,7 @@ final class Cubex
 
     define("CUBEX_ENV", $env);
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
+    define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
     $dirname = \dirname(\dirname(__FILE__));
     define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirname : \dirname($dirname));
