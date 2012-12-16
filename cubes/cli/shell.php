@@ -9,46 +9,41 @@ namespace Cubex\Cli;
 
 class Shell
 {
+  const COLOUR_FOREGROUND_BLACK        = '0;30';
+  const COLOUR_FOREGROUND_DARK_GREY    = '1;30';
+  const COLOUR_FOREGROUND_BLUE         = '0;34';
+  const COLOUR_FOREGROUND_LIGHT_BLUE   = '1;34';
+  const COLOUR_FOREGROUND_GREEN        = '0;32';
+  const COLOUR_FOREGROUND_LIGHT_GREEN  = '1;32';
+  const COLOUR_FOREGROUND_CYAN         = '0;36';
+  const COLOUR_FOREGROUND_LIGHT_       = '1;36';
+  const COLOUR_FOREGROUND_RED          = '0;31';
+  const COLOUR_FOREGROUND_LIGHT_RED    = '1;31';
+  const COLOUR_FOREGROUND_PURPLE       = '0;35';
+  const COLOUR_FOREGROUND_LIGHT_PURPLE = '1;35';
+  const COLOUR_FOREGROUND_BROWN        = '0;33';
+  const COLOUR_FOREGROUND_YELLOW       = '1;33';
+  const COLOUR_FOREGROUND_LIGHT_GREY   = '0;37';
+  const COLOUR_FOREGROUND_WHITE        = '1;37';
+
+  const COLOUR_BACKGROUND_BLACK      = '40';
+  const COLOUR_BACKGROUND_RED        = '41';
+  const COLOUR_BACKGROUNDG_GREEN     = '42';
+  const COLOUR_BACKGROUND_YELLOW     = '43';
+  const COLOUR_BACKGROUND_BLUE       = '44';
+  const COLOUR_BACKGROUND_MAGENTA    = '45';
+  const COLOUR_BACKGROUND_CYAN       = '46';
+  const COLOUR_BACKGROUND_LIGHT_GREY = '47';
 
   private static $_foreground_colour;
   private static $_background_colour;
 
-  private static $_foreground_colours = array(
-    'black'        => '0;30',
-    'dark_gray'    => '1;30',
-    'blue'         => '0;34',
-    'light_blue'   => '1;34',
-    'green'        => '0;32',
-    'light_green'  => '1;32',
-    'cyan'         => '0;36',
-    'light_cyan'   => '1;36',
-    'red'          => '0;31',
-    'light_red'    => '1;31',
-    'purple'       => '0;35',
-    'light_purple' => '1;35',
-    'brown'        => '0;33',
-    'yellow'       => '1;33',
-    'light_gray'   => '0;37',
-    'white'        => '1;37'
-  );
-
-  private static $_background_colours = array(
-    'black'      => '40',
-    'red'        => '41',
-    'green'      => '42',
-    'yellow'     => '43',
-    'blue'       => '44',
-    'magenta'    => '45',
-    'cyan'       => '46',
-    'light_gray' => '47'
-  );
-
-  public static function setForeground($colour='white')
+  public static function setForeground($colour = self::COLOUR_FOREGROUND_WHITE)
   {
     self::$_foreground_colour = $colour;
   }
 
-  public static function setBackground($colour='black')
+  public static function setBackground($colour = self::COLOUR_BACKGROUND_BLACK)
   {
     self::$_background_colour = $colour;
   }
@@ -69,18 +64,18 @@ class Shell
 
     if(self::$_foreground_colour !== null)
     {
-      $colour_string .= "\033[" . self::$_foreground_colours[self::$_foreground_colour] . "m";
+      $colour_string .= "\033[" . self::$_foreground_colour . "m";
     }
 
     if(self::$_background_colour !== null)
     {
-      $colour_string .= "\033[" . self::$_background_colours[self::$_background_colour] . "m";
+      $colour_string .= "\033[" . self::$_background_colour . "m";
     }
 
     return $colour_string . $string . "\033[0m";
   }
 
-  public static function colourText($string,$foreground=null,$background=null)
+  public static function colourText($string, $foreground = null, $background = null)
   {
     $existing_foreground = self::$_foreground_colour;
     $existing_background = self::$_background_colour;
