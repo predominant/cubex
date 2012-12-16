@@ -18,6 +18,7 @@ final class Events
   const CUBEX_RESPONSE_SENT  = 'cubex.response.sent';
 
   const CUBEX_DEBUG = 'cubex.debug';
+  const CUBEX_LOG   = 'cubex.log';
 
   private static $_listeners = array();
 

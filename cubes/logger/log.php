@@ -7,6 +7,8 @@
  */
 namespace Cubex\Logger;
 
+use Cubex\Events\Events;
+
 class Log
 {
 
@@ -61,5 +63,16 @@ class Log
     $backtrace   = debug_backtrace();
     $source_line = $backtrace[1]['line'];
     $source_file = $backtrace[1]['file'];
+
+    Events::trigger(
+      Events::CUBEX_LOG, array(
+                              'level'   => $level,
+                              'message' => $message,
+                              'type'    => $type,
+                              'code'    => $code,
+                              'file'    => $source_file,
+                              'line'    => $source_line,
+                         )
+    );
   }
 }
