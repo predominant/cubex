@@ -9,6 +9,9 @@ namespace Cubex\Logger;
 
 use Cubex\Events\Events;
 
+/**
+ * Base logger class (Triggers Cubex Log Events)
+ */
 class Log
 {
 
@@ -28,36 +31,86 @@ class Log
   const TYPE_QUERY       = 'query';
   const TYPE_API         = 'api';
 
+  /**
+   * Informative Log
+   *
+   * @param        $message
+   * @param        $code
+   * @param string $type
+   */
   public static function info($message, $code, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_INFO, $message, $type, $code);
   }
 
+  /**
+   * Log a successful thingy
+   * @param        $message
+   * @param        $code
+   * @param string $type
+   */
   public static function success($message, $code, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_SUCCESS, $message, $type, $code);
   }
 
+  /**
+   * Oh dear, someone should be warned about this
+   *
+   * @param        $message
+   * @param        $code
+   * @param string $type
+   */
   public static function warning($message, $code, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_WARNING, $message, $type, $code);
   }
 
+  /**
+   * That really shouldn't have happened, but, I guess it did
+   *
+   * @param        $message
+   * @param        $code
+   * @param string $type
+   */
   public static function critical($message, $code, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_CRITICAL, $message, $type, $code);
   }
 
+  /**
+   * Well, gone and dont it now, havent you!
+   * @param        $message
+   * @param        $code
+   * @param string $type
+   */
   public static function fatal($message, $code, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_FATAL, $message, $type, $code);
   }
 
+  /**
+   * You need to brush up on your coding skills
+   *
+   * @param $message
+   * @param $type
+   * @param $code
+   */
   public static function parseError($message, $type, $code)
   {
     static::_log(self::LEVEL_PARSE, $message, $type, $code);
   }
 
+  /**
+   * Let the world know about the various log messages
+   *
+   * Base handler for methods to filter through to
+   *
+   * @param $level
+   * @param $message
+   * @param $type
+   * @param $code
+   */
   protected static function _log($level, $message, $type, $code)
   {
     $backtrace   = debug_backtrace();

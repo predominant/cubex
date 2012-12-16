@@ -15,6 +15,9 @@ use Cubex\Cubex;
 
 class Mapper
 {
+  /**
+   * When called from the CLI, the CLI process will be kicked off
+   */
   public function __construct()
   {
     /**
@@ -29,7 +32,7 @@ class Mapper
   private function cli()
   {
     echo str_repeat("\n", 100);
-    //Shell::clear();
+    Shell::clear();
 
     $base_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
 
@@ -114,6 +117,13 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
     echo "\n";
   }
 
+  /**
+   * Output OK / FAILED in CLI Colour
+   *
+   * @param bool $success
+   *
+   * @return string
+   */
   public function cliResult($success = true)
   {
     if($success)

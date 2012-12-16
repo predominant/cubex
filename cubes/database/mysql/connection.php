@@ -185,7 +185,7 @@ class Connection implements \Cubex\Database\Connection
   public function getColumns($query)
   {
     $this->prepareConnection('r');
-    $result = $this->getKeyedRows($query, 0);
+    $result = $this->getKeyedRows($query);
 
     return array_keys($result);
   }

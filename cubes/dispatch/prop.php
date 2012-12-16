@@ -7,10 +7,22 @@
  */
 namespace Cubex\Dispatch;
 
+/**
+ * Combine all dispatch resources
+ */
 final class Prop
 {
   private static $requires = array("css" => array(), "js" => array(), "packages" => array());
 
+  /**
+   * Mark a CSS or JS script as being required, which can be picked up on render
+   *
+   * @param Dispatcher $source
+   * @param            $resource
+   * @param string     $type
+   *
+   * @throws \Exception
+   */
   public static function requireResource(Dispatcher $source, $resource, $type = 'css')
   {
     if(\in_array($type, array('css', 'js')))
@@ -48,6 +60,15 @@ final class Prop
     }
   }
 
+  /**
+   * Mark a complete package as being required for a response, this will include all $type files for an entity group
+   *
+   * @param Dispatcher $source
+   * @param            $name
+   * @param string     $type
+   *
+   * @throws \Exception
+   */
   public static function requirePackage(Dispatcher $source, $name, $type = 'css')
   {
     if(\in_array($type, array('css', 'js')))
@@ -66,6 +87,13 @@ final class Prop
     }
   }
 
+  /**
+   * Return an array of URIs that need to be rendered to the user
+   *
+   * @param string $type
+   *
+   * @return array
+   */
   public static function getResourceUris($type = 'css')
   {
     $out = array();

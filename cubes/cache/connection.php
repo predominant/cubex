@@ -8,15 +8,37 @@
 
 namespace Cubex\Cache;
 
-interface Connection
+/**
+ * Base caching connection
+ */
+interface Connection extends \Cubex\Data\Connection
 {
-
-  public function __construct(array $configuration);
-
+  /**
+   * Get data by key
+   *
+   * @param $key
+   *
+   * @return mixed
+   */
   public function get($key);
 
+  /**
+   * Get data by multiple keys
+   *
+   * @param array $keys
+   *
+   * @return mixed
+   */
   public function multi(array $keys);
 
-  public function set($key, $data, $expire=0);
-
+  /**
+   * Cache data out to a key, with expiry time in seconds
+   *
+   * @param     $key
+   * @param     $data
+   * @param int $expire
+   *
+   * @return mixed
+   */
+  public function set($key, $data, $expire = 0);
 }

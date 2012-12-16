@@ -11,6 +11,9 @@ namespace Cubex\Http;
 use Cubex\Data\Handler;
 use Cubex\Cubex;
 
+/**
+ * Standard Request Handler
+ */
 class Request extends Handler
 {
 
@@ -23,16 +26,25 @@ class Request extends Handler
   private $_subdomain;
   private $_domain;
   private $_tld;
-  private $_port;
+  private $_port = 80;
   private $_processed_host;
 
 
+  /**
+   * @param null $path Defaults to $_SERVER['HTTP_HOST']
+   * @param null $host Defaults to $_SERVER['REQUEST_URI']
+   */
   public function __construct($path = null, $host = null)
   {
     $this->_host = $host === null ? $_SERVER['HTTP_HOST'] : $host; //SERVER_NAME
     $this->_path = $path === null ? $_SERVER['REQUEST_URI'] : $path;
   }
 
+  /**
+   * @param string $path
+   *
+   * @return Request
+   */
   final public function setPath($path)
   {
     $this->_path = $path;
@@ -40,11 +52,19 @@ class Request extends Handler
     return $this;
   }
 
+  /**
+   * @return string
+   */
   final public function getPath()
   {
     return $this->_path;
   }
 
+  /**
+   * @param string $host
+   *
+   * @return Request
+   */
   final public function setHost($host)
   {
     $this->_host = $host;
@@ -52,11 +72,21 @@ class Request extends Handler
     return $this;
   }
 
+  /**
+   * @return string
+   */
   final public function getHost()
   {
     return $this->_host;
   }
 
+  /**
+   * Convert the host to subdomain / domain / tld
+   *
+   * @param string $host
+   *
+   * @return Request
+   */
   private function processHost($host)
   {
     if($this->_processed_host) return $this;
@@ -108,11 +138,19 @@ class Request extends Handler
     return $this;
   }
 
+  /**
+   * http:// or https://
+   *
+   * @return string
+   */
   final public function getProtocol()
   {
     return $this->isHTTP() ? 'http://' : 'https://';
   }
 
+  /**
+   * @return string|null
+   */
   final public function getSubDomain()
   {
     if($this->_subdomain === null) $this->processHost($this->_host);
@@ -120,6 +158,9 @@ class Request extends Handler
     return $this->_subdomain;
   }
 
+  /**
+   * @return string
+   */
   final public function getDomain()
   {
     if($this->_domain === null) $this->processHost($this->_host);
@@ -127,6 +168,9 @@ class Request extends Handler
     return $this->_domain;
   }
 
+  /**
+   * @return string
+   */
   final public function getTld()
   {
     if($this->_tld === null) $this->processHost($this->_host);
@@ -134,6 +178,9 @@ class Request extends Handler
     return $this->_tld;
   }
 
+  /**
+   * @return int
+   */
   final public function getPort()
   {
     if($this->_port === null) $this->processHost($this->_host);
@@ -141,11 +188,19 @@ class Request extends Handler
     return $this->_port;
   }
 
+  /**
+   * @return array
+   */
   final public function getRequestData()
   {
     return $this->_data;
   }
 
+  /**
+   * @param array $request_data
+   *
+   * @return Request
+   */
   final public function setRequestData(array $request_data)
   {
     $this->_data = $request_data;
@@ -153,18 +208,37 @@ class Request extends Handler
     return $this;
   }
 
+  /**
+   * Client IP Address
+   *
+   * @return mixed
+   */
   public function getRemoteAddr()
   {
     return $_SERVER['REMOTE_ADDR'];
   }
 
+  /**
+   * @return bool
+   */
   public function isHTTPS()
   {
-    if(empty($_SERVER['HTTPS'])) return false;
-    else if(!\strcasecmp($_SERVER["HTTPS"], "off")) return false;
+    if(empty($_SERVER['HTTPS']))
+    {
+      return false;
+    }
+    else if(!\strcasecmp($_SERVER["HTTPS"], "off"))
+    {
+      return false;
+    }
     else return true;
   }
 
+  /**
+   * REQUEST Variables (Excluding __ prefixed used by Cubex)
+   *
+   * @return array
+   */
   public function variables()
   {
     $variables = array();
@@ -176,28 +250,43 @@ class Request extends Handler
     return $variables;
   }
 
+  /**
+   * @return bool
+   */
   final public function isHTTP()
   {
     return !$this->isHTTPS();
   }
 
+  /**
+   * @return bool
+   */
   final public function isHTTPPost()
   {
     return $_SERVER['REQUEST_METHOD'] == 'POST';
   }
 
-  //TODO: When pushing ajax request, include _cubex_ajax_ POST VAR
+  /**
+   * @return bool
+   */
   public function isAjax()
   {
+    //TODO: When pushing ajax request, include _cubex_ajax_ POST VAR
     return $this->getExists(self::TYPE_AJAX);
   }
 
-  //TODO: When posting to a form, include _cubex_form_ POST VAR
+  /**
+   * @return bool
+   */
   public function isForm()
   {
+    //TODO: When posting to a form, include _cubex_form_ POST VAR
     return $this->getExists(self::TYPE_FORM);
   }
 
+  /**
+   * @return bool
+   */
   public function jsSupport()
   {
     return !isset($_REQUEST[self::NO_JAVASCRIPT]);

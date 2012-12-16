@@ -8,6 +8,9 @@
 
 namespace Cubex\Events;
 
+/**
+ * Standard hooks for events
+ */
 final class Events
 {
 
@@ -22,6 +25,12 @@ final class Events
 
   private static $_listeners = array();
 
+  /**
+   * Listen into an event
+   *
+   * @param          $event_name
+   * @param callable $callback
+   */
   public static function listen($event_name, callable $callback)
   {
     if(!isset(self::$_listeners[$event_name]))
@@ -31,6 +40,12 @@ final class Events
     self::$_listeners[$event_name][] = $callback;
   }
 
+  /**
+   * Trigger an event
+   *
+   * @param       $event_name
+   * @param array $args
+   */
   public static function trigger($event_name, $args = array())
   {
     $listeners = isset(self::$_listeners[$event_name]) ? self::$_listeners[$event_name] : array();

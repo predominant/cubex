@@ -8,6 +8,9 @@
 
 namespace Cubex\View;
 
+/**
+ * An object that can be rendered with __tostring() or with render()
+ */
 interface Renderable
 {
 

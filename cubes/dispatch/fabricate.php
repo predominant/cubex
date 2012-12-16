@@ -203,6 +203,11 @@ class Fabricate
     return $this;
   }
 
+  /**
+   * Load the base project dispatch resource map
+   *
+   * @return Fabricate
+   */
   protected function loadBaseMap()
   {
     try

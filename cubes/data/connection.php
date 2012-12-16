@@ -7,19 +7,45 @@
  */
 namespace Cubex\Data;
 
+/**
+ * Base connection interface
+ */
 interface Connection
 {
+  /**
+   * Pass through connection configuration
+   *
+   * @param Handler $configuration
+   */
   public function __construct(Handler $configuration);
 
-  /*
-   * @param $mode string Mode, either 'r' (reading) or 'w' (reading and writing)
+  /**
+   * @param string $mode Either 'r' (reading) or 'w' (reading and writing)
    */
   public function connect($mode = 'w');
 
+  /**
+   * Disconnect from the connection
+   *
+   * @return mixed
+   */
   public function disconnect();
 
+  /**
+   * Escape column name
+   *
+   * @param $column
+   *
+   * @return mixed
+   */
   public function escapeColumnName($column);
 
+  /**
+   * Escape string value for insert
+   *
+   * @param $string
+   *
+   * @return mixed
+   */
   public function escapeString($string);
-
 }

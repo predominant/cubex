@@ -7,6 +7,9 @@
  */
 namespace Cubex\Cli;
 
+/**
+ * Basic Shell improvements
+ */
 class Shell
 {
   const COLOUR_FOREGROUND_BLACK        = '0;30';
@@ -38,11 +41,21 @@ class Shell
   private static $_foreground_colour;
   private static $_background_colour;
 
+  /**
+   * Set forground colour for all shell output
+   *
+   * @param string $colour
+   */
   public static function setForeground($colour = self::COLOUR_FOREGROUND_WHITE)
   {
     self::$_foreground_colour = $colour;
   }
 
+  /**
+   * Set background colour for all shell output
+   *
+   * @param string $colour
+   */
   public static function setBackground($colour = self::COLOUR_BACKGROUND_BLACK)
   {
     self::$_background_colour = $colour;
@@ -58,6 +71,13 @@ class Shell
     self::$_background_colour = null;
   }
 
+  /**
+   * output coloured text based on the defined colours
+   *
+   * @param $string
+   *
+   * @return string
+   */
   public static function colouredText($string)
   {
     $colour_string = '';
@@ -75,6 +95,15 @@ class Shell
     return $colour_string . $string . "\033[0m";
   }
 
+  /**
+   * Output specific coloured text
+   *
+   * @param      $string
+   * @param null $foreground
+   * @param null $background
+   *
+   * @return string
+   */
   public static function colourText($string, $foreground = null, $background = null)
   {
     $existing_foreground = self::$_foreground_colour;

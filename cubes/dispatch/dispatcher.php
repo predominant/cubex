@@ -15,6 +15,11 @@ abstract class Dispatcher
   private $_fabrication;
   protected $_entity_dispatch_name;
 
+  /**
+   * Create the dispatch name e.g. Application Name
+   *
+   * @return string
+   */
   public function dispatcherEntityName()
   {
     if($this->_entity_dispatch_name !== null)
@@ -30,11 +35,23 @@ abstract class Dispatcher
     return $this->_entity_dispatch_name;
   }
 
+  /**
+   * Require all $type files with the request
+   *
+   * @param string $type
+   */
   public function requirePackage($type = 'css')
   {
     Prop::requirePackage($this, $this->dispatcherEntityName(), $type);
   }
 
+  /**
+   * Specify a CSS file to include (/css | .css are not required)
+   *
+   * @param $file
+   *
+   * @return Dispatcher
+   */
   public function requireCss($file)
   {
     if(\substr($file, -4) != '.css')
@@ -53,6 +70,13 @@ abstract class Dispatcher
     return $this;
   }
 
+  /**
+   * Specify a JS file to include (/js | .js are not required)
+   *
+   * @param $file
+   *
+   * @return Dispatcher
+   */
   public function requireJs($file)
   {
     if(\substr($file, -3) != '.js')
@@ -71,6 +95,13 @@ abstract class Dispatcher
     return $this;
   }
 
+  /**
+   * Build a full image URI (no need to prefix with img)
+   *
+   * @param $file
+   *
+   * @return string
+   */
   public function imgUri($file)
   {
     if(\substr($file, 0, 1) == '/')
