@@ -16,7 +16,7 @@ class Shell
   const COLOUR_FOREGROUND_GREEN        = '0;32';
   const COLOUR_FOREGROUND_LIGHT_GREEN  = '1;32';
   const COLOUR_FOREGROUND_CYAN         = '0;36';
-  const COLOUR_FOREGROUND_LIGHT_       = '1;36';
+  const COLOUR_FOREGROUND_LIGHT_CYAN   = '1;36';
   const COLOUR_FOREGROUND_RED          = '0;31';
   const COLOUR_FOREGROUND_LIGHT_RED    = '1;31';
   const COLOUR_FOREGROUND_PURPLE       = '0;35';
@@ -28,7 +28,7 @@ class Shell
 
   const COLOUR_BACKGROUND_BLACK      = '40';
   const COLOUR_BACKGROUND_RED        = '41';
-  const COLOUR_BACKGROUNDG_GREEN     = '42';
+  const COLOUR_BACKGROUND_GREEN     = '42';
   const COLOUR_BACKGROUND_YELLOW     = '43';
   const COLOUR_BACKGROUND_BLUE       = '44';
   const COLOUR_BACKGROUND_MAGENTA    = '45';
