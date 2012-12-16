@@ -75,7 +75,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
 
           echo "           Mapping Directory:   ";
           flush();
-          $mapped = $this->mapDirectory($base_path, $entity);
+          $mapped = $this->mapDirectory($base_path . $entity);
           echo $this->cliResult($mapped !== false);
           if($mapped)
           {
@@ -140,7 +140,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       {
         while(false !== ($filename = \readdir($handle)))
         {
-          if(\in_array($filename, array('.', '..'))) continue;
+          if(\substr($filename, 0, 1) == '.') continue;
 
           if($filename != 'src')
           {
@@ -182,7 +182,8 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       {
         while(false !== ($filename = \readdir($handle)))
         {
-          if(\in_array($filename, array('.', '..'))) continue;
+          if(\substr($filename, 0, 1) == '.') continue;
+          if($filename == 'dispatch.ini') continue;
 
           if(\is_dir($directory . $sub_directory . DIRECTORY_SEPARATOR . $filename))
           {
