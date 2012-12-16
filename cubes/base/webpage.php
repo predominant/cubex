@@ -11,6 +11,8 @@ namespace Cubex\Base;
 use \Cubex\Cubex;
 use Cubex\View\Renderable;
 use Cubex\View\Template;
+use Cubex\Dispatch\Prop;
+use Cubex\View\Partial;
 
 class WebPage
 {
@@ -65,7 +67,10 @@ class WebPage
 
   public function getMeta($key = null)
   {
-    if($key === null) return $this->_meta;
+    if($key === null)
+    {
+      return $this->_meta;
+    }
     else return $this->_meta[$key];
   }
 
@@ -83,8 +88,13 @@ class WebPage
 
   public function getHead()
   {
-    //TODO: Get Stylesheets
-    return $this->getMetaHTML();
+    $css_headers = new Partial('<link type="text/css" rel="stylesheet" href="%s" />');
+    $css_uris    = Prop::getResourceUris('css');
+    if($css_uris)
+    {
+      $css_headers->addElements($css_uris);
+    }
+    return $css_headers . $this->getMetaHTML();
   }
 
   public function getBody()
@@ -92,18 +102,25 @@ class WebPage
     $view = $this->_view;
     if($view instanceof Renderable)
     {
-      return $view->render();
+      $result = $view->render();
     }
     else
     {
-      return $this->capturedContent();
+      $result = $this->capturedContent();
     }
+
+    return $this->minifyHtml($result);
   }
 
   public function getClosing()
   {
-    //TODO: Get Scripts
-    return '';
+    $js_items = new Partial('<script type="text/javascript" src="%s"></script>');
+    $js_uris  = Prop::getResourceUris('js');
+    if($js_uris)
+    {
+      $js_items->addElements($js_uris);
+    }
+    return $js_items;
   }
 
   public function renderHead()
@@ -120,14 +137,13 @@ class WebPage
     $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
     if(Cubex::request()->jsSupport() === false) $noscript = '';
 
-    $response = <<<EOHTML
-<!DOCTYPE html>
-<html class="no_js"><head><meta charset="$charset" />
-<script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};window.Env = Env = window.Env || {};b(Env);};
-!function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);
-envPop({"method":"$method"});</script><noscript>{$noscript}</noscript>
-<title>{$title}</title>{$head}</head><body>
-EOHTML;
+    $response = "<!DOCTYPE html>\n"
+    . '<html class="no_js"><head><meta charset="' . $charset . '" />'
+    . '<script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};'
+    . 'window.Env = Env = window.Env || {};b(Env);};'
+    . "!function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);"
+    . 'envPop({"method":"' . $method . '"});</script><noscript>' . $noscript . '</noscript>'
+    . '<title>' . $title . '</title>' . $head . '</head><body>';
 
     return $response;
   }
@@ -182,5 +198,20 @@ EOHTML;
   final public function preRender()
   {
     if($this->_captured === false) $this->endCapture();
+  }
+
+  public function minifyHtml($html)
+  {
+    $search  = array(
+      '/\>[^\S ]+/s', //strip whitespaces after tags, except space
+      '/[^\S ]+\</s', //strip whitespaces before tags, except space
+      '/(\s)+/s' // shorten multiple whitespace sequences
+    );
+    $replace = array(
+      '>',
+      '<',
+      '\\1'
+    );
+    return preg_replace($search, $replace, $html);
   }
 }

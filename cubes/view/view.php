@@ -10,25 +10,10 @@ namespace Cubex\View;
 
 use Cubex\Base\Application;
 use Cubex\Language\Translatable;
+use Cubex\Dispatch\Dispatcher;
 
-abstract class View extends Translatable implements Renderable
+abstract class View extends Dispatcher implements Renderable
 {
-
-  public function requireCss($css)
-  {
-    //require_resource($css);
-  }
-
-  public function requireJs($js)
-  {
-    //require_resource($js);
-  }
-
-  public function imageUrl($src)
-  {
-    return 'http://www.google.com/' . $src;
-  }
-
   abstract public function render();
 
   public function __tostring()

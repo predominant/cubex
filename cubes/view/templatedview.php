@@ -102,6 +102,7 @@ class TemplatedView extends View
     $this->_templates_path = rtrim($this->_templates_path, '/\\') . DIRECTORY_SEPARATOR;
 
     $this->_template = new Template($this->_template_file, $this->_templates_path . 'templates');
+    $this->_template->setDispatcher($this);
     foreach($this as $k => $v)
     {
       $this->_template->setData($k, $v);

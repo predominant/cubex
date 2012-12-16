@@ -17,6 +17,8 @@ class Fabricate
   protected $_real_path;
   protected $_path;
 
+  protected static $_base_map = null;
+
   protected $_entity_map = null;
 
   protected $_entity_hash = null;
@@ -65,7 +67,7 @@ class Fabricate
    *
    * @return string
    */
-  public function generateDomainHash($domain)
+  public static function generateDomainHash($domain)
   {
     return \substr(\md5($domain), 0, 6);
   }
@@ -75,7 +77,7 @@ class Fabricate
    *
    * @return string
    */
-  public function generateEntityHash($entity_path)
+  public static function generateEntityHash($entity_path)
   {
     return \substr(\md5($entity_path), 0, 6);
   }
@@ -142,18 +144,33 @@ class Fabricate
    */
   public function resource($path)
   {
-    if($this->_entity_map === null)
-    {
-      $this->loadEntityMap();
-    }
 
     $base          = substr($path, 0, 1) == '/';
     $path          = ltrim($path, '/');
     $resource_hash = 'pamon'; //No Map
 
-    if(isset($this->_entity_map[$path]))
+    if($base)
     {
-      $resource_hash = $this->generateResourceHash($this->_entity_map[$path]);
+      if(self::$_base_map === null)
+      {
+        $this->loadBaseMap();
+      }
+      if(isset(self::$_base_map[$path]))
+      {
+        $resource_hash = $this->generateResourceHash(self::$_base_map[$path]);
+      }
+    }
+    else
+    {
+      if($this->_entity_map === null)
+      {
+        $this->loadEntityMap();
+      }
+
+      if(isset($this->_entity_map[$path]))
+      {
+        $resource_hash = $this->generateResourceHash($this->_entity_map[$path]);
+      }
     }
 
     return implode('/', array($this->preHash($base), $resource_hash, $path));
@@ -171,6 +188,21 @@ class Fabricate
     catch(\Exception $e)
     {
       $this->_entity_map = array();
+    }
+    return $this;
+  }
+
+  protected function loadBaseMap()
+  {
+    try
+    {
+      self::$_base_map = \parse_ini_file(
+        Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'src/dispatch.ini', false
+      );
+    }
+    catch(\Exception $e)
+    {
+      self::$_base_map = array();
     }
     return $this;
   }

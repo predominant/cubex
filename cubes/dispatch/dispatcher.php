@@ -14,6 +14,56 @@ abstract class Dispatcher
 {
   private $_fabrication;
 
+  public function requireCss($file)
+  {
+    if(\substr($file,-4) != '.css')
+    {
+      $file = $file . '.css';
+    }
+    if(\substr($file,0,1) == '/')
+    {
+      $file = '/css' . $file;
+    }
+    else
+    {
+      $file = 'css/' . $file;
+    }
+    Prop::requireResource($this, $file, 'css');
+    return $this;
+  }
+
+  public function requireJs($file)
+  {
+    if(\substr($file,-3) != '.js')
+    {
+      $file = $file . '.js';
+    }
+    if(\substr($file,0,1) == '/')
+    {
+      $file = '/js' . $file;
+    }
+    else
+    {
+      $file = 'js/' . $file;
+    }
+    Prop::requireResource($this, $file, 'js');
+    return $this;
+  }
+
+  public function imgUri($file)
+  {
+    if(\substr($file,0,1) == '/')
+    {
+      $file = '/img' . $file;
+    }
+    else
+    {
+      $file = 'img/' . $file;
+    }
+
+    return $this->getDispatchFabricator()->resource($file);
+  }
+
   /**
    * @return Fabricate
    */

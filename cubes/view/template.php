@@ -11,6 +11,7 @@ namespace Cubex\View;
 use Cubex\Data\Handler;
 use Cubex\Base\Application;
 use Cubex\Language\Translatable;
+use Cubex\Dispatch\Dispatcher;
 
 class Template extends Handler implements Renderable
 {
@@ -26,6 +27,10 @@ class Template extends Handler implements Renderable
   public static $cache = array();
   public static $ephemeral = array();
   public static $last_known_base = '';
+  /**
+   * @var \Cubex\Dispatch\Dispatcher
+   */
+  private $_dispatch;
 
   public function __construct($file = null, $base = null)
   {
@@ -45,6 +50,13 @@ class Template extends Handler implements Renderable
     {
       $this->setTemplateFile($file);
     }
+
+    $this->setDispatcher(Application::$app);
+  }
+
+  public function setDispatcher(Dispatcher $dispatch)
+  {
+    $this->_dispatch = $dispatch;
   }
 
   public function addEphemeral($name, $value)
@@ -103,7 +115,6 @@ class Template extends Handler implements Renderable
 
       return HTMLElement::create('div', $rendered, array('id' => $name))->render();
     }
-
   }
 
   final public function render($rerender = false)
@@ -179,10 +190,28 @@ class Template extends Handler implements Renderable
     }
   }
 
+  public function requireCss($file)
+  {
+    $this->_dispatch->requireCss($file);
+    return $this;
+  }
+
+  public function requireJs($file)
+  {
+    $this->_dispatch->requireJs($file);
+    return $this;
+  }
+
+  public function imgUri($file)
+  {
+    return $this->_dispatch->imgUri($file);
+  }
+
   /**
    * Translate string to locale
    *
    * @param $message string $string
+   *
    * @return string
    */
   public function t($message)
@@ -196,6 +225,7 @@ class Template extends Handler implements Renderable
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
   public function p($singular, $plural = null, $number = 0)
