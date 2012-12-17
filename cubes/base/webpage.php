@@ -200,8 +200,21 @@ class WebPage
     if($this->_captured === false) $this->endCapture();
   }
 
+  /**
+   * Minify HTML code
+   * 
+   * @param $html
+   *
+   * @return mixed
+   */
   public function minifyHtml($html)
   {
+    if(!Cubex::config("response")->getBool("minify_html", true))
+    {
+      return $html;
+    }
+    $html = preg_replace('/<!--[^\[](.|\s)*?-->/', '', $html); //Strip HTML Comments
+
     $search  = array(
       '/\>[^\S ]+/s', //strip whitespaces after tags, except space
       '/[^\S ]+\</s', //strip whitespaces before tags, except space
