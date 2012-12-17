@@ -149,7 +149,7 @@ class Respond
     {
       try
       {
-        $data = file_get_contents($file);
+        $data = \file_get_contents($file);
         if(!empty($data))
         {
           return $this->minifyData($data, \end(\explode('.', $file_path)));
@@ -260,7 +260,7 @@ class Respond
   public function locateEntityPath($path, $match, $depth = 0)
   {
     $base      = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
-    $match_len = strlen($match);
+    $match_len = \strlen($match);
 
     if($handle = \opendir($base . $path))
     {
@@ -268,7 +268,7 @@ class Respond
       {
         if(\substr($filename, 0, 1) == '.') continue;
 
-        if(substr(md5($path . '/' . $filename . '/src'), 0, $match_len) == $match)
+        if(\substr(\md5($path . '/' . $filename . '/src'), 0, $match_len) == $match)
         {
           return $path . '/' . $filename . '/src';
         }
@@ -334,7 +334,7 @@ class Respond
    */
   protected function minifyData($data, $filetype)
   {
-    if(strpos($data, '@' . 'do-not-minify') !== false)
+    if(\strpos($data, '@' . 'do-not-minify') !== false)
     {
       return $data;
     }
@@ -343,22 +343,22 @@ class Respond
     {
       case 'css':
         // Remove comments.
-        $data = preg_replace('@/\*.*?\*/@s', '', $data);
+        $data = \preg_replace('@/\*.*?\*/@s', '', $data);
         // Remove whitespace around symbols.
-        $data = preg_replace('@\s*([{}:;,])\s*@', '\1', $data);
+        $data = \preg_replace('@\s*([{}:;,])\s*@', '\1', $data);
         // Remove unnecessary semicolons.
-        $data = preg_replace('@;}@', '}', $data);
+        $data = \preg_replace('@;}@', '}', $data);
         // Replace #rrggbb with #rgb when possible.
-        $data = preg_replace('@#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3@i', '#\1\2\3', $data);
+        $data = \preg_replace('@#([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3@i', '#\1\2\3', $data);
         $data = trim($data);
         break;
       case 'js':
         //Strip Comments
-        $data = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $data);
-        $data = preg_replace('!^([\t ]+)?\/\/.+$!m', '', $data);
+        $data = \preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $data);
+        $data = \preg_replace('!^([\t ]+)?\/\/.+$!m', '', $data);
         //remove tabs, spaces, newlines, etc.
-        $data = str_replace(array("\t"), ' ', $data);
-        $data = str_replace(array("\r\n", "\r", "\n", '  ', '    ', '    '), '', $data);
+        $data = \str_replace(array("\t"), ' ', $data);
+        $data = \str_replace(array("\r\n", "\r", "\n", '  ', '    ', '    '), '', $data);
         break;
     }
 

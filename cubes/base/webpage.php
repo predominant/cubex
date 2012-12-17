@@ -212,6 +212,6 @@ class WebPage
       '<',
       '\\1'
     );
-    return preg_replace($search, $replace, $html);
+    return \preg_replace($search, $replace, $html);
   }
 }

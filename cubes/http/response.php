@@ -104,7 +104,7 @@ class Response
     {
       foreach($this->_headers as $h)
       {
-        if(strtolower($h[0]) == strtolower($header))
+        if(\strtolower($h[0]) == \strtolower($header))
         {
           return $this;
         }
@@ -242,11 +242,11 @@ class Response
         $this->addHeader("Content-Type", "application/json", false);
         $this->sendHeaders();
 
-        $response = json_encode($this->_source);
+        $response = \json_encode($this->_source);
 
         // Prevent content sniffing attacks by encoding "<" and ">", so browsers
         // won't try to execute the document as HTML
-        $response = str_replace(array('<', '>'), array('\u003c', '\u003e'), $response);
+        $response = \str_replace(array('<', '>'), array('\u003c', '\u003e'), $response);
 
         echo $response;
 
@@ -451,6 +451,6 @@ class Response
    */
   public function httpHeaderDate($timestamp)
   {
-    return gmdate('D, d M Y H:i:s', $timestamp) . ' GMT';
+    return \gmdate('D, d M Y H:i:s', $timestamp) . ' GMT';
   }
 }

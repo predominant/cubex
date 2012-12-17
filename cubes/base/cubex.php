@@ -82,7 +82,7 @@ final class Cubex
     if(CUBEX_WEB)
     {
       Cubex::core()->setRequest(new Request($_REQUEST['__path__']));
-      list($verify, $dispatch_path) = explode('/', ltrim($_REQUEST['__path__'], '/'), 2);
+      list($verify, $dispatch_path) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
 
       if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
       {

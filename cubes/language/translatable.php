@@ -54,8 +54,8 @@ abstract class Translatable extends Dispatcher
   public function tp($text, $number)
   {
     return $this->p(
-      str_replace('(s)', '', $text),
-      str_replace('(s)', 's', $text),
+      \str_replace('(s)', '', $text),
+      \str_replace('(s)', 's', $text),
       $number
     );
   }

@@ -27,9 +27,9 @@ final class Prop
   {
     if(\in_array($type, array('css', 'js')))
     {
-      if(substr($resource, 0, 7) == 'http://'
-      || substr($resource, 0, 8) == 'https://'
-      || substr($resource, 0, 3) == '://'
+      if(\substr($resource, 0, 7) == 'http://'
+      || \substr($resource, 0, 8) == 'https://'
+      || \substr($resource, 0, 3) == '://'
       )
       {
         $uri   = $resource;
@@ -38,7 +38,7 @@ final class Prop
       else
       {
         $uri = $source->getDispatchFabricator()->resource($resource);
-        if(substr($resource, 0, 1) == '/')
+        if(\substr($resource, 0, 1) == '/')
         {
           $group = 'esabot';
         }

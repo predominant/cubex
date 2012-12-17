@@ -45,6 +45,7 @@ class Log
 
   /**
    * Log a successful thingy
+   *
    * @param        $message
    * @param        $code
    * @param string $type
@@ -80,6 +81,7 @@ class Log
 
   /**
    * Well, gone and dont it now, havent you!
+   *
    * @param        $message
    * @param        $code
    * @param string $type
@@ -113,7 +115,7 @@ class Log
    */
   protected static function _log($level, $message, $type, $code)
   {
-    $backtrace   = debug_backtrace();
+    $backtrace   = \debug_backtrace();
     $source_line = $backtrace[1]['line'];
     $source_file = $backtrace[1]['file'];
 

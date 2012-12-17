@@ -31,7 +31,7 @@ class Fabricate
    */
   public function __construct($entity_base = null)
   {
-    $entity_base        = rtrim($entity_base, '/') . '/';
+    $entity_base        = \rtrim($entity_base, '/') . '/';
     $this->_real_path   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_base . 'src';
     $this->_path        = $entity_base . 'src';
     $this->_entity_hash = $this->generateEntityHash($this->_path);
@@ -143,7 +143,7 @@ class Fabricate
    */
   public function package($name, $ext = 'css', $base = false)
   {
-    return implode('/', array($this->preHash($base), 'pkg', $name . '.' . $ext));
+    return \implode('/', array($this->preHash($base), 'pkg', $name . '.' . $ext));
   }
 
   /**
@@ -156,8 +156,8 @@ class Fabricate
   public function resource($path)
   {
 
-    $base          = substr($path, 0, 1) == '/';
-    $path          = ltrim($path, '/');
+    $base          = \substr($path, 0, 1) == '/';
+    $path          = \ltrim($path, '/');
     $resource_hash = 'pamon'; //No Map
 
     if($base)
@@ -184,7 +184,7 @@ class Fabricate
       }
     }
 
-    return implode('/', array($this->preHash($base), $resource_hash, $path));
+    return \implode('/', array($this->preHash($base), $resource_hash, $path));
   }
 
   /**

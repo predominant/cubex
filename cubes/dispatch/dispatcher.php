@@ -31,7 +31,7 @@ abstract class Dispatcher
     $parts     = \explode('\\', $reflector->getName());
     \array_shift($parts);
     $parts                       = \array_chunk($parts, 1, false);
-    $this->_entity_dispatch_name = strtolower($parts[1][0]);
+    $this->_entity_dispatch_name = \strtolower($parts[1][0]);
     return $this->_entity_dispatch_name;
   }
 

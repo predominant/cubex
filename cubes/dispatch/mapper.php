@@ -31,7 +31,7 @@ class Mapper
 
   private function cli()
   {
-    echo str_repeat("\n", 100);
+    echo \str_repeat("\n", 100);
     Shell::clear();
 
     $base_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
@@ -60,7 +60,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
     {
       echo Shell::colourText("=======================================\n\n", Shell::COLOUR_FOREGROUND_DARK_GREY);
       echo Shell::colourText("Processing ", Shell::COLOUR_FOREGROUND_CYAN);
-      echo ($entity_group == '' ? 'Base' : ucwords($entity_group)) . "\n";
+      echo ($entity_group == '' ? 'Base' : \ucwords($entity_group)) . "\n";
       $entities = $this->cliFindEntities($base_path, $entity_group);
       if($entities)
       {
@@ -77,7 +77,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
           echo " $entity\n";
 
           echo "           Mapping Directory:   ";
-          flush();
+          \flush();
           $mapped = $this->mapDirectory($base_path . $entity);
           echo $this->cliResult($mapped !== false);
           if($mapped)
@@ -159,7 +159,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
 
           if(\is_dir($path . $group . DIRECTORY_SEPARATOR . $filename))
           {
-            $entities[] = $group . '/' . str_replace('\\', '/', $filename);
+            $entities[] = $group . '/' . \str_replace('\\', '/', $filename);
           }
         }
 
@@ -248,7 +248,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
         $current_md5 = \md5_file($path . DIRECTORY_SEPARATOR . $filename);
       }
 
-      if($current_md5 != md5($mapped))
+      if($current_md5 != \md5($mapped))
       {
         \file_put_contents($path . DIRECTORY_SEPARATOR . $filename, $mapped);
       }
