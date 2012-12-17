@@ -13,7 +13,11 @@ use Cubex\View\Renderable;
 use Cubex\View\Template;
 use Cubex\Dispatch\Prop;
 use Cubex\View\Partial;
+use Cubex\View\Render;
 
+/**
+ * Standard webpage response builder
+ */
 class WebPage
 {
 
@@ -24,6 +28,13 @@ class WebPage
   private $_captured_content;
   private $_view;
 
+  /**
+   * Set page body to be a renderable object
+   *
+   * @param \Cubex\View\Renderable $view
+   *
+   * @return WebPage
+   */
   public function setView(Renderable $view)
   {
     $this->_view = $view;
@@ -31,11 +42,23 @@ class WebPage
     return $this;
   }
 
+  /**
+   * Get Controller shortcut
+   *
+   * @return Controller
+   */
   public function controller()
   {
     return Cubex::core()->controller();
   }
 
+  /**
+   * Set HTTP Status Code
+   *
+   * @param int $status
+   *
+   * @return WebPage
+   */
   public function setHttpStatus($status = 200)
   {
     $this->_http_status = $status;
@@ -43,11 +66,21 @@ class WebPage
     return $this;
   }
 
+  /**
+   * HTTP Status Code
+   *
+   * @return int
+   */
   public function getHttpStatus()
   {
     return $this->_http_status;
   }
 
+  /**
+   * Page Character Set
+   *
+   * @return string
+   */
   public function getCharset()
   {
     return 'UTF-8';
@@ -58,6 +91,13 @@ class WebPage
     return $this->_title;
   }
 
+  /**
+   * Set Webpage Title
+   *
+   * @param $title
+   *
+   * @return WebPage
+   */
   public function setTitle($title)
   {
     $this->_title = $title;
@@ -65,6 +105,13 @@ class WebPage
     return $this;
   }
 
+  /**
+   * Get defined meta tags
+   *
+   * @param null $key
+   *
+   * @return mixed
+   */
   public function getMeta($key = null)
   {
     if($key === null)
@@ -74,6 +121,11 @@ class WebPage
     else return $this->_meta[$key];
   }
 
+  /**
+   * Build MetaTags
+   *
+   * @return string
+   */
   public function getMetaHTML()
   {
     if(!$this->_meta) return '';
@@ -86,6 +138,11 @@ class WebPage
     return $html;
   }
 
+  /**
+   * Get CSS
+   *
+   * @return string
+   */
   public function getHead()
   {
     $css_headers = new Partial('<link type="text/css" rel="stylesheet" href="%s" />');
@@ -97,6 +154,11 @@ class WebPage
     return $css_headers . $this->getMetaHTML();
   }
 
+  /**
+   * Render body content or captured content
+   *
+   * @return mixed
+   */
   public function getBody()
   {
     $view = $this->_view;
@@ -112,9 +174,14 @@ class WebPage
     return $this->minifyHtml($result);
   }
 
+  /**
+   * Include JavaScript
+   *
+   * @return \Cubex\View\Partial
+   */
   public function getClosing()
   {
-    $js_items = new Partial('<script type="text/javascript" src="%s"></script>');
+    $js_items = new Partial('<script type="text/javascript" src' . '="%s"></script>');
     $js_uris  = Prop::getResourceUris('js');
     if($js_uris)
     {
@@ -123,6 +190,11 @@ class WebPage
     return $js_items;
   }
 
+  /**
+   * Build HTML upto opening Body tag
+   *
+   * @return string
+   */
   public function renderHead()
   {
     $this->preRender();
@@ -148,16 +220,31 @@ class WebPage
     return $response;
   }
 
+  /**
+   * get Body content
+   *
+   * @return mixed
+   */
   public function renderBody()
   {
     return $this->getBody();
   }
 
+  /**
+   * Closing Body and HTML Tags
+   *
+   * @return string
+   */
   public function renderClosing()
   {
     return $this->getClosing() . '</body></html>';
   }
 
+  /**
+   * Render whole webpage
+   *
+   * @return string
+   */
   public function render()
   {
     $this->preRender();
@@ -186,13 +273,13 @@ class WebPage
     else $this->_captured = false;
   }
 
-  public function capturedView()
+  /**
+   * @return \Cubex\View\Render
+   */
+  public function capturedData()
   {
     $this->endCapture();
-    $view = new Template();
-    $view->setCompiled($this->capturedContent());
-
-    return $view;
+    return new Render($this->capturedContent());
   }
 
   final public function preRender()
@@ -202,7 +289,7 @@ class WebPage
 
   /**
    * Minify HTML code
-   * 
+   *
    * @param $html
    *
    * @return mixed
