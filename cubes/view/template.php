@@ -113,7 +113,7 @@ class Template extends Handler implements Renderable
         $name = $contain_div_id;
       }
 
-      return HTMLElement::create('div', $rendered, array('id' => $name))->render();
+      return HTMLElement::create('div', array('id' => $name), $rendered)->render();
     }
   }
 

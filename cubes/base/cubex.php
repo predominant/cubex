@@ -436,7 +436,7 @@ final class Cubex
         if(CUBEX_WEB && !$fatal && $render_type != Response::RENDER_TEXT)
         {
           $shutdown_debug = new HTMLElement(
-            'div', '',
+            'div',
             array(
                  'id'    => 'cubex-shutdown-debug',
                  'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .

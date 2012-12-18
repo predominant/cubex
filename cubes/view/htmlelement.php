@@ -28,7 +28,7 @@ class HTMLElement implements Renderable
    */
   public static function create($tag = '', $attributes = array(), $content = '')
   {
-    return new HTMLElement($tag, $content, $attributes);
+    return new HTMLElement($tag, $attributes, $content);
   }
 
   /**
@@ -64,7 +64,7 @@ class HTMLElement implements Renderable
    */
   public function nestElement($tag, $attributes = array(), $content = '')
   {
-    $this->_nested[] = new HTMLElement($tag, $content, $attributes);
+    $this->_nested[] = new HTMLElement($tag, $attributes, $content);
 
     return $this;
   }
@@ -80,7 +80,7 @@ class HTMLElement implements Renderable
   {
     foreach($values as $value)
     {
-      $this->nestElement($tag, $value, $attributes);
+      $this->nestElement($tag, $attributes, $value);
     }
 
     return $this;
@@ -104,6 +104,11 @@ class HTMLElement implements Renderable
   public function renderAttributes()
   {
     $attributes = array();
+    if($this->_attributes === null || !\is_array($this->_attributes))
+    {
+      return '';
+    }
+
     foreach($this->_attributes as $attr => $attr_v)
     {
       if($attr_v === null)

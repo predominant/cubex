@@ -33,6 +33,6 @@ class ErrorPage extends WebPage
       }
     }
 
-    return HTMLElement::create('', $response);
+    return HTMLElement::create('', [], $response);
   }
 }
