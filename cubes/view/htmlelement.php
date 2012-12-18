@@ -8,6 +8,9 @@
 
 namespace Cubex\View;
 
+/**
+ * Simple HTML Render
+ */
 class HTMLElement implements Renderable
 {
 
@@ -16,18 +19,35 @@ class HTMLElement implements Renderable
   private $_attributes = array();
   private $_content = '';
 
-  public static function create($tag = '', $content = '', $attributes = array())
+  /**
+   * @param string $tag
+   * @param array  $attributes
+   * @param string $content
+   *
+   * @return HTMLElement
+   */
+  public static function create($tag = '', $attributes = array(), $content = '')
   {
     return new HTMLElement($tag, $content, $attributes);
   }
 
-  public function __construct($tag = '', $content = '', $attributes = array())
+  /**
+   * @param string $tag
+   * @param array  $attributes
+   * @param string $content
+   */
+  public function __construct($tag = '', $attributes = array(), $content = '')
   {
     $this->_tag        = $tag;
     $this->_content    = $content;
     $this->_attributes = $attributes;
   }
 
+  /**
+   * @param $content
+   *
+   * @return HTMLElement
+   */
   public function setContent($content)
   {
     $this->_content = $content;
@@ -35,14 +55,28 @@ class HTMLElement implements Renderable
     return $this;
   }
 
-  public function nestElement($tag, $content, $attributes = array())
+  /**
+   * @param       $tag
+   * @param array $attributes
+   * @param       $content
+   *
+   * @return HTMLElement
+   */
+  public function nestElement($tag, $attributes = array(), $content = '')
   {
     $this->_nested[] = new HTMLElement($tag, $content, $attributes);
 
     return $this;
   }
 
-  public function nestElements($tag, array $values, $attributes = array())
+  /**
+   * @param       $tag
+   * @param array $attributes
+   * @param array $values
+   *
+   * @return HTMLElement
+   */
+  public function nestElements($tag, $attributes = array(), array $values = array())
   {
     foreach($values as $value)
     {
@@ -52,6 +86,11 @@ class HTMLElement implements Renderable
     return $this;
   }
 
+  /**
+   * @param Renderable $item
+   *
+   * @return HTMLElement
+   */
   public function nest(Renderable $item)
   {
     $this->_nested[] = $item;
@@ -59,6 +98,9 @@ class HTMLElement implements Renderable
     return $this;
   }
 
+  /**
+   * @return string
+   */
   public function renderAttributes()
   {
     $attributes = array();
@@ -74,6 +116,9 @@ class HTMLElement implements Renderable
     return \implode(' ', $attributes);
   }
 
+  /**
+   * @return string
+   */
   public function render()
   {
     $return = empty($this->_tag) ? '' : '<' . $this->_tag . $this->renderAttributes() . '>';
@@ -90,11 +135,19 @@ class HTMLElement implements Renderable
     return $return;
   }
 
+  /**
+   * @return string
+   */
   public function __toString()
   {
     return $this->render();
   }
 
+  /**
+   * @param $content
+   *
+   * @return string
+   */
   public static function escape($content)
   {
     return \htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
