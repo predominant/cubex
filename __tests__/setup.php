@@ -57,9 +57,9 @@ namespace Cubex\Tests
   {
     public function respond()
     {
-      echo $this->_webpage->renderHead();
-      echo $this->_webpage->renderBody();
-      echo $this->_webpage->renderClosing();
+      echo $this->_source->renderHead();
+      echo $this->_source->renderBody();
+      echo $this->_source->renderClosing();
     }
   }
 
