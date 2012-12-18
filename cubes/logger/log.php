@@ -15,12 +15,13 @@ use Cubex\Events\Events;
 class Log
 {
 
-  const LEVEL_INFO     = 'info';
-  const LEVEL_SUCCESS  = 'success';
-  const LEVEL_WARNING  = 'warning';
-  const LEVEL_CRITICAL = 'critical';
-  const LEVEL_FATAL    = 'fatal';
-  const LEVEL_PARSE    = 'parse';
+  const LEVEL_INFO       = 'info';
+  const LEVEL_SUCCESS    = 'success';
+  const LEVEL_WARNING    = 'warning';
+  const LEVEL_CRITICAL   = 'critical';
+  const LEVEL_FATAL      = 'fatal';
+  const LEVEL_PARSE      = 'parse';
+  const LEVEL_DEPRECATED = 'deprecated';
 
   const TYPE_GENERIC     = 'generic';
   const TYPE_DEBUG       = 'debug';
@@ -101,6 +102,19 @@ class Log
   public static function parseError($message, $type, $code)
   {
     static::_log(self::LEVEL_PARSE, $message, $type, $code);
+  }
+
+
+  /**
+   * Notify of a deprecated action
+   *
+   * @param $message
+   * @param $type
+   * @param $code
+   */
+  public static function deprecated($message, $type, $code)
+  {
+    static::_log(self::LEVEL_DEPRECATED, $message, $type, $code);
   }
 
   /**
