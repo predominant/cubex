@@ -14,6 +14,7 @@ use Cubex\View\Template;
 use Cubex\Dispatch\Prop;
 use Cubex\View\Partial;
 use Cubex\View\Render;
+use Cubex\View\HTMLElement;
 
 /**
  * Standard webpage response builder
@@ -27,6 +28,7 @@ class WebPage
   private $_captured;
   private $_capturedContent;
   private $_view;
+  private $_bodyAttributes = array();
 
   /**
    * Set page body to be a renderable object
@@ -202,7 +204,7 @@ class WebPage
     $title   = $this->getTitle();
     $head    = $this->getHead();
 
-    $method      = \strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
+    $method     = \strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
     $requestUrl = Cubex::request()->getPath();
     $requestUrl .= '?' . \http_build_query(Cubex::request()->variables(), '', '&amp;');
 
@@ -215,7 +217,7 @@ class WebPage
     . 'window.Env = Env = window.Env || {};b(Env);};'
     . "!function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);"
     . 'envPop({"method":"' . $method . '"});</script><noscript>' . $noscript . '</noscript>'
-    . '<title>' . $title . '</title>' . $head . '</head><body>';
+    . '<title>' . $title . '</title>' . $head . '</head><body' . $this->bodyAttributes() . '>';
 
     return $response;
   }
@@ -231,11 +233,36 @@ class WebPage
   }
 
   /**
+   * Attach an attribute to the body tag
+   *
+   * @param string $key   e.g. Class
+   * @param string $value e.g. fullpage
+   */
+  public function addBodyAttribute($key, $value)
+  {
+    $this->_bodyAttributes[$key] = $value;
+  }
+
+  /**
+   * @return string
+   */
+  protected function bodyAttributes()
+  {
+    $attr = array();
+    foreach($this->_bodyAttributes as $k => $v)
+    {
+      $attr[] = " " . $k . '="' . HTMLElement::escape($v) . '"';
+    }
+    return implode("", $attr);
+  }
+
+  /**
    * Closing Body and HTML Tags
    *
    * @return string
    */
-  public function renderClosing()
+  public
+  function renderClosing()
   {
     return $this->getClosing() . '</body></html>';
   }
@@ -245,7 +272,8 @@ class WebPage
    *
    * @return string
    */
-  public function render()
+  public
+  function render()
   {
     $this->preRender();
     return $this->renderHead() . $this->renderBody() . $this->renderClosing();
@@ -268,7 +296,7 @@ class WebPage
     if($this->_captured === false)
     {
       $this->_capturedContent = \ob_get_clean();
-      $this->_captured         = true;
+      $this->_captured        = true;
     }
     else $this->_captured = false;
   }
