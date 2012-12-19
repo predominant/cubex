@@ -347,57 +347,33 @@ final class Cubex
     $class = \ltrim($class, '\\');
     try
     {
-      if(\strpos($class, 'Cubex\\') === 0)
+      if(\strpos($class, 'Cubex\\Modules\\') === 0
+      || \strpos($class, 'Cubex\\Widgets\\') === 0
+      || \strpos($class, 'Cubex\\Applications\\') === 0
+      || \strpos($class, 'Cubex\\Components\\') === 0
+      )
       {
+        //Project specific groups
         $class = \substr($class, 6);
       }
 
-      if(\strpos($class, 'Modules\\') === 0)
+      $class       = ltrim($class, '\\');
+      $includeFile = '';
+      if($lastNsPos = strrpos($class, '\\'))
       {
-        //Add some module loaders to handle more complex modules
+        $namespace   = substr($class, 0, $lastNsPos);
+        $class       = substr($class, $lastNsPos + 1);
+        $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
       }
-      else if(\strpos($class, 'Widgets\\') === 0)
-      {
-        //Add some widget loaders
-      }
-      else if(\strpos($class, 'Applications\\') === 0 || \strpos($class, 'Components\\') === 0)
-      {
-        $parts = \explode('\\', $class);
+      $includeFile .= str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
 
-        if(\count($parts) > 2)
-        {
-          $end = $parts[\count($parts) - 1];
-
-          if(\substr($class, -10) === 'Controller')
-          {
-            $end                       = 'controllers\\' . \substr($end, 0, -10);
-            $parts[\count($parts) - 1] = $end;
-            $class                     = \implode('\\', $parts);
-          }
-          else if($end === 'Constants')
-          {
-            $class .= '\\Constants';
-          }
-          else if(\substr($class, -9) === 'Constants')
-          {
-            $end                       = 'constants\\' . \substr($end, 0, -9);
-            $parts[\count($parts) - 1] = $end;
-            $class                     = \implode('\\', $parts);
-          }
-        }
-      }
-      else
-      {
-        $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
-      }
-
-      $includeFile = \strtolower(\str_replace('_', '/', \str_replace('\\', '/', $class))) . '.php';
       include_once($includeFile);
     }
     catch(\Exception $e)
     {
     }
   }
+
 
   /**
    * Get full path to project

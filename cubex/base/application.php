@@ -75,7 +75,7 @@ abstract class Application extends Translatable
       /**
        * Initiate Controller
        */
-      $controller = $namespace . "\\" . $this->getController(Cubex::request()->getPath());
+      $controller = $namespace . '\Controllers\\' . $this->getController(Cubex::request()->getPath());
       if(\class_exists($controller))
       {
         Cubex::core()->setController(new $controller());

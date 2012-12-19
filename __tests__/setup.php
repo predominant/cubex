@@ -8,7 +8,7 @@
 
 namespace Cubex\Tests
 {
-  require_once dirname(dirname(__FILE__)) .'/cubes/base/cubex.php';
+  require_once dirname(dirname(__FILE__)) .'/cubex/base/cubex.php';
   \Cubex\Cubex::boot();
 
   final class Setup
@@ -42,17 +42,6 @@ namespace Cubex\Tests
     }
   }
 
-  class Controller extends \Cubex\Base\Controller
-  {
-    public function processRequest()
-    {
-      $webpage = new \Cubex\Base\WebPage();
-      $webpage->setTitle("Test Application");
-
-      return new Response($webpage);
-    }
-  }
-
   class Response extends \Cubex\Http\Response
   {
     public function respond()
@@ -78,6 +67,20 @@ namespace Cubex\Tests
     }
   }
 
+}
+
+namespace Cubex\Tests\Controllers
+{
+  class Controller extends \Cubex\Base\Controller
+  {
+    public function processRequest()
+    {
+      $webpage = new \Cubex\Base\WebPage();
+      $webpage->setTitle("Test Application");
+
+      return new \Cubex\Http\Response($webpage);
+    }
+  }
 }
 
 namespace Cubex\Tests\Views
