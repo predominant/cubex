@@ -33,12 +33,15 @@ abstract class Model implements \IteratorAggregate
   const ID_COMPOSITE_SPLIT = 'compositesplit';
 
   private $_attributes;
-  private $_invalid_attributes;
+  private $_invalidAttributes;
   //TODO: on load, store data results in ephemeral to stop re-collecting data from source
-  protected static $_ephemeral_datastore;
+  protected static $_ephemeralDatastore;
 
   /*
    * Automatically add all public properties as attributes and unset them for automatic handling of data
+   */
+  /**
+   *
    */
   public function __construct()
   {
@@ -54,6 +57,9 @@ abstract class Model implements \IteratorAggregate
     }
   }
 
+  /**
+   *
+   */
   public function __clone()
   {
     $attrs             = $this->_attributes;
@@ -68,6 +74,9 @@ abstract class Model implements \IteratorAggregate
     }
   }
 
+  /**
+   * @return \ArrayIterator
+   */
   public function getIterator()
   {
     $attrs = array();
@@ -85,6 +94,9 @@ abstract class Model implements \IteratorAggregate
     return new \ArrayIterator($attrs);
   }
 
+  /**
+   * @return string
+   */
   public function __toString()
   {
     $properties = array();
@@ -95,7 +107,7 @@ abstract class Model implements \IteratorAggregate
         if(!$attr->isEmpty())
         {
           $properties[] = $attr->getName() . ' = ' .
-          (is_scalar($attr->data()) ? $attr->data() : print_r($attr->data(), true));
+            (is_scalar($attr->data()) ? $attr->data() : print_r($attr->data(), true));
         }
       }
     }
@@ -103,6 +115,12 @@ abstract class Model implements \IteratorAggregate
     return \get_class($this) . " {" . implode(', ', $properties) . "}";
   }
 
+  /**
+   * @param $method
+   * @param $args
+   *
+   * @return bool|Model|mixed
+   */
   public function __call($method, $args)
   {
     // NOTE: PHP has a bug that static variables defined in __call() are shared
@@ -111,6 +129,13 @@ abstract class Model implements \IteratorAggregate
     return $this->call($method, $args);
   }
 
+  /**
+   * @param $method
+   * @param $args
+   *
+   * @return bool|Model|mixed
+   * @throws \Exception
+   */
   final protected function call($method, $args)
   {
     switch(\substr($method, 0, 3))
@@ -143,16 +168,30 @@ abstract class Model implements \IteratorAggregate
     return true;
   }
 
+  /**
+   * @param $name
+   *
+   * @return bool|Model|mixed
+   */
   public function __get($name)
   {
     return $this->call("get" . \ucwords($name), null);
   }
 
+  /**
+   * @param $name
+   * @param $value
+   *
+   * @return bool|Model|mixed
+   */
   public function __set($name, $value)
   {
     return $this->call("set" . \ucwords($name), array($value));
   }
 
+  /**
+   * @return mixed
+   */
   public function getTableName()
   {
     return \str_replace(
@@ -170,6 +209,9 @@ abstract class Model implements \IteratorAggregate
     return 'id';
   }
 
+  /**
+   * @return string
+   */
   public function getID()
   {
     if($this->isCompositeID())
@@ -182,6 +224,9 @@ abstract class Model implements \IteratorAggregate
     }
   }
 
+  /**
+   * @return bool
+   */
   public function isCompositeID()
   {
     $config = $this->getConfiguration();
@@ -196,6 +241,9 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  /**
+   * @return string
+   */
   protected function getCompositeID()
   {
     $result = array();
@@ -207,11 +255,17 @@ abstract class Model implements \IteratorAggregate
     return implode('|', $result);
   }
 
+  /**
+   * @return array
+   */
   protected function getCompositeKeys()
   {
     return array();
   }
 
+  /**
+   * @return string
+   */
   public function composeID( /*$key1,$key2*/)
   {
     return \implode("|", \func_get_args());
@@ -220,8 +274,14 @@ abstract class Model implements \IteratorAggregate
   /*
    * @returns Cubex\Data\Connection
    */
+  /**
+   * @return mixed
+   */
   abstract protected function dataConnection();
 
+  /**
+   * @return array
+   */
   protected function getConfiguration()
   {
     return array(
@@ -239,19 +299,34 @@ abstract class Model implements \IteratorAggregate
     return isset($this->_attributes[$name]) ? $this->_attributes[$name] : null;
   }
 
+  /**
+   * @param Attribute $attribute
+   */
   final protected function addAttribute(Attribute $attribute)
   {
     $this->_attributes[strtolower($attribute->getName())] = $attribute;
   }
 
+  /**
+   * @param $attribute
+   *
+   * @return bool
+   */
   final protected function attributeExists($attribute)
   {
     return isset($this->_attributes[$attribute]);
   }
 
+  /**
+   * @param                      $attribute
+   * @param \Cubex\Base\Callback $filter
+   *
+   * @return bool
+   */
   final protected function addAttributeFilter($attribute, Callback $filter)
   {
-    if(!isset($this->_attributes[$attribute])) return false;
+    if(!isset($this->_attributes[$attribute]))
+      return false;
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -263,9 +338,16 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  /**
+   * @param                      $attribute
+   * @param \Cubex\Base\Callback $filter
+   *
+   * @return bool
+   */
   final protected function addAttributeValidator($attribute, Callback $filter)
   {
-    if(!isset($this->_attributes[$attribute])) return false;
+    if(!isset($this->_attributes[$attribute]))
+      return false;
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -277,9 +359,16 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  /**
+   * @param $attribute
+   * @param $option
+   *
+   * @return bool
+   */
   final protected function addAttributeOption($attribute, $option)
   {
-    if(!isset($this->_attributes[$attribute])) return false;
+    if(!isset($this->_attributes[$attribute]))
+      return false;
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -291,6 +380,13 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  /**
+   * @param null $attributes
+   * @param bool $process_all_validators
+   * @param bool $fail_first
+   *
+   * @return bool
+   */
   public function isValid($attributes = null, $process_all_validators = false, $fail_first = false)
   {
     $valid = true;
@@ -306,12 +402,13 @@ abstract class Model implements \IteratorAggregate
         $attr = isset($this->_attributes[$attribute]) ? $this->_attributes[$attribute] : null;
         if($attr instanceof Attribute)
         {
-          unset($this->_invalid_attributes[$attribute]);
+          unset($this->_invalidAttributes[$attribute]);
           if(!$attr->valid($process_all_validators))
           {
-            $valid                                 = false;
-            $this->_invalid_attributes[$attribute] = $attr->errors();
-            if($fail_first) return false;
+            $valid                                = false;
+            $this->_invalidAttributes[$attribute] = $attr->errors();
+            if($fail_first)
+              return false;
           }
         }
       }
@@ -321,16 +418,25 @@ abstract class Model implements \IteratorAggregate
   }
 
 
+  /**
+   * @return bool
+   */
   public function saveChanges()
   {
     return false;
   }
 
+  /**
+   * @return bool
+   */
   public function delete()
   {
     return false;
   }
 
+  /**
+   * @return bool
+   */
   public function reload()
   {
     $this->clearEphemeral($this->getID());
@@ -338,6 +444,12 @@ abstract class Model implements \IteratorAggregate
     return $this->load($this->getID());
   }
 
+  /**
+   * @param       $id
+   * @param array $columns
+   *
+   * @return bool
+   */
   public function load($id, $columns = array("*"))
   {
     if(\is_array($id))
@@ -349,6 +461,11 @@ abstract class Model implements \IteratorAggregate
     return false;
   }
 
+  /**
+   * @param array $columns
+   *
+   * @return bool
+   */
   public function loadComposite($columns = array("*") /*,$key1,$key2*/)
   {
     $args = \func_get_args();
@@ -357,12 +474,22 @@ abstract class Model implements \IteratorAggregate
     return $this->load(array($args), $columns);
   }
 
+  /**
+   * @param array $columns
+   *
+   * @return array
+   */
   public function loadAll($columns = array("*"))
   {
     //Load array of models
     return array();
   }
 
+  /**
+   * @param array $data
+   *
+   * @return Model
+   */
   public function loadFromArray(array $data)
   {
     foreach($data as $k => $v)
@@ -378,6 +505,11 @@ abstract class Model implements \IteratorAggregate
     return $this;
   }
 
+  /**
+   * @param \stdClass $data
+   *
+   * @return Model
+   */
   public function loadFromStdClass(\stdClass $data)
   {
     $this->loadFromArray((array)$data);
@@ -385,6 +517,11 @@ abstract class Model implements \IteratorAggregate
     return $this;
   }
 
+  /**
+   * @param array $rows
+   *
+   * @return array
+   */
   public function loadMultiFromArray(array $rows)
   {
     $result = array();
@@ -411,6 +548,11 @@ abstract class Model implements \IteratorAggregate
     return $result;
   }
 
+  /**
+   * @param array $columns
+   *
+   * @return array
+   */
   public static function All($columns = array('*'))
   {
     $user = new static;
@@ -418,25 +560,44 @@ abstract class Model implements \IteratorAggregate
     return $user->loadAll($columns);
   }
 
+  /**
+   * @param $id
+   *
+   * @return bool
+   */
   public function clearEphemeral($id)
   {
-    unset(self::$_ephemeral_datastore[$id]);
+    unset(self::$_ephemeralDatastore[$id]);
 
     return true;
   }
 
+  /**
+   * @param $id
+   * @param $data
+   *
+   * @return Model
+   */
   public function addEphemeral($id, $data)
   {
-    self::$_ephemeral_datastore[$id] = $data;
+    self::$_ephemeralDatastore[$id] = $data;
 
     return $this;
   }
 
+  /**
+   * @param $id
+   *
+   * @return mixed
+   */
   public function getEphemeral($id)
   {
-    return self::$_ephemeral_datastore[$id];
+    return self::$_ephemeralDatastore[$id];
   }
 
+  /**
+   *
+   */
   protected function unmodifyAttributes()
   {
     foreach($this->_attributes as $attr)
@@ -448,6 +609,9 @@ abstract class Model implements \IteratorAggregate
     }
   }
 
+  /**
+   * @return array
+   */
   public function getModifiedAttributes()
   {
     $modified = array();
@@ -465,6 +629,11 @@ abstract class Model implements \IteratorAggregate
     return $modified;
   }
 
+  /**
+   * @param null $name
+   *
+   * @return Model
+   */
   public function revert($name = null)
   {
     if($name !== null)

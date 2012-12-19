@@ -27,9 +27,10 @@ final class Prop
   {
     if(\in_array($type, array('css', 'js')))
     {
-      if(\substr($resource, 0, 7) == 'http://'
-      || \substr($resource, 0, 8) == 'https://'
-      || \substr($resource, 0, 3) == '://'
+      if(
+        \substr($resource, 0, 7) == 'http://'
+        || \substr($resource, 0, 8) == 'https://'
+        || \substr($resource, 0, 3) == '://'
       )
       {
         $uri   = $resource;
@@ -104,6 +105,7 @@ final class Prop
         $out[] = $res['uri'];
       }
     }
+
     return $out;
   }
 }

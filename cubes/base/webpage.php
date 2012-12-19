@@ -22,10 +22,10 @@ class WebPage
 {
 
   private $_title;
-  private $_http_status = 200;
+  private $_httpStatus = 200;
   private $_meta;
   private $_captured;
-  private $_captured_content;
+  private $_capturedContent;
   private $_view;
 
   /**
@@ -61,7 +61,7 @@ class WebPage
    */
   public function setHttpStatus($status = 200)
   {
-    $this->_http_status = $status;
+    $this->_httpStatus = $status;
 
     return $this;
   }
@@ -73,7 +73,7 @@ class WebPage
    */
   public function getHttpStatus()
   {
-    return $this->_http_status;
+    return $this->_httpStatus;
   }
 
   /**
@@ -145,13 +145,13 @@ class WebPage
    */
   public function getHead()
   {
-    $css_headers = new Partial('<link type="text/css" rel="stylesheet" href="%s" />');
-    $css_uris    = Prop::getResourceUris('css');
-    if($css_uris)
+    $cssHeaders = new Partial('<link type="text/css" rel="stylesheet" href="%s" />');
+    $cssUris    = Prop::getResourceUris('css');
+    if($cssUris)
     {
-      $css_headers->addElements($css_uris);
+      $cssHeaders->addElements($cssUris);
     }
-    return $css_headers . $this->getMetaHTML();
+    return $cssHeaders . $this->getMetaHTML();
   }
 
   /**
@@ -181,13 +181,13 @@ class WebPage
    */
   public function getClosing()
   {
-    $js_items = new Partial('<script type="text/javascript" src' . '="%s"></script>');
-    $js_uris  = Prop::getResourceUris('js');
-    if($js_uris)
+    $jsItems = new Partial('<script type="text/javascript" src' . '="%s"></script>');
+    $jsUris  = Prop::getResourceUris('js');
+    if($jsUris)
     {
-      $js_items->addElements($js_uris);
+      $jsItems->addElements($jsUris);
     }
-    return $js_items;
+    return $jsItems;
   }
 
   /**
@@ -203,10 +203,10 @@ class WebPage
     $head    = $this->getHead();
 
     $method      = \strtoupper(isset($_SERVER["REQUEST_METHOD"]) ? $_SERVER["REQUEST_METHOD"] : 'GET');
-    $request_url = Cubex::request()->getPath();
-    $request_url .= '?' . \http_build_query(Cubex::request()->variables(), '', '&amp;');
+    $requestUrl = Cubex::request()->getPath();
+    $requestUrl .= '?' . \http_build_query(Cubex::request()->variables(), '', '&amp;');
 
-    $noscript = '<meta http-equiv="refresh" content="0; URL=' . $request_url . '&amp;__noscript__=1" />';
+    $noscript = '<meta http-equiv="refresh" content="0; URL=' . $requestUrl . '&amp;__noscript__=1" />';
     if(Cubex::request()->jsSupport() === false) $noscript = '';
 
     $response = "<!DOCTYPE html>\n"
@@ -260,14 +260,14 @@ class WebPage
 
   final public function capturedContent()
   {
-    return $this->_captured_content;
+    return $this->_capturedContent;
   }
 
   final public function endCapture()
   {
     if($this->_captured === false)
     {
-      $this->_captured_content = \ob_get_clean();
+      $this->_capturedContent = \ob_get_clean();
       $this->_captured         = true;
     }
     else $this->_captured = false;

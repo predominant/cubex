@@ -14,7 +14,7 @@ use Cubex\Base\Sprintf;
 abstract class SQLModel extends Model
 {
 
-  /*
+  /**
    * Recommended to override this method in your models
    */
   public function dataConnection()
@@ -22,40 +22,72 @@ abstract class SQLModel extends Model
     return Cubex::db();
   }
 
+  /**
+   * @param $pattern
+   *
+   * @return bool|Model
+   * @throws \Exception
+   */
   public function loadOneWhere($pattern /* , $arg, $arg, $arg ... */)
   {
     $args = \func_get_args();
     \array_unshift($args, true);
     $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
-    if(\count($data) > 1) throw new \Exception("More than one result in loadOneWhere() $pattern");
+    if(\count($data) > 1)
+      throw new \Exception("More than one result in loadOneWhere() $pattern");
     $data = \reset($data);
-    if($data) return $this->loadFromArray($data);
+    if($data)
+      return $this->loadFromArray($data);
     else return false;
   }
 
+  /**
+   * @param $pattern
+   *
+   * @return array|bool
+   */
   public function loadAllWhere($pattern /* , $arg, $arg, $arg ... */)
   {
     $args = \func_get_args();
     \array_unshift($args, true);
     $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
-    if($data) return $this->loadMultiFromArray($data);
+    if($data)
+      return $this->loadMultiFromArray($data);
     else return false;
   }
 
+  /**
+   * @param array $columns
+   *
+   * @return array|bool
+   */
   public function loadAll($columns = array("*"))
   {
     $data = $this->loadRawWhere($columns, "1=1");
-    if($data) return $this->loadMultiFromArray($data);
+    if($data)
+      return $this->loadMultiFromArray($data);
     else return false;
   }
 
+  /**
+   * @param SearchObject $o
+   *
+   * @return array|bool
+   */
   public function loadMatches(SearchObject $o)
   {
     return self::loadAllWhere("%QO", $o);
   }
 
+  /**
+   * @param $columns
+   * @param $pattern
+   *
+   * @return bool|mixed
+   * @throws \Exception
+   */
   public function loadRawWhere($columns, $pattern /* , $arg, $arg, $arg ... */)
   {
     $args = \func_get_args();
@@ -75,7 +107,8 @@ abstract class SQLModel extends Model
     else if(\is_scalar($columns))
     {
       $columns = \explode(',', $columns);
-      if(!\is_array($columns)) $columns = array($columns);
+      if(!\is_array($columns))
+        $columns = array($columns);
       \array_unshift($args, $columns);
     }
     else
@@ -95,6 +128,12 @@ abstract class SQLModel extends Model
     else return false;
   }
 
+  /**
+   * @param       $id
+   * @param array $columns
+   *
+   * @return bool
+   */
   public function load($id, $columns = array("*"))
   {
     if(\is_array($id))
@@ -112,6 +151,9 @@ abstract class SQLModel extends Model
     else return false;
   }
 
+  /**
+   * @return string
+   */
   protected function idPattern()
   {
     $config = $this->getConfiguration();
@@ -125,6 +167,9 @@ abstract class SQLModel extends Model
     }
   }
 
+  /**
+   * @return mixed
+   */
   public function saveChanges()
   {
     $modified = $this->getModifiedAttributes();

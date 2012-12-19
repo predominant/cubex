@@ -12,8 +12,8 @@ class Router
 {
 
   const ROUTE_DYNAMIC = 'route:dynamic';
-  protected $_processed_route = '';
-  protected $_route_data = array();
+  protected $_processedRoute = '';
+  protected $_routeData = array();
 
   public function parseRoute($routes, $path, $prepend = '')
   {
@@ -28,23 +28,23 @@ class Router
       {
         foreach($attempt[1] as $k => $v)
         {
-          $this->_route_data[$k] = $v;
+          $this->_routeData[$k] = $v;
         }
       }
 
       if(\is_array($control))
       {
-        $this->_processed_route = $prepend . $route;
+        $this->_processedRoute = $prepend . $route;
 
         return $this->parseRoute($control, $path, $prepend . $route);
       }
       else if($attempt[0])
       {
-        $this->_processed_route = $prepend . $route;
+        $this->_processedRoute = $prepend . $route;
 
-        if($control == self::ROUTE_DYNAMIC && isset($this->_route_data["_dynamic"]))
+        if($control == self::ROUTE_DYNAMIC && isset($this->_routeData["_dynamic"]))
         {
-          $control = ltrim($this->_route_data["_dynamic"], '/');
+          $control = ltrim($this->_routeData["_dynamic"], '/');
           $control = str_replace(' ', '', ucwords(str_replace('/', ' ', $control)));
         }
 
@@ -79,13 +79,13 @@ class Router
 
   public function processedRoute()
   {
-    return $this->_processed_route;
+    return $this->_processedRoute;
   }
 
   public function getRouteData($key = null)
   {
-    if($key === null) return $this->_route_data;
-    else if(isset($this->_route_data[$key])) return $this->_route_data[$key];
+    if($key === null) return $this->_routeData;
+    else if(isset($this->_routeData[$key])) return $this->_routeData[$key];
     else return array();
   }
 }

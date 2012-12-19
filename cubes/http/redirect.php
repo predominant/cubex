@@ -14,8 +14,8 @@ namespace Cubex\Http;
 class Redirect
 {
   private $_url = null;
-  private $_http_status = 200;
-  private $_die_render = false;
+  private $_httpStatus = 200;
+  private $_dieRender = false;
 
   /**
    * @param      $url
@@ -25,8 +25,8 @@ class Redirect
   public function __construct($url, $status = 302, $die = false)
   {
     $this->_url    = $url;
-    $this->_http_status = $status;
-    $this->_die_render  = $die;
+    $this->_httpStatus = $status;
+    $this->_dieRender  = $die;
   }
 
   /**
@@ -38,7 +38,7 @@ class Redirect
    */
   public function setHttpStatus($status=200)
   {
-    $this->_http_status = $status;
+    $this->_httpStatus = $status;
     return $this;
   }
 
@@ -49,7 +49,7 @@ class Redirect
    */
   public function getHttpStatus()
   {
-    return $this->_http_status;
+    return $this->_httpStatus;
   }
 
   /**
@@ -84,7 +84,7 @@ class Redirect
    */
   public function setDieRender($do=false)
   {
-    $this->_die_render = $do;
+    $this->_dieRender = $do;
     return $this;
   }
 
@@ -94,18 +94,18 @@ class Redirect
    */
   public function getDieRender()
   {
-    return $this->_die_render;
+    return $this->_dieRender;
   }
 
   /**
    * Set the redirect headers and potential bail out
    *
-   * @param bool $from_response
+   * @param bool $fromResponse
    */
-  public function redirect($from_response = false)
+  public function redirect($fromResponse = false)
   {
-    if(!$from_response) \header('Status: ' . $this->_http_status);
+    if(!$fromResponse) \header('Status: ' . $this->_httpStatus);
     \header('Location: ' . $this->_url);
-    if(!$from_response && $this->_die_render) die;
+    if(!$fromResponse && $this->_dieRender) die;
   }
 }

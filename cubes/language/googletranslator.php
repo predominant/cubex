@@ -14,11 +14,11 @@ class GoogleTranslator implements Translator
 
   /**
    * @param string $text            Text to translate
-   * @param string $source_language original text language
-   * @param string $target_language expected return language
+   * @param string $sourceLanguage original text language
+   * @param string $targetLanguage expected return language
    * @return string Translation
    */
-  public function translate($text, $source_language, $target_language)
+  public function translate($text, $sourceLanguage, $targetLanguage)
   {
     $translation = $text;
 
@@ -33,8 +33,8 @@ class GoogleTranslator implements Translator
 
     $data = array(
       'key'    => Cubex::config('locale')->getStr('google_api'),
-      'source' => \substr($source_language, 0, 2),
-      'target' => \substr($target_language, 0, 2),
+      'source' => \substr($sourceLanguage, 0, 2),
+      'target' => \substr($targetLanguage, 0, 2),
       'q'      => $text
     );
 

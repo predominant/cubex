@@ -21,12 +21,12 @@ class Template extends Handler implements Renderable
 
   private $_base = '';
   private $_nested = array();
-  private $_render_file = null;
-  private $_view_type = self::STATE_DYNAMIC;
+  private $_renderFile = null;
+  private $_viewType = self::STATE_DYNAMIC;
   private $_compiled = '';
   public static $cache = array();
   public static $ephemeral = array();
-  public static $last_known_base = '';
+  public static $lastKnownBase = '';
   /**
    * @var \Cubex\Dispatch\Dispatcher
    */
@@ -67,17 +67,17 @@ class Template extends Handler implements Renderable
   public function setBasePath($base)
   {
     $this->_base           = \substr($base, -1) != DIRECTORY_SEPARATOR ? $base . DIRECTORY_SEPARATOR : $base;
-    self::$last_known_base = $this->_base;
+    self::$lastKnownBase = $this->_base;
   }
 
   public function getBasePath()
   {
-    return empty($this->_base) ? self::$last_known_base : $this->_base;
+    return empty($this->_base) ? self::$lastKnownBase : $this->_base;
   }
 
   final public function setTemplateFile($filepath, $ext = 'phtml')
   {
-    $this->_render_file = $this->getBasePath() . $filepath . "." . $ext;
+    $this->_renderFile = $this->getBasePath() . $filepath . "." . $ext;
   }
 
   final public function isNested($name)
@@ -90,7 +90,7 @@ class Template extends Handler implements Renderable
     $this->_nested[$name] = $view;
   }
 
-  public function renderNest($name, $contain_div_id = true)
+  public function renderNest($name, $containDivId = true)
   {
     $rendered = '';
     if(isset($this->_nested[$name]))
@@ -102,15 +102,15 @@ class Template extends Handler implements Renderable
       }
     }
 
-    if($contain_div_id === false)
+    if($containDivId === false)
     {
       return $rendered;
     }
     else
     {
-      if(\is_string($contain_div_id))
+      if(\is_string($containDivId))
       {
-        $name = $contain_div_id;
+        $name = $containDivId;
       }
 
       return HTMLElement::create('div', array('id' => $name), $rendered)->render();
@@ -119,11 +119,11 @@ class Template extends Handler implements Renderable
 
   final public function render($rerender = false)
   {
-    if($rerender || $this->_view_type == self::STATE_DYNAMIC)
+    if($rerender || $this->_viewType == self::STATE_DYNAMIC)
     {
       $rendered = '';
 
-      if($this->_render_file !== null)
+      if($this->_renderFile !== null)
       {
         foreach(self::$ephemeral as $k => $v)
         {
@@ -133,12 +133,12 @@ class Template extends Handler implements Renderable
           }
         }
 
-        $view_content = $this->loadRaw();
+        $viewContent = $this->loadRaw();
         \ob_start();
         try //Make sure the view does not cause the entire render to fail
         {
           /* Close PHP tags to allow for html and opening tags */
-          eval('?>' . $view_content);
+          eval('?>' . $viewContent);
         }
         catch(\Exception $e)
         {
@@ -156,23 +156,23 @@ class Template extends Handler implements Renderable
     return $this->_compiled;
   }
 
-  public function setCompiled($compiled_output)
+  public function setCompiled($compiledOutput)
   {
-    $this->_compiled  = $compiled_output;
-    $this->_view_type = self::STATE_PRECOMPILED;
+    $this->_compiled  = $compiledOutput;
+    $this->_viewType = self::STATE_PRECOMPILED;
 
     return $this;
   }
 
   public function loadRaw()
   {
-    if(isset(static::$cache[\md5($this->_render_file)]))
+    if(isset(static::$cache[\md5($this->_renderFile)]))
     {
-      return static::$cache[\md5($this->_render_file)];
+      return static::$cache[\md5($this->_renderFile)];
     }
     else
     {
-      return static::$cache[\md5($this->_render_file)] = \file_get_contents($this->_render_file);
+      return static::$cache[\md5($this->_renderFile)] = \file_get_contents($this->_renderFile);
     }
   }
 

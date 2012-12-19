@@ -13,17 +13,17 @@ use Cubex\Cubex;
 class TemplatedView extends View
 {
 
-  protected $_templates_path;
-  protected $_template_file;
+  protected $_templatesPath;
+  protected $_templateFile;
   /** @var Template */
   protected $_template;
 
   /**
    * Automated way to pick out the correct views folder
    */
-  /*public function __construct($template_file = null)
+  /*public function __construct($templateFile = null)
   {
-    if($template_file !== null)
+    if($templateFile !== null)
     {
       $backtrace = debug_backtrace(2);
       if(isset($backtrace[1]))
@@ -32,15 +32,15 @@ class TemplatedView extends View
       }
       else
       {
-        $this->_templates_path = Cubex::config('general')->getStr('include_path');
+        $this->_templatesPath = Cubex::config('general')->getStr('include_path');
       }
-      $this->_template_file = $template_file;
+      $this->_templateFile = $templateFile;
     }
   }*/
 
   public function setTemplatesPath($path)
   {
-    $this->_templates_path = $path;
+    $this->_templatesPath = $path;
   }
 
 
@@ -48,13 +48,13 @@ class TemplatedView extends View
   {
     $reflector = new \ReflectionClass($class === null ? \get_class($this) : $class);
     $ns        = ltrim($reflector->getName(), "\\");
-    $ns_parts  = explode('\\', $ns);
+    $nsParts  = explode('\\', $ns);
 
-    foreach($ns_parts as $part)
+    foreach($nsParts as $part)
     {
       if($class === null)
       {
-        \array_shift($ns_parts);
+        \array_shift($nsParts);
       }
 
       $part = \strtolower($part);
@@ -70,38 +70,38 @@ class TemplatedView extends View
 
       if($class !== null)
       {
-        \array_shift($ns_parts);
+        \array_shift($nsParts);
       }
     }
 
-    $this->_templates_path = dirname($reflector->getFileName());
-    for($ii = 0; $ii < count($ns_parts); $ii++)
+    $this->_templatesPath = dirname($reflector->getFileName());
+    for($ii = 0; $ii < count($nsParts); $ii++)
     {
-      $this->_templates_path = dirname($this->_templates_path);
+      $this->_templatesPath = dirname($this->_templatesPath);
     }
 
-    $this->setTemplateFile(strtolower(implode('\\', $ns_parts)));
+    $this->setTemplateFile(strtolower(implode('\\', $nsParts)));
 
     return $this;
   }
 
   protected function setTemplateFile($template)
   {
-    $this->_template_file = $template;
+    $this->_templateFile = $template;
 
     return $this;
   }
 
   public function render()
   {
-    if($this->_template_file === null)
+    if($this->_templateFile === null)
     {
       $this->calculateTemplate();
     }
 
-    $this->_templates_path = rtrim($this->_templates_path, '/\\') . DIRECTORY_SEPARATOR;
+    $this->_templatesPath = rtrim($this->_templatesPath, '/\\') . DIRECTORY_SEPARATOR;
 
-    $this->_template = new Template($this->_template_file, $this->_templates_path . 'templates');
+    $this->_template = new Template($this->_templateFile, $this->_templatesPath . 'templates');
     $this->_template->setDispatcher($this);
     foreach($this as $k => $v)
     {

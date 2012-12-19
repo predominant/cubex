@@ -49,7 +49,6 @@ class Connection implements \Cubex\Cache\Connection
    * Escape column name
    *
    * @param $column
-   *
    * @return mixed
    */
   public function escapeColumnName($column)
@@ -61,7 +60,6 @@ class Connection implements \Cubex\Cache\Connection
    * Escape string value for insert
    *
    * @param $string
-   *
    * @return mixed
    */
   public function escapeString($string)
@@ -73,7 +71,6 @@ class Connection implements \Cubex\Cache\Connection
    * Get data by key
    *
    * @param $key
-   *
    * @return mixed
    */
   public function get($key)

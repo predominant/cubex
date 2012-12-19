@@ -27,6 +27,9 @@ abstract class Controller extends Handler
 
   protected $_delegated = false;
 
+  /**
+   *
+   */
   final public function __construct()
   {
     /* Populate data set with routes */
@@ -44,8 +47,8 @@ abstract class Controller extends Handler
 
     try
     {
-      $can_process = $this->canProcess();
-      if(!$can_process)
+      $canProcess = $this->canProcess();
+      if(!$canProcess)
       {
         throw new \Exception("Unable to process request");
       }
@@ -79,11 +82,18 @@ abstract class Controller extends Handler
     return Cubex::request();
   }
 
+  /**
+   * @return \Cubex\Http\Response
+   */
   public function getResponse()
   {
     return $this->_response;
   }
 
+  /**
+   * @param $response
+   * @return Controller
+   */
   public function setResponse($response)
   {
     if($response instanceof Response)
@@ -122,10 +132,10 @@ abstract class Controller extends Handler
     $webpage = new ErrorPage(
       500, $e->getMessage(),
       array(
-           'path'             => $this->request()->getPath(),
-           'exception'        => $e->getMessage(),
-           'exception_code'   => $e->getCode(),
-           'exception_source' => $e->getFile() . ':' . $e->getLine(),
+        'path'             => $this->request()->getPath(),
+        'exception'        => $e->getMessage(),
+        'exception_code'   => $e->getCode(),
+        'exception_source' => $e->getFile() . ':' . $e->getLine(),
       )
     );
 
@@ -165,16 +175,25 @@ abstract class Controller extends Handler
     return array();
   }
 
+  /**
+   * @return array
+   */
   public function getPostRoutes()
   {
     return array();
   }
 
+  /**
+   * @return array
+   */
   public function getRoutes()
   {
     return array();
   }
 
+  /**
+   * @return array
+   */
   final public function getAllRoutes()
   {
     return array(
@@ -231,14 +250,12 @@ abstract class Controller extends Handler
 
   /**
    * example action = index
-   *
    * ajax requests will attempt: ajaxIndex()
    * post requests will attempt: postIndex()
    * final attempt will be to: renderIndex()
    *
    * @returns Response
    * @throws \BadMethodCallException
-   *
    * */
   protected function processRouteReturn($action)
   {
@@ -274,6 +291,9 @@ abstract class Controller extends Handler
     throw new \BadMethodCallException("Invalid action $action specified on " . $this->controllerName());
   }
 
+  /**
+   * @return string
+   */
   protected function controllerName()
   {
     $reflector = new \ReflectionClass(\get_class($this));
@@ -281,6 +301,9 @@ abstract class Controller extends Handler
     return $reflector->getShortName();
   }
 
+  /**
+   * @return null|string
+   */
   protected function defaultAction()
   {
     return null;
@@ -289,25 +312,32 @@ abstract class Controller extends Handler
   /**
    * Delegate control to a new controller
    *
-   * @param Controller $new_controller
+   * @param Controller $newController
    * @return bool
    */
-  public function delegate(Controller $new_controller)
+  public function delegate(Controller $newController)
   {
     \ob_get_clean();
     $this->_delegated = true;
-    Cubex::core()->setController($new_controller);
+    Cubex::core()->setController($newController);
 
-    return $new_controller->getResponse();
+    return $newController->getResponse();
   }
 
   /* View Related Bits */
 
+  /**
+   * @return string
+   */
   public function getLayout()
   {
     return $this->app()->getLayout();
   }
 
+  /**
+   * @param $layout
+   * @return Controller
+   */
   public function setLayout($layout)
   {
     $this->app()->setLayout($layout);
@@ -315,6 +345,9 @@ abstract class Controller extends Handler
     return $this;
   }
 
+  /**
+   * @return \Cubex\View\Template
+   */
   public function baseTemplate()
   {
     return new Template('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
@@ -346,9 +379,8 @@ abstract class Controller extends Handler
   }
 
   /**
-   *
    * Translate plural, converting (s) to '' or 's'
-   *
+
    */
   public function tp($text, $number)
   {

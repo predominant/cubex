@@ -32,9 +32,9 @@ final class Cubex
   private $_connections = null;
   private $_locale = null;
 
-  private $_project_base = '';
+  private $_projectBase = '';
 
-  private $_allow_shutdown_details = true;
+  private $_allowShutdownDetails = true;
 
   /**
    * Verify and setup the environment for cubex to run in
@@ -43,17 +43,19 @@ final class Cubex
   {
     if(\defined('PHP_MAJOR_VERSION')) //Do not check version if running through a compiler
     {
-      $required_version = '5.4.0';
-      $current_version  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
-      if($current_version < $required_version)
+      $requiredVersion = '5.4.0';
+      $currentVersion  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
+      if($currentVersion < $requiredVersion)
       {
-        Cubex::fatal("You are running PHP '" . $current_version . "', version '{$required_version}' required");
+        Cubex::fatal("You are running PHP '" . $currentVersion . "', version '{$requiredVersion}' required");
       }
     }
 
     $env = \getenv('CUBEX_ENV'); // Apache Config
-    if(!$env && isset($_ENV['CUBEX_ENV'])) $env = $_ENV['CUBEX_ENV'];
-    if(!$env) Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
+    if(!$env && isset($_ENV['CUBEX_ENV']))
+      $env = $_ENV['CUBEX_ENV'];
+    if(!$env)
+      Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
 
     \register_shutdown_function('Cubex\Cubex::shutdown');
     \set_error_handler('Cubex\Cubex::error_handler');
@@ -67,8 +69,8 @@ final class Cubex
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-    $dirname = \dirname(\dirname(__FILE__));
-    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirname : \dirname($dirname));
+    $dirName = \dirname(\dirname(__FILE__));
+    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirName : \dirname($dirName));
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))
     {
@@ -82,7 +84,7 @@ final class Cubex
     if(CUBEX_WEB)
     {
       Cubex::core()->setRequest(new Request($_REQUEST['__path__']));
-      list($verify, $dispatch_path) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
+      list($verify, $dispatchPath) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
 
       if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
       {
@@ -90,9 +92,9 @@ final class Cubex
           Cubex::config("dispatch")->getArr("entity_map"),
           Cubex::config("dispatch")->getArr("domain_map")
         );
-        $response = $dispatch->getResponse($dispatch_path);
+        $response = $dispatch->getResponse($dispatchPath);
         $response->respond();
-        self::core()->_allow_shutdown_details = false;
+        self::core()->_allowShutdownDetails = false;
       }
       else
       {
@@ -119,7 +121,8 @@ final class Cubex
    */
   public static function core()
   {
-    if(self::$cubex === null) self::$cubex = new Cubex();
+    if(self::$cubex === null)
+      self::$cubex = new Cubex();
 
     return self::$cubex;
   }
@@ -216,9 +219,9 @@ final class Cubex
       $this->_configuration = \parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
       if(isset($this->_configuration['general']['include_path']))
       {
-        $application_dir     = $this->_configuration['general']['include_path'];
-        $this->_project_base = \realpath($application_dir);
-        \set_include_path(\get_include_path() . PATH_SEPARATOR . $this->_project_base);
+        $applicationDir     = $this->_configuration['general']['include_path'];
+        $this->_projectBase = \realpath($applicationDir);
+        \set_include_path(\get_include_path() . PATH_SEPARATOR . $this->_projectBase);
       }
     }
     catch(\Exception $e)
@@ -261,7 +264,8 @@ final class Cubex
   {
     if(!isset(self::core()->_connections[$type][$connection]))
     {
-      if(!isset(self::core()->_connections[$type])) self::core()->_connections[$type] = array();
+      if(!isset(self::core()->_connections[$type]))
+        self::core()->_connections[$type] = array();
       $config = self::config($type . "\\" . $connection);
       $layer  = "\\Cubex\\" . \ucwords($type) . "\\";
       $layer .= $config->getStr("engine", self::config($type)->getStr("engine", "mysql"));
@@ -322,7 +326,8 @@ final class Cubex
    */
   public static function locale($locale = null)
   {
-    if($locale === null) return self::core()->_locale;
+    if($locale === null)
+      return self::core()->_locale;
     $loc                  = \explode(',', $locale);
     self::core()->_locale = $loc[0];
     \putenv('LC_ALL=' . $loc[0]);
@@ -386,8 +391,8 @@ final class Cubex
         $class = 'cubes' . DIRECTORY_SEPARATOR . $class;
       }
 
-      $include_file = \strtolower(\str_replace('_', '/', \str_replace('\\', '/', $class))) . '.php';
-      include_once($include_file);
+      $includeFile = \strtolower(\str_replace('_', '/', \str_replace('\\', '/', $class))) . '.php';
+      include_once($includeFile);
     }
     catch(\Exception $e)
     {
@@ -401,7 +406,7 @@ final class Cubex
    */
   public function projectBasePath()
   {
-    return $this->_project_base;
+    return $this->_projectBase;
   }
 
   /**
@@ -409,49 +414,49 @@ final class Cubex
    */
   final public static function shutdown()
   {
-    if(self::core()->_allow_shutdown_details)
+    if(self::core()->_allowShutdownDetails)
     {
-      $render_type = '';
+      $renderType = '';
       if(Cubex::core()->controller() instanceof Controller)
       {
         if(Cubex::core()->controller()->getResponse() instanceof Response)
         {
-          $render_type = Cubex::core()->controller()->getResponse()->getRenderType();
+          $renderType = Cubex::core()->controller()->getResponse()->getRenderType();
         }
       }
 
       if(\in_array(
-        $render_type,
+        $renderType,
         array(
-             '',
-             Response::RENDER_RENDERABLE,
-             Response::RENDER_TEXT,
-             Response::RENDER_WEBPAGE,
+          '',
+          Response::RENDER_RENDERABLE,
+          Response::RENDER_TEXT,
+          Response::RENDER_WEBPAGE,
         )
       )
       )
       {
 
         $fatal = \defined('CUBEX_FATAL_ERROR');
-        if(CUBEX_WEB && !$fatal && $render_type != Response::RENDER_TEXT)
+        if(CUBEX_WEB && !$fatal && $renderType != Response::RENDER_TEXT)
         {
-          $shutdown_debug = new HTMLElement(
+          $shutdownDebug = new HTMLElement(
             'div',
             array(
-                 'id'    => 'cubex-shutdown-debug',
-                 'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
-                 'padding:3px; background:#FFFFFF; position:fixed;',
+              'id'    => 'cubex-shutdown-debug',
+              'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+                'padding:3px; background:#FFFFFF; position:fixed;',
             )
           );
         }
         else
         {
-          $shutdown_debug = new HTMLElement("");
+          $shutdownDebug = new HTMLElement("");
         }
 
-        echo $shutdown_debug->setContent(
+        echo $shutdownDebug->setContent(
           "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-          " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
+            " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
         );
       }
     }
@@ -501,8 +506,8 @@ final class Cubex
     {
       Cubex::fatal(
         ($e->getCode() > 0 ? "[" . $e->getCode() . "] " : '')
-        . $e->getMessage() . "\n" .
-        "In: " . $e->getFile() . ':' . $e->getLine()
+          . $e->getMessage() . "\n" .
+          "In: " . $e->getFile() . ':' . $e->getLine()
       );
     }
   }

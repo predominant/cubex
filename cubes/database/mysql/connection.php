@@ -9,6 +9,9 @@ namespace Cubex\Database\MySQL;
 
 use Cubex\Data\Handler;
 
+/**
+ * Connection
+ */
 class Connection implements \Cubex\Database\Connection
 {
 
@@ -22,12 +25,19 @@ class Connection implements \Cubex\Database\Connection
   protected $_config;
   private $_connected = false;
 
+  /**
+   * @param \Cubex\Data\Handler $config
+   */
   public function __construct(Handler $config)
   {
     $this->_config = $config;
-
   }
 
+  /**
+   * @param string $mode
+   *
+   * @return Connection
+   */
   public function connect($mode = 'w')
   {
     $hostname = $this->_config->getStr('hostname', 'localhost');
@@ -51,11 +61,19 @@ class Connection implements \Cubex\Database\Connection
     return $this;
   }
 
+  /**
+   *
+   */
   public function disconnect()
   {
     $this->_connection->close();
   }
 
+  /**
+   * @param $column
+   *
+   * @return string
+   */
   public function escapeColumnName($column)
   {
     $column = str_replace('`', '', $this->escapeString($column));
@@ -63,6 +81,11 @@ class Connection implements \Cubex\Database\Connection
     return "`$column`";
   }
 
+  /**
+   * @param $string
+   *
+   * @return string
+   */
   public function escapeString($string)
   {
     $this->prepareConnection('r');
@@ -78,6 +101,9 @@ class Connection implements \Cubex\Database\Connection
     return $this->_connection->query($query);
   }
 
+  /**
+   * @param string $mode
+   */
   protected function prepareConnection($mode = 'r')
   {
     if(!$this->_connected)
@@ -86,6 +112,11 @@ class Connection implements \Cubex\Database\Connection
     }
   }
 
+  /**
+   * @param $query
+   *
+   * @return bool
+   */
   public function query($query)
   {
     $this->prepareConnection('w');
@@ -93,6 +124,11 @@ class Connection implements \Cubex\Database\Connection
     return $this->doQuery($query) === true;
   }
 
+  /**
+   * @param $query
+   *
+   * @return bool
+   */
   public function getField($query)
   {
     $this->prepareConnection('r');
@@ -101,13 +137,24 @@ class Connection implements \Cubex\Database\Connection
     return isset($result[0]) ? $result[0] : false;
   }
 
+  /**
+   * @param $query
+   *
+   * @return mixed
+   */
   public function getRow($query)
   {
     $this->prepareConnection('r');
     $result = $this->doQuery($query);
+
     return $result->fetch_object();
   }
 
+  /**
+   * @param $query
+   *
+   * @return array
+   */
   public function getRows($query)
   {
     $this->prepareConnection('r');
@@ -136,36 +183,40 @@ class Connection implements \Cubex\Database\Connection
     return $rows;
   }
 
+  /**
+   * @param $query
+   *
+   * @return array
+   */
   public function getKeyedRows($query)
   {
     $this->prepareConnection('r');
     $result         = $this->doQuery($query);
     $rows           = array();
-    $keyfield       = $value_key = null;
-    $value_as_array = true;
+    $keyField       = $valueKey = null;
+    $valueAsArray = true;
     if($result->num_rows > 0)
     {
       while($row = $result->fetch_object())
       {
-        if($keyfield == null)
+        if($keyField == null)
         {
-          $keyfield = array_keys(get_object_vars($row));
-          if(count($keyfield) == 2)
+          $keyField = array_keys(get_object_vars($row));
+          if(count($keyField) == 2)
           {
-            $value_as_array = false;
-            $value_key      = $keyfield[1];
+            $valueAsArray = false;
+            $valueKey      = $keyField[1];
           }
-          else if(count($keyfield) == 1)
+          else if(count($keyField) == 1)
           {
-            $value_as_array = false;
-            $value_key      = $keyfield[0];
+            $valueAsArray = false;
+            $valueKey      = $keyField[0];
           }
-          $keyfield = $keyfield[0];
+          $keyField = $keyField[0];
         }
-        $rows[$row->$keyfield] = !$value_as_array && !empty($value_key) ? $row->$value_key : $row;
+        $rows[$row->$keyField] = !$valueAsArray && !empty($valueKey) ? $row->$valueKey : $row;
       }
     }
-
 
     try
     {
@@ -182,6 +233,11 @@ class Connection implements \Cubex\Database\Connection
     return $rows;
   }
 
+  /**
+   * @param $query
+   *
+   * @return array
+   */
   public function getColumns($query)
   {
     $this->prepareConnection('r');
@@ -190,11 +246,16 @@ class Connection implements \Cubex\Database\Connection
     return array_keys($result);
   }
 
+  /**
+   * @param $query
+   *
+   * @return int
+   */
   public function numRows($query)
   {
     $this->prepareConnection('r');
     $result = $this->doQuery($query);
-    $rows = (int)$result->num_rows;
+    $rows   = (int)$result->num_rows;
 
     try
     {
@@ -210,5 +271,4 @@ class Connection implements \Cubex\Database\Connection
 
     return $rows;
   }
-
 }

@@ -28,27 +28,27 @@ final class Events
   /**
    * Listen into an event
    *
-   * @param          $event_name
+   * @param          $eventName
    * @param callable $callback
    */
-  public static function listen($event_name, callable $callback)
+  public static function listen($eventName, callable $callback)
   {
-    if(!isset(self::$_listeners[$event_name]))
+    if(!isset(self::$_listeners[$eventName]))
     {
-      self::$_listeners[$event_name] = array();
+      self::$_listeners[$eventName] = array();
     }
-    self::$_listeners[$event_name][] = $callback;
+    self::$_listeners[$eventName][] = $callback;
   }
 
   /**
    * Trigger an event
    *
-   * @param       $event_name
+   * @param       $eventName
    * @param array $args
    */
-  public static function trigger($event_name, $args = array())
+  public static function trigger($eventName, $args = array())
   {
-    $listeners = isset(self::$_listeners[$event_name]) ? self::$_listeners[$event_name] : array();
+    $listeners = isset(self::$_listeners[$eventName]) ? self::$_listeners[$eventName] : array();
     foreach($listeners as $listen)
     {
       if(!\is_callable($listen)) continue;

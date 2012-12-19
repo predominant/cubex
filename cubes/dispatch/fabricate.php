@@ -14,27 +14,27 @@ use Cubex\Cubex;
 
 class Fabricate
 {
-  protected $_real_path;
+  protected $_realPath;
   protected $_path;
 
-  protected static $_base_map = null;
+  protected static $_baseMap = null;
 
-  protected $_entity_map = null;
+  protected $_entityMap = null;
 
-  protected $_entity_hash = null;
-  protected $_domain_hash = null;
+  protected $_entityHash = null;
+  protected $_domainHash = null;
 
   /**
    * Initiate a new Fabricate class for each entity
    *
-   * @param null $entity_base
+   * @param null $entityBase
    */
-  public function __construct($entity_base = null)
+  public function __construct($entityBase = null)
   {
-    $entity_base        = \rtrim($entity_base, '/') . '/';
-    $this->_real_path   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_base . 'src';
-    $this->_path        = $entity_base . 'src';
-    $this->_entity_hash = $this->generateEntityHash($this->_path);
+    $entityBase        = \rtrim($entityBase, '/') . '/';
+    $this->_realPath   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityBase . 'src';
+    $this->_path        = $entityBase . 'src';
+    $this->_entityHash = $this->generateEntityHash($this->_path);
   }
 
   /**
@@ -44,7 +44,7 @@ class Fabricate
    */
   public function getEntityHash()
   {
-    return $this->_entity_hash;
+    return $this->_entityHash;
   }
 
   /**
@@ -56,7 +56,7 @@ class Fabricate
    */
   public function setEntityHash($hash)
   {
-    $this->_entity_hash = $hash;
+    $this->_entityHash = $hash;
     return $this;
   }
 
@@ -69,7 +69,7 @@ class Fabricate
    */
   public function setDomainHash($hash)
   {
-    $this->_domain_hash = $hash;
+    $this->_domainHash = $hash;
     return $this;
   }
 
@@ -84,13 +84,13 @@ class Fabricate
   }
 
   /**
-   * @param $entity_path
+   * @param $entityPath
    *
    * @return string
    */
-  public static function generateEntityHash($entity_path)
+  public static function generateEntityHash($entityPath)
   {
-    return \substr(\md5($entity_path), 0, 6);
+    return \substr(\md5($entityPath), 0, 6);
   }
 
   /**
@@ -112,22 +112,22 @@ class Fabricate
    */
   public function preHash($base = false)
   {
-    if($this->_domain_hash === null)
+    if($this->_domainHash === null)
     {
       $domain             = Cubex::request()->getDomain() . '.' . Cubex::request()->getTld();
-      $this->_domain_hash = $this->generateDomainHash($domain);
+      $this->_domainHash = $this->generateDomainHash($domain);
     }
 
-    if(!$base && $this->_entity_hash === null)
+    if(!$base && $this->_entityHash === null)
     {
-      $this->_entity_hash = $this->generateEntityHash($this->_path);
+      $this->_entityHash = $this->generateEntityHash($this->_path);
     }
 
     return \implode(
       '/', array('',
                  Cubex::config("dispatch")->getStr('base', 'res'),
-                 $this->_domain_hash,
-                 $base ? 'esabot' : $this->_entity_hash
+                 $this->_domainHash,
+                 $base ? 'esabot' : $this->_entityHash
            )
     );
   }
@@ -158,33 +158,33 @@ class Fabricate
 
     $base          = \substr($path, 0, 1) == '/';
     $path          = \ltrim($path, '/');
-    $resource_hash = 'pamon'; //No Map
+    $resourceHash = 'pamon'; //No Map
 
     if($base)
     {
-      if(self::$_base_map === null)
+      if(self::$_baseMap === null)
       {
         $this->loadBaseMap();
       }
-      if(isset(self::$_base_map[$path]))
+      if(isset(self::$_baseMap[$path]))
       {
-        $resource_hash = $this->generateResourceHash(self::$_base_map[$path]);
+        $resourceHash = $this->generateResourceHash(self::$_baseMap[$path]);
       }
     }
     else
     {
-      if($this->_entity_map === null)
+      if($this->_entityMap === null)
       {
         $this->loadEntityMap();
       }
 
-      if(isset($this->_entity_map[$path]))
+      if(isset($this->_entityMap[$path]))
       {
-        $resource_hash = $this->generateResourceHash($this->_entity_map[$path]);
+        $resourceHash = $this->generateResourceHash($this->_entityMap[$path]);
       }
     }
 
-    return \implode('/', array($this->preHash($base), $resource_hash, $path));
+    return \implode('/', array($this->preHash($base), $resourceHash, $path));
   }
 
   /**
@@ -194,11 +194,11 @@ class Fabricate
   {
     try
     {
-      $this->_entity_map = \parse_ini_file($this->_real_path . DIRECTORY_SEPARATOR . 'dispatch.ini', false);
+      $this->_entityMap = \parse_ini_file($this->_realPath . DIRECTORY_SEPARATOR . 'dispatch.ini', false);
     }
     catch(\Exception $e)
     {
-      $this->_entity_map = array();
+      $this->_entityMap = array();
     }
     return $this;
   }
@@ -212,13 +212,13 @@ class Fabricate
   {
     try
     {
-      self::$_base_map = \parse_ini_file(
+      self::$_baseMap = \parse_ini_file(
         Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'src/dispatch.ini', false
       );
     }
     catch(\Exception $e)
     {
-      self::$_base_map = array();
+      self::$_baseMap = array();
     }
     return $this;
   }

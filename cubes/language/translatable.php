@@ -18,7 +18,7 @@ abstract class Translatable extends Dispatcher
 {
 
   protected $_textdomain = 'messages';
-  private $_bound_td = false;
+  private $_boundTd = false;
   /**
    * @var Loader
    */
@@ -87,14 +87,14 @@ abstract class Translatable extends Dispatcher
 
     $this->_textdomain = \md5($path);
 
-    if(!$this->_bound_td) $this->bindLanguage();
+    if(!$this->_boundTd) $this->bindLanguage();
 
     return $this->_textdomain;
   }
 
   public function bindLanguage()
   {
-    $this->_bound_td = true;
+    $this->_boundTd = true;
 
     return $this->getTranslator()->bindLanguage($this->textDomain(), $this->filePath() . '\\locale');
   }

@@ -13,7 +13,7 @@ namespace Cubex\Dispatch;
 abstract class Dispatcher
 {
   private $_fabrication;
-  protected $_entity_dispatch_name;
+  protected $_entityDispatchName;
 
   /**
    * Create the dispatch name e.g. Application Name
@@ -22,17 +22,17 @@ abstract class Dispatcher
    */
   public function dispatcherEntityName()
   {
-    if($this->_entity_dispatch_name !== null)
+    if($this->_entityDispatchName !== null)
     {
-      return $this->_entity_dispatch_name;
+      return $this->_entityDispatchName;
     }
 
     $reflector = new \ReflectionClass(\get_class($this));
     $parts     = \explode('\\', $reflector->getName());
     \array_shift($parts);
     $parts                       = \array_chunk($parts, 1, false);
-    $this->_entity_dispatch_name = \strtolower($parts[1][0]);
-    return $this->_entity_dispatch_name;
+    $this->_entityDispatchName = \strtolower($parts[1][0]);
+    return $this->_entityDispatchName;
   }
 
   /**

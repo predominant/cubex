@@ -8,35 +8,45 @@
 
 namespace Cubex\Language\Loader;
 
+/**
+ * Gettext
+ */
 class Gettext
 {
 
+  /**
+   * @var string
+   */
   protected $_textdomain = 'messages';
-  private $_bound_td = false;
+  /**
+   * @var bool
+   */
+  private $_boundTd = false;
 
   /**
    * Translate String
    *
-   * @param $textdomain
+   * @param $textDomain
    * @param $message
+   *
    * @return string
    */
-  public function t($textdomain, $message)
+  public function t($textDomain, $message)
   {
-    if(!\function_exists('\dgettext')) return (string)$message;
+    if(!\function_exists('\dgettext'))
+      return (string)$message;
 
-    return \dgettext($textdomain, $message);
+    return \dgettext($textDomain, $message);
   }
 
   /**
-   *
    * Translate plural, converting (s) to '' or 's'
-   *
+
    */
-  public function tp($textdomain, $text, $number)
+  public function tp($textDomain, $text, $number)
   {
     return $this->p(
-      $textdomain,
+      $textDomain,
       str_replace('(s)', '', $text),
       str_replace('(s)', 's', $text),
       $number
@@ -46,13 +56,14 @@ class Gettext
   /**
    * Translate plural
    *
-   * @param      $textdomain
+   * @param      $textDomain
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
-  public function p($textdomain, $singular, $plural = null, $number = 0)
+  public function p($textDomain, $singular, $plural = null, $number = 0)
   {
     if(!\function_exists('\dngettext'))
     {
@@ -60,7 +71,7 @@ class Gettext
     }
     else
     {
-      $translated = \dngettext($textdomain, $singular, $plural, $number);
+      $translated = \dngettext($textDomain, $singular, $plural, $number);
     }
 
     if(\substr_count($translated, '%d') == 1)
@@ -71,11 +82,18 @@ class Gettext
     return $translated;
   }
 
-  public function bindLanguage($textdomain, $filepath)
+  /**
+   * @param $textDomain
+   * @param $filePath
+   *
+   * @return bool|string
+   */
+  public function bindLanguage($textDomain, $filePath)
   {
-    $this->_bound_td = true;
-    if(!\function_exists('bindtextdomain')) return false;
+    $this->_boundTd = true;
+    if(!\function_exists('bindtextdomain'))
+      return false;
 
-    return \bindtextdomain($textdomain, $filepath . '\\locale');
+    return \bindtextdomain($textDomain, $filePath . '\\locale');
   }
 }

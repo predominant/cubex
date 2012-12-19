@@ -17,20 +17,20 @@ use Cubex\Base\ErrorPage;
 
 class Respond
 {
-  protected $_cache_time = 2592000; //60 * 60 * 24 * 30
+  protected $_cacheTime = 2592000; //60 * 60 * 24 * 30
 
-  protected $_use_map = true;
-  protected $_entity_map = array();
-  protected $_domain_map = array();
+  protected $_useMap = true;
+  protected $_entityMap = array();
+  protected $_domainMap = array();
 
   /**
-   * @param array $entity_map
-   * @param array $domain_map
+   * @param array $entityMap
+   * @param array $domainMap
    */
-  public function __construct($entity_map = array(), $domain_map = array())
+  public function __construct($entityMap = array(), $domainMap = array())
   {
-    $this->_entity_map = $entity_map;
-    $this->_domain_map = $domain_map;
+    $this->_entityMap = $entityMap;
+    $this->_domainMap = $domainMap;
   }
 
   /**
@@ -44,13 +44,13 @@ class Respond
    */
   public function getResponse($path)
   {
-    list($domain_hash, $entity_hash, $type, $rel) = \explode('/', $path, 4);
+    list($domainHash, $entityHash, $type, $rel) = \explode('/', $path, 4);
 
     list($type, $debug) = \explode(';', $type, 2);
 
     if($type == 'pamon')
     {
-      $this->_use_map = false;
+      $this->_useMap = false;
     }
 
     /**
@@ -61,14 +61,14 @@ class Respond
       $response = new Response("");
       $response->addHeader("X-Powered-By", "Cubex:Dispatch");
       $response->setStatus(304);
-      $response->setCacheable($this->_cache_time); //Dispatch content should never change
+      $response->setCacheable($this->_cacheTime); //Dispatch content should never change
       $response->setLastModified(time());
       return $response;
     }
 
-    $domain        = $this->getDomain($domain_hash);
-    $entity_path   = $this->getEntityPath($entity_hash);
-    $resource_type = \end(\explode('.', $rel));
+    $domain        = $this->getDomain($domainHash);
+    $entityPath   = $this->getEntityPath($entityHash);
+    $resourceType = \end(\explode('.', $rel));
 
     if($type != 'pkg')
     {
@@ -88,18 +88,18 @@ class Respond
     /**
      * Either hack attempt or a dev needs a slapped wrist
      */
-    if(empty($types[$resource_type]))
+    if(empty($types[$resourceType]))
     {
       return new Response(new ErrorPage(404));
     }
 
     if($type == 'pkg')
     {
-      $data = $this->getPackageData($entity_path, $rel, $domain, $type);
+      $data = $this->getPackageData($entityPath, $rel, $domain, $type);
     }
     else
     {
-      $data = $this->getData($entity_path, $rel, $domain, $type);
+      $data = $this->getData($entityPath, $rel, $domain, $type);
     }
 
     /**
@@ -111,12 +111,12 @@ class Respond
     }
 
     $response = new Response($data);
-    $response->addHeader("Content-Type", $types[$resource_type]);
+    $response->addHeader("Content-Type", $types[$resourceType]);
     $response->addHeader("X-Powered-By", "Cubex:Dispatch");
     $response->setStatus(200);
     if($debug != 'nocache')
     {
-      $response->setCacheable($this->_cache_time);
+      $response->setCacheable($this->_cacheTime);
       $response->setLastModified(time());
     }
     return $response;
@@ -125,34 +125,34 @@ class Respond
   /**
    * Load file data or compile package for the response
    */
-  public function getData($entity_path, $file_path, $domain = null)
+  public function getData($entityPath, $filePath, $domain = null)
   {
-    $base_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_path;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
 
     if($domain !== null && !empty($domain))
     {
-      $locate_list  = array();
-      $domain_parts = \explode('.', $domain);
-      $domain_path  = '';
-      foreach($domain_parts as $dpart)
+      $locateList  = array();
+      $domainParts = \explode('.', $domain);
+      $domainPath  = '';
+      foreach($domainParts as $dpart)
       {
         //Prepend with . on domain to avoid conflicts in standard resources
-        $domain_path .= '.' . $dpart;
-        $locate_list[] = $base_path . DIRECTORY_SEPARATOR . $domain_path . DIRECTORY_SEPARATOR . $file_path;
+        $domainPath .= '.' . $dpart;
+        $locateList[] = $basePath . DIRECTORY_SEPARATOR . $domainPath . DIRECTORY_SEPARATOR . $filePath;
       }
-      $locate_list = \array_reverse($locate_list);
+      $locateList = \array_reverse($locateList);
     }
 
-    $locate_list[] = $base_path . DIRECTORY_SEPARATOR . $file_path;
+    $locateList[] = $basePath . DIRECTORY_SEPARATOR . $filePath;
 
-    foreach($locate_list as $file)
+    foreach($locateList as $file)
     {
       try
       {
         $data = \file_get_contents($file);
         if(!empty($data))
         {
-          return $this->minifyData($data, \end(\explode('.', $file_path)));
+          return $this->minifyData($data, \end(\explode('.', $filePath)));
         }
       }
       catch(\Exception $e)
@@ -165,21 +165,21 @@ class Respond
   /**
    * Compile package from map
    *
-   * @param $entity_path
-   * @param $file_path
+   * @param $entityPath
+   * @param $filePath
    * @param $domain
    *
    * @return string
    */
-  public function getPackageData($entity_path, $file_path, $domain)
+  public function getPackageData($entityPath, $filePath, $domain)
   {
-    $base_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entity_path;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
 
     $response = '';
 
     try
     {
-      $resources = \parse_ini_file($base_path . DIRECTORY_SEPARATOR . 'dispatch.ini', false);
+      $resources = \parse_ini_file($basePath . DIRECTORY_SEPARATOR . 'dispatch.ini', false);
     }
     catch(\Exception $e)
     {
@@ -188,27 +188,27 @@ class Respond
 
     if(!$resources)
     {
-      $resources = Mapper::mapDirectory($base_path);
-      if($this->_use_map)
+      $resources = Mapper::mapDirectory($basePath);
+      if($this->_useMap)
       {
-        Mapper::saveMap($resources, $base_path);
+        Mapper::saveMap($resources, $basePath);
       }
     }
 
-    $match_ext = \end(\explode('.', $file_path));
+    $matchExt = \end(\explode('.', $filePath));
 
     /**
      * Only allow JS & CSS packages
      */
-    if(\in_array($match_ext, array("js", "css")))
+    if(\in_array($matchExt, array("js", "css")))
     {
       if(!empty($resources))
       {
         foreach($resources as $resource => $checksum)
         {
-          if(\end(\explode('.', $resource)) == $match_ext)
+          if(\end(\explode('.', $resource)) == $matchExt)
           {
-            $response .= $this->getData($entity_path, $resource, $domain) . "\n";
+            $response .= $this->getData($entityPath, $resource, $domain) . "\n";
           }
         }
       }
@@ -220,26 +220,26 @@ class Respond
   /**
    * Locate path to entity src directory
    *
-   * @param string $entity_hash
+   * @param string $entityHash
    *
    * @return string
    */
-  public function getEntityPath($entity_hash = '')
+  public function getEntityPath($entityHash = '')
   {
-    if($entity_hash == 'esabot')
+    if($entityHash == 'esabot')
     {
       return 'src';
     }
-    else if(isset($this->_entity_map[$entity_hash]))
+    else if(isset($this->_entityMap[$entityHash]))
     {
-      return $this->_entity_map[$entity_hash];
+      return $this->_entityMap[$entityHash];
     }
     else
     {
-      $path = $this->locateEntityPath('', $entity_hash);
+      $path = $this->locateEntityPath('', $entityHash);
       if($path === null)
       {
-        return \rawurldecode($entity_hash);
+        return \rawurldecode($entityHash);
       }
       else
       {
@@ -260,7 +260,7 @@ class Respond
   public function locateEntityPath($path, $match, $depth = 0)
   {
     $base      = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
-    $match_len = \strlen($match);
+    $matchLen = \strlen($match);
 
     if($handle = \opendir($base . $path))
     {
@@ -268,7 +268,7 @@ class Respond
       {
         if(\substr($filename, 0, 1) == '.') continue;
 
-        if(\substr(\md5($path . '/' . $filename . '/src'), 0, $match_len) == $match)
+        if(\substr(\md5($path . '/' . $filename . '/src'), 0, $matchLen) == $match)
         {
           return $path . '/' . $filename . '/src';
         }
@@ -291,15 +291,15 @@ class Respond
   /**
    * Get domain from hash, or failover to the current domain processing the request
    *
-   * @param $domain_hash
+   * @param $domainHash
    *
    * @return mixed
    */
-  protected function getDomain($domain_hash = '')
+  protected function getDomain($domainHash = '')
   {
-    if(isset($this->_domain_map[$domain_hash]))
+    if(isset($this->_domainMap[$domainHash]))
     {
-      return $this->_domain_map[$domain_hash];
+      return $this->_domainMap[$domainHash];
     }
     else
     {
@@ -328,18 +328,18 @@ class Respond
    * Process file data for minified response
    *
    * @param $data
-   * @param $filetype
+   * @param $fileType
    *
    * @return string
    */
-  protected function minifyData($data, $filetype)
+  protected function minifyData($data, $fileType)
   {
     if(\strpos($data, '@' . 'do-not-minify') !== false)
     {
       return $data;
     }
 
-    switch($filetype)
+    switch($fileType)
     {
       case 'css':
         // Remove comments.

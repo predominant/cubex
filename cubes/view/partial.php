@@ -8,13 +8,31 @@
 
 namespace Cubex\View;
 
+/**
+ *
+ */
 class Partial implements Renderable
 {
 
+  /**
+   * @var string
+   */
   private $_template;
+  /**
+   * @var array|null
+   */
   private $_variables;
+  /**
+   * @var
+   */
   private $_elements;
-  private $_element_data = array();
+  /**
+   * @var array
+   */
+  private $_elementData = array();
+  /**
+   * @var string
+   */
   protected $_glue = '';
 
   /**
@@ -38,10 +56,13 @@ class Partial implements Renderable
     return $this;
   }
 
+  /**
+   * @param $args
+   */
   private function addItem($args)
   {
     $element               = $this->_template;
-    $this->_element_data[] = $args; //Allow for changing the template at a later point in time, or handling in render
+    $this->_elementData[] = $args; //Allow for changing the template at a later point in time, or handling in render
 
     foreach($this->_variables as $arg => $key)
     {
@@ -57,7 +78,11 @@ class Partial implements Renderable
     }
   }
 
-  public function addElements(array $elements)
+  /**
+   * @param array $elements
+   *
+   * @return Partial
+   */public function addElements(array $elements)
   {
     foreach($elements as $element)
     {
@@ -67,7 +92,10 @@ class Partial implements Renderable
     return $this;
   }
 
-  public function setGlue($glue = '')
+  /**
+   * @param string $glue
+   * @return Partial
+   */public function setGlue($glue = '')
   {
     $this->_glue = $glue;
 
@@ -82,7 +110,9 @@ class Partial implements Renderable
     return \implode($this->_glue === null ? '' : $this->_glue, $this->_elements);
   }
 
-  public function __toString()
+  /**
+   * @return string
+   */public function __toString()
   {
     return $this->render();
   }
@@ -95,7 +125,10 @@ class Partial implements Renderable
     $this->_elements = array();
   }
 
-  public static function single($template /*$element,$element,...*/)
+  /**
+   * @param $template
+   * @return Partial
+   */public static function single($template /*$element,$element,...*/)
   {
     $partial = new Partial($template);
     $args    = \func_get_args();

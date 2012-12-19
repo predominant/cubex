@@ -20,8 +20,8 @@ class Response
 
   protected $_source = null;
 
-  protected $_http_status = 200;
-  protected $_render_type = null;
+  protected $_httpStatus = 200;
+  protected $_renderType = null;
 
   /**
    * Number of seconds to cache response
@@ -34,7 +34,7 @@ class Response
    *
    * @var bool|int
    */
-  protected $_last_modified = false;
+  protected $_lastModified = false;
 
   protected $_rendered = false;
 
@@ -74,8 +74,8 @@ class Response
     }
     else if($source !== null)
     {
-      $this->_source      = $source;
-      $this->_render_type = self::RENDER_UNKNOWN;
+      $this->_source     = $source;
+      $this->_renderType = self::RENDER_UNKNOWN;
     }
   }
 
@@ -86,7 +86,7 @@ class Response
    */
   public function getRenderType()
   {
-    return $this->_render_type;
+    return $this->_renderType;
   }
 
   /**
@@ -111,6 +111,7 @@ class Response
       }
     }
     $this->_headers[] = array($header, $data, $replace);
+
     return $this;
   }
 
@@ -123,8 +124,9 @@ class Response
    */
   public function text($text)
   {
-    $this->_source      = $text;
-    $this->_render_type = self::RENDER_TEXT;
+    $this->_source     = $text;
+    $this->_renderType = self::RENDER_TEXT;
+
     return $this;
   }
 
@@ -138,8 +140,9 @@ class Response
    */
   public function json($object)
   {
-    $this->_source      = $object;
-    $this->_render_type = self::RENDER_JSON;
+    $this->_source     = $object;
+    $this->_renderType = self::RENDER_JSON;
+
     return $this;
   }
 
@@ -152,8 +155,9 @@ class Response
    */
   public function renderable(Renderable $item)
   {
-    $this->_source      = $item;
-    $this->_render_type = self::RENDER_RENDERABLE;
+    $this->_source     = $item;
+    $this->_renderType = self::RENDER_RENDERABLE;
+
     return $this;
   }
 
@@ -166,9 +170,10 @@ class Response
    */
   public function webpage(WebPage $page)
   {
-    $this->_source      = $page;
-    $this->_http_status = $page->getHttpStatus();
-    $this->_render_type = self::RENDER_WEBPAGE;
+    $this->_source     = $page;
+    $this->_httpStatus = $page->getHttpStatus();
+    $this->_renderType = self::RENDER_WEBPAGE;
+
     return $this;
   }
 
@@ -181,15 +186,15 @@ class Response
    */
   public function redirect(Redirect $redirect)
   {
-    $this->_source      = $redirect;
-    $this->_http_status = $redirect->getHttpStatus();
-    $this->_render_type = self::RENDER_REDIRECT;
+    $this->_source     = $redirect;
+    $this->_httpStatus = $redirect->getHttpStatus();
+    $this->_renderType = self::RENDER_REDIRECT;
+
     return $this;
   }
 
   /**
    * Send a response to the client based on the constructed response object
-   *
    * Only the most recent response initiator/call will be used
    *
    * @throws \Exception
@@ -197,10 +202,10 @@ class Response
    */
   public function respond()
   {
-    $this->addHeader("X-Cubex-Render", $this->_render_type);
-    $this->addHeader("Status", $this->_http_status);
+    $this->addHeader("X-Cubex-Render", $this->_renderType);
+    $this->addHeader("Status", $this->_httpStatus);
 
-    switch($this->_render_type)
+    switch($this->_renderType)
     {
       case self::RENDER_WEBPAGE;
         $this->addHeader("Content-Type", "text/html; charset=UTF-8", false);
@@ -222,7 +227,8 @@ class Response
         if($this->_source instanceof Redirect)
         {
           $this->_source->redirect();
-          if($this->_source->getDieRender()) die;
+          if($this->_source->getDieRender())
+            die;
         }
         break;
       case self::RENDER_RENDERABLE:
@@ -264,6 +270,7 @@ class Response
     }
 
     $this->_rendered = true;
+
     return $this;
   }
 
@@ -276,11 +283,11 @@ class Response
   {
     if(!\headers_sent())
     {
-      \header("HTTP/1.1 " . $this->_http_status . ' ' . $this->getStatusReason());
+      \header("HTTP/1.1 " . $this->_httpStatus . ' ' . $this->getStatusReason());
 
-      if($this->_last_modified)
+      if($this->_lastModified)
       {
-        $this->addHeader('Last-Modified', $this->httpHeaderDate($this->_last_modified));
+        $this->addHeader('Last-Modified', $this->httpHeaderDate($this->_lastModified));
       }
 
       if($this->_cacheable)
@@ -300,6 +307,7 @@ class Response
         \header($header[0] . ":" . $header[1], $header[2]);
       }
     }
+
     return $this;
   }
 
@@ -313,6 +321,7 @@ class Response
   public function setCacheable($seconds = 3600)
   {
     $this->_cacheable = $seconds;
+
     return $this;
   }
 
@@ -324,12 +333,12 @@ class Response
   public function disbleCache()
   {
     $this->_cacheable = false;
+
     return $this;
   }
 
   /**
    * Set the last modified time of the respones
-   *
    * Useful when returning static elements to improve cache
    *
    * @param int $timestamp
@@ -338,7 +347,8 @@ class Response
    */
   public function setLastModified($timestamp = 0)
   {
-    $this->_last_modified = $timestamp;
+    $this->_lastModified = $timestamp;
+
     return $this;
   }
 
@@ -349,7 +359,8 @@ class Response
    */
   public function unsetLastModified()
   {
-    $this->_last_modified = false;
+    $this->_lastModified = false;
+
     return $this;
   }
 
@@ -360,7 +371,7 @@ class Response
    */
   public function setStatus($code)
   {
-    $this->_http_status = $code;
+    $this->_httpStatus = $code;
   }
 
   /**
@@ -370,9 +381,9 @@ class Response
    */
   protected function getStatusReason()
   {
-    if($this->_http_status === null)
+    if($this->_httpStatus === null)
     {
-      $this->_http_status = 200;
+      $this->_httpStatus = 200;
     }
 
     $reasons = array(
@@ -439,7 +450,7 @@ class Response
       511 => 'Network Authentication Required',
     );
 
-    return isset($reasons[$this->_http_status]) ? $reasons[$this->_http_status] : '';
+    return isset($reasons[$this->_httpStatus]) ? $reasons[$this->_httpStatus] : '';
   }
 
   /**

@@ -26,7 +26,7 @@ abstract class Component extends Translatable
   }
 
   /**
-   * Description for your comonent
+   * Description for your component
    *
    * @return string
    */

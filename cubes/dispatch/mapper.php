@@ -34,7 +34,7 @@ class Mapper
     echo \str_repeat("\n", 100);
     Shell::clear();
 
-    $base_path = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
 
     $mapper = '_____________                      _____      ______
 ___  __ \__(_)____________________ __  /_________  /_
@@ -49,41 +49,41 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
 /_/  /_/  \__,_/ _  .___/_  .___/\___//_/
                  /_/     /_/                  ';
 
-    $project_ini = '';
+    $projectIni = '';
 
-    $existing_map = Cubex::config("dispatch")->getArr("entity_map");
+    $existingMap = Cubex::config("dispatch")->getArr("entity_map");
 
     echo Shell::colourText("\n$mapper\n\n", Shell::COLOUR_FOREGROUND_LIGHT_RED);
-    echo Shell::colourText("Using Path: ", Shell::COLOUR_FOREGROUND_CYAN) . $base_path . "\n\n";
+    echo Shell::colourText("Using Path: ", Shell::COLOUR_FOREGROUND_CYAN) . $basePath . "\n\n";
 
-    foreach(array("", "applications", "components", "modules", "widgets") as $entity_group)
+    foreach(array("", "applications", "components", "modules", "widgets") as $entityGroup)
     {
       echo Shell::colourText("=======================================\n\n", Shell::COLOUR_FOREGROUND_DARK_GREY);
       echo Shell::colourText("Processing ", Shell::COLOUR_FOREGROUND_CYAN);
-      echo ($entity_group == '' ? 'Base' : \ucwords($entity_group)) . "\n";
-      $entities = $this->cliFindEntities($base_path, $entity_group);
+      echo ($entityGroup == '' ? 'Base' : \ucwords($entityGroup)) . "\n";
+      $entities = $this->cliFindEntities($basePath, $entityGroup);
       if($entities)
       {
         foreach($entities as $entity)
         {
           echo "\n";
-          $entity_hash = Fabricate::generateEntityHash($entity);
-          if(!isset($existing_map[$entity_hash]))
+          $entityHash = Fabricate::generateEntityHash($entity);
+          if(!isset($existingMap[$entityHash]))
           {
-            $project_ini .= "entity_map[" . $entity_hash . "] = $entity\n";
+            $projectIni .= "entityMap[" . $entityHash . "] = $entity\n";
           }
           echo Shell::colourText("     Found ", Shell::COLOUR_FOREGROUND_LIGHT_CYAN);
-          echo Shell::colourText($entity_hash, Shell::COLOUR_FOREGROUND_PURPLE);
+          echo Shell::colourText($entityHash, Shell::COLOUR_FOREGROUND_PURPLE);
           echo " $entity\n";
 
           echo "           Mapping Directory:   ";
           \flush();
-          $mapped = $this->mapDirectory($base_path . $entity);
+          $mapped = $this->mapDirectory($basePath . $entity);
           echo $this->cliResult($mapped !== false);
           if($mapped)
           {
             echo "           Saving Dispatch Map: ";
-            $saved = $this->saveMap($mapped, $base_path . $entity);
+            $saved = $this->saveMap($mapped, $basePath . $entity);
             echo $this->cliResult($saved);
           }
         }
@@ -95,7 +95,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       echo "\n";
     }
 
-    if(!empty($project_ini))
+    if(!empty($projectIni))
     {
       echo "\n\n";
 
@@ -105,7 +105,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       echo "the dispatch section of " . CUBEX_ENV . ".ini\n";
 
       echo "\n[dispatch]\n";
-      echo Shell::colourText($project_ini, Shell::COLOUR_FOREGROUND_LIGHT_BLUE);
+      echo Shell::colourText($projectIni, Shell::COLOUR_FOREGROUND_LIGHT_BLUE);
     }
     else
     {
@@ -178,30 +178,30 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
    * Generate array of directory structure
    *
    * @param        $directory
-   * @param string $sub_directory
+   * @param string $subDirectory
    *
    * @return array
    */
-  public static function mapDirectory($directory, $sub_directory = '')
+  public static function mapDirectory($directory, $subDirectory = '')
   {
     $map = array();
 
     try
     {
-      if($handle = \opendir($directory . $sub_directory))
+      if($handle = \opendir($directory . $subDirectory))
       {
         while(false !== ($filename = \readdir($handle)))
         {
           if(\substr($filename, 0, 1) == '.') continue;
           if($filename == 'dispatch.ini') continue;
 
-          if(\is_dir($directory . $sub_directory . DIRECTORY_SEPARATOR . $filename))
+          if(\is_dir($directory . $subDirectory . DIRECTORY_SEPARATOR . $filename))
           {
-            $map = \array_merge($map, self::mapDirectory($directory, $sub_directory . DIRECTORY_SEPARATOR . $filename));
+            $map = \array_merge($map, self::mapDirectory($directory, $subDirectory . DIRECTORY_SEPARATOR . $filename));
           }
           else
           {
-            $rel            = $sub_directory . DIRECTORY_SEPARATOR . $filename;
+            $rel            = $subDirectory . DIRECTORY_SEPARATOR . $filename;
             $safe_rel       = \ltrim(\str_replace('\\', '/', $rel), '/');
             $map[$safe_rel] = \md5_file($directory . $rel);
           }
@@ -241,14 +241,14 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
     }
     try
     {
-      $current_md5 = '';
+      $currentMd5 = '';
       /** Do not overwrite the same file - causes havock with rsync */
       if(\file_exists($path . DIRECTORY_SEPARATOR . $filename))
       {
-        $current_md5 = \md5_file($path . DIRECTORY_SEPARATOR . $filename);
+        $currentMd5 = \md5_file($path . DIRECTORY_SEPARATOR . $filename);
       }
 
-      if($current_md5 != \md5($mapped))
+      if($currentMd5 != \md5($mapped))
       {
         \file_put_contents($path . DIRECTORY_SEPARATOR . $filename, $mapped);
       }

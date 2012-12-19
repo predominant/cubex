@@ -20,19 +20,19 @@ class Filter
     return \strtolower(trim($email));
   }
 
-  public static function trim($string, $charlist = null)
+  public static function trim($string, $charList = null)
   {
-    return \trim($string, $charlist);
+    return \trim($string, $charList);
   }
 
-  public static function leftTrim($string, $charlist = null)
+  public static function leftTrim($string, $charList = null)
   {
-    return \ltrim($string, $charlist);
+    return \ltrim($string, $charList);
   }
 
-  public static function rightTrim($string, $charlist = null)
+  public static function rightTrim($string, $charList = null)
   {
-    return \rtrim($string, $charlist);
+    return \rtrim($string, $charList);
   }
 
   public static function lower($string)
@@ -80,28 +80,28 @@ class Filter
 
   /**
    * Returns a name object
-   * @param $full_name
+   * @param $fullName
    * @return \stdClass
    */
-  public static function splitName($full_name)
+  public static function splitName($fullName)
   {
-    $full_name = \preg_replace('!\s+!', ' ', $full_name); // Make multiple spaces single
+    $fullName = \preg_replace('!\s+!', ' ', $fullName); // Make multiple spaces single
     $name             = new \stdClass();
-    $parts            = \explode(' ', \trim($full_name));
-    $name->first_name = $name->middle_name = $name->last_name = '';
+    $parts            = \explode(' ', \trim($fullName));
+    $name->firstName = $name->middleName = $name->lastName = '';
     switch(\count($parts))
     {
       case 1:
-        $name->first_name = $parts[0];
+        $name->firstName = $parts[0];
         break;
       case 2:
-        $name->first_name = $parts[0];
-        $name->last_name  = $parts[1];
+        $name->firstName = $parts[0];
+        $name->lastName  = $parts[1];
         break;
       default:
-        $name->first_name  = \array_shift($parts);
-        $name->last_name   = \array_pop($parts);
-        $name->middle_name = \implode(' ', $parts);
+        $name->firstName  = \array_shift($parts);
+        $name->lastName   = \array_pop($parts);
+        $name->middleName = \implode(' ', $parts);
         break;
     }
 

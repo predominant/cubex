@@ -109,13 +109,13 @@ class HTMLElement implements Renderable
       return '';
     }
 
-    foreach($this->_attributes as $attr => $attr_v)
+    foreach($this->_attributes as $attr => $attrV)
     {
-      if($attr_v === null)
+      if($attrV === null)
       {
         continue;
       }
-      $attributes[] = ' ' . $attr . '="' . self::escape($attr_v) . '"';
+      $attributes[] = ' ' . $attr . '="' . self::escape($attrV) . '"';
     }
 
     return \implode(' ', $attributes);

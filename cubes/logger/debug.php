@@ -50,8 +50,8 @@ class Debug extends Log
   protected static function _log($level, $message, $type, $code)
   {
     $backtrace   = \debug_backtrace();
-    $source_line = $backtrace[1]['line'];
-    $source_file = $backtrace[1]['file'];
+    $sourceLine = $backtrace[1]['line'];
+    $sourceFile = $backtrace[1]['file'];
 
     Events::trigger(
       Events::CUBEX_DEBUG, array(
@@ -59,8 +59,8 @@ class Debug extends Log
                                 'message' => $message,
                                 'type'    => $type,
                                 'code'    => $code,
-                                'file'    => $source_file,
-                                'line'    => $source_line,
+                                'file'    => $sourceFile,
+                                'line'    => $sourceLine,
                            )
     );
   }

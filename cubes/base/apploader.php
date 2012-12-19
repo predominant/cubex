@@ -13,7 +13,7 @@ use \Cubex\Http\Request;
 use Cubex\Events\Events;
 
 /**
- * The app loader is essentiall a "project" router, defining which application should handle a request
+ * The app loader is essential a "project" router, defining which application should handle a request
  */
 abstract class AppLoader
 {

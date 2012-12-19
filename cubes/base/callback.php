@@ -32,16 +32,15 @@ class Callback
   private $_type;
 
   /**
-   *
    * @param        $method
    * @param array  $options
-   * @param string $callback_type
+   * @param string $callbackType
    */
-  public function __construct($method, $options = array(), $callback_type = self::TYPE_GENERIC)
+  public function __construct($method, $options = array(), $callbackType = self::TYPE_GENERIC)
   {
     $this->_method  = $method;
     $this->_options = $options;
-    $this->_type    = $callback_type;
+    $this->_type    = $callbackType;
   }
 
   /**
@@ -49,13 +48,13 @@ class Callback
    *
    * @param        $method
    * @param array  $options
-   * @param string $callback_type
+   * @param string $callbackType
    *
    * @return Callback
    */
-  public static function _($method, $options = array(), $callback_type = self::TYPE_GENERIC)
+  public static function _($method, $options = array(), $callbackType = self::TYPE_GENERIC)
   {
-    return new callback($method, $options, $callback_type);
+    return new callback($method, $options, $callbackType);
   }
 
   /**

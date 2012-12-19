@@ -28,7 +28,7 @@ abstract class WebpageController extends Controller
    */
   protected $_view;
 
-  protected $_capture_nest = 'content';
+  protected $_captureNest = 'content';
 
   public function initialiseWebpage()
   {
@@ -66,15 +66,15 @@ abstract class WebpageController extends Controller
    */
   public function finaliseWebpage($response = null)
   {
-    if(!$this->_view->isNested($this->_capture_nest))
+    if(!$this->_view->isNested($this->_captureNest))
     {
       if($response === null)
       {
-        $this->_view->nest($this->_capture_nest, $this->_webpage->capturedData());
+        $this->_view->nest($this->_captureNest, $this->_webpage->capturedData());
       }
       else if($response instanceof Renderable)
       {
-        $this->_view->nest($this->_capture_nest, $response);
+        $this->_view->nest($this->_captureNest, $response);
       }
     }
   }

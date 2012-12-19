@@ -10,15 +10,23 @@ namespace Cubex\Language;
 class Analyse
 {
 
+  /**
+   * @var array
+   */
   protected $_translations = array('single' => array(), 'plural' => array());
 
+  /**
+   * @param $base
+   * @param $directory
+   */
   public function processDirectory($base, $directory)
   {
     if($handle = \opendir($base . $directory))
     {
       while(false !== ($entry = \readdir($handle)))
       {
-        if(\in_array($entry, array('.', '..', 'locale'))) continue;
+        if(\in_array($entry, array('.', '..', 'locale')))
+          continue;
 
         if(\is_dir($base . $directory . DIRECTORY_SEPARATOR . $entry))
         {
@@ -34,13 +42,17 @@ class Analyse
     }
   }
 
+  /**
+   * @param $base
+   * @param $path
+   */
   public function processFile($base, $path)
   {
     $content   = \file_get_contents($base . $path);
     $path      = \ltrim($path, DIRECTORY_SEPARATOR);
     $tokens    = \token_get_all($content);
-    $startline = $building = 0;
-    $msgid     = $type = $msgid_plural = '';
+    $startLine = $building = 0;
+    $msgId     = $type = $msgIdPlural = '';
     $started   = false;
 
     foreach($tokens as $token)
@@ -48,27 +60,27 @@ class Analyse
       if($token[0] == 307 && $token[1] == 't')
       {
         $building  = 0;
-        $msgid     = $msgid_plural = '';
+        $msgId     = $msgIdPlural = '';
         $type      = 'single';
-        $startline = $token[2];
+        $startLine = $token[2];
         $started   = true;
       }
 
       if($token[0] == 307 && $token[1] == 'tp')
       {
         $building  = 0;
-        $msgid     = $msgid_plural = '';
+        $msgId     = $msgIdPlural = '';
         $type      = 'singleplural';
-        $startline = $token[2];
+        $startLine = $token[2];
         $started   = true;
       }
 
       if($token[0] == 307 && $token[1] == 'p')
       {
-        $msgid     = $msgid_plural = '';
+        $msgId     = $msgIdPlural = '';
         $type      = 'plural';
         $building  = 0;
-        $startline = $token[2];
+        $startLine = $token[2];
         $started   = true;
       }
 
@@ -81,20 +93,20 @@ class Analyse
       {
         if($type == 'plural')
         {
-          $this->_translations[$type][md5($msgid . $msgid_plural)]['data']    = array($msgid, $msgid_plural);
-          $this->_translations[$type][md5($msgid . $msgid_plural)]['options'] = array($path, $startline);
+          $this->_translations[$type][md5($msgId . $msgIdPlural)]['data']    = array($msgId, $msgIdPlural);
+          $this->_translations[$type][md5($msgId . $msgIdPlural)]['options'] = array($path, $startLine);
         }
         else if($type == 'singleplural')
         {
-          $msgid_plural = str_replace('(s)', 's', $msgid);
-          $msgid        = str_replace('(s)', '', $msgid);
+          $msgIdPlural = str_replace('(s)', 's', $msgId);
+          $msgId       = str_replace('(s)', '', $msgId);
 
-          $this->_translations['plural'][md5($msgid . $msgid_plural)]['data']    = array($msgid, $msgid_plural);
-          $this->_translations['plural'][md5($msgid . $msgid_plural)]['options'] = array($path, $startline);
+          $this->_translations['plural'][md5($msgId . $msgIdPlural)]['data']    = array($msgId, $msgIdPlural);
+          $this->_translations['plural'][md5($msgId . $msgIdPlural)]['options'] = array($path, $startLine);
         }
         else
         {
-          $this->_translations[$type][$msgid][] = array($path, $startline);
+          $this->_translations[$type][$msgId][] = array($path, $startLine);
         }
 
         $started = false;
@@ -104,25 +116,32 @@ class Analyse
       {
         if($building == 0)
         {
-          $msgid .= \substr($token[1], 1, -1);
+          $msgId .= \substr($token[1], 1, -1);
         }
         else
         {
-          $msgid_plural .= \substr($token[1], 1, -1);
+          $msgIdPlural .= \substr($token[1], 1, -1);
         }
       }
     }
   }
 
-  public function generatePO($language, Translator $translator, $source_language = 'en')
+  /**
+   * @param            $language
+   * @param Translator $translator
+   * @param string     $sourceLanguage
+   *
+   * @return string
+   */
+  public function generatePO($language, Translator $translator, $sourceLanguage = 'en')
   {
     $result = '';
 
-    foreach($this->_translations as $build_type => $translations)
+    foreach($this->_translations as $buildType => $translations)
     {
       foreach($translations as $message => $appearances)
       {
-        if($build_type == 'plural')
+        if($buildType == 'plural')
         {
           $data        = $appearances;
           $appearances = array($data['options']);
@@ -136,9 +155,9 @@ class Analyse
         }
 
         $result .= "\n";
-        if($build_type == 'single')
+        if($buildType == 'single')
         {
-          $translated = $translator->translate($message, $source_language, $language);
+          $translated = $translator->translate($message, $sourceLanguage, $language);
           if(\strlen($message) < 80)
           {
             $result .= 'msgid "' . $this->slash($message) . '"';
@@ -160,10 +179,10 @@ class Analyse
           }
           $result .= "\n\n";
         }
-        else if($build_type == 'plural')
+        else if($buildType == 'plural')
         {
-          $singular = $translator->translate($message[0], $source_language, $language);
-          $plural   = $translator->translate($message[1], $source_language, $language);
+          $singular = $translator->translate($message[0], $sourceLanguage, $language);
+          $plural   = $translator->translate($message[1], $sourceLanguage, $language);
 
           if(\strlen($message[0]) < 80)
           {
@@ -199,16 +218,26 @@ class Analyse
     return $result;
   }
 
+  /**
+   * @param        $string
+   * @param int    $width
+   * @param string $break
+   * @param bool   $cut
+   * @param string $charset
+   *
+   * @return string
+   * @throws \Exception
+   */
   function iconv_wordwrap($string, $width = 75, $break = "\n", $cut = false, $charset = 'utf-8')
   {
-    $string_width = \iconv_strlen($string, $charset);
-    $break_width  = \iconv_strlen($break, $charset);
+    $stringWidth = \iconv_strlen($string, $charset);
+    $breakWidth  = \iconv_strlen($break, $charset);
 
     if(\strlen($string) === 0)
     {
       return '';
     }
-    elseif($break_width === null)
+    elseif($breakWidth === null)
     {
       throw new \Exception('Break string cannot be empty');
     }
@@ -217,58 +246,63 @@ class Analyse
       throw new \Exception('Can\'t force cut when width is zero');
     }
 
-    $result     = '';
-    $last_start = $last_space = 0;
+    $result    = '';
+    $lastStart = $lastSpace = 0;
 
-    for($current = 0; $current < $string_width; $current++)
+    for($current = 0; $current < $stringWidth; $current++)
     {
       $char = \iconv_substr($string, $current, 1, $charset);
 
-      if($break_width === 1)
+      if($breakWidth === 1)
       {
-        $possible_break = $char;
+        $possibleBreak = $char;
       }
       else
       {
-        $possible_break = \iconv_substr($string, $current, $break_width, $charset);
+        $possibleBreak = \iconv_substr($string, $current, $breakWidth, $charset);
       }
 
-      if($possible_break === $break)
+      if($possibleBreak === $break)
       {
-        $result .= \iconv_substr($string, $last_start, $current - $last_start + $break_width, $charset);
-        $current += $break_width - 1;
-        $last_start = $last_space = $current + 1;
+        $result .= \iconv_substr($string, $lastStart, $current - $lastStart + $breakWidth, $charset);
+        $current += $breakWidth - 1;
+        $lastStart = $lastSpace = $current + 1;
       }
       elseif($char === ' ')
       {
-        if($current - $last_start >= $width)
+        if($current - $lastStart >= $width)
         {
-          $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
-          $last_start = $current + 1;
+          $result .= $this->slash(\iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
+          $lastStart = $current + 1;
         }
 
-        $last_space = $current;
+        $lastSpace = $current;
       }
-      elseif($current - $last_start >= $width && $cut && $last_start >= $last_space)
+      elseif($current - $lastStart >= $width && $cut && $lastStart >= $lastSpace)
       {
-        $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset)) . $break;
-        $last_start = $last_space = $current;
+        $result .= $this->slash(\iconv_substr($string, $lastStart, $current - $lastStart, $charset)) . $break;
+        $lastStart = $lastSpace = $current;
       }
-      elseif($current - $last_start >= $width && $last_start < $last_space)
+      elseif($current - $lastStart >= $width && $lastStart < $lastSpace)
       {
-        $result .= $this->slash(\iconv_substr($string, $last_start, $last_space - $last_start, $charset)) . $break;
-        $last_start = $last_space = $last_space + 1;
+        $result .= $this->slash(\iconv_substr($string, $lastStart, $lastSpace - $lastStart, $charset)) . $break;
+        $lastStart = $lastSpace = $lastSpace + 1;
       }
     }
 
-    if($last_start !== $current)
+    if($lastStart !== $current)
     {
-      $result .= $this->slash(\iconv_substr($string, $last_start, $current - $last_start, $charset));
+      $result .= $this->slash(\iconv_substr($string, $lastStart, $current - $lastStart, $charset));
     }
 
     return $result;
   }
 
+  /**
+   * @param $text
+   *
+   * @return mixed
+   */
   public function slash($text)
   {
     $pattern = '/<span class="notranslate">([^<]*)<\/span>/';
@@ -276,6 +310,5 @@ class Analyse
 
     return \str_replace('"', '\"', $text);
   }
-
 }
 

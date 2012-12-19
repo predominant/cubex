@@ -25,7 +25,7 @@ class Attribute
   private $_filters;
   private $_options;
   private $_data;
-  private $_original_data;
+  private $_originalData;
   private $_exceptions;
   private $_populated = false;
 
@@ -100,7 +100,7 @@ class Attribute
   {
     if(!$this->isModified())
     {
-      $this->_original_data = $this->_data;
+      $this->_originalData = $this->_data;
     }
     $this->_populated = $data !== null;
     $this->_data      = $data;
@@ -189,12 +189,12 @@ class Attribute
     }
   }
 
-  public function filters($replace_filters)
+  public function filters($replaceFilters)
   {
-    if($replace_filters !== null && \is_array($replace_filters))
+    if($replaceFilters !== null && \is_array($replaceFilters))
     {
       $this->_filters = array();
-      $this->addFilters($replace_filters);
+      $this->addFilters($replaceFilters);
 
       return $this;
     }
@@ -242,12 +242,12 @@ class Attribute
     }
   }
 
-  public function validators($replace_validators = null)
+  public function validators($replaceValidators = null)
   {
-    if($replace_validators !== null && \is_array($replace_validators))
+    if($replaceValidators !== null && \is_array($replaceValidators))
     {
       $this->_validators = array();
-      $this->addValidators($replace_validators);
+      $this->addValidators($replaceValidators);
 
       return $this;
     }
@@ -316,12 +316,12 @@ class Attribute
 
   public function originalData()
   {
-    return $this->_original_data;
+    return $this->_originalData;
   }
 
   public function revert()
   {
-    $this->setData($this->_original_data);
+    $this->setData($this->_originalData);
     $this->unsetModified();
 
     return true;

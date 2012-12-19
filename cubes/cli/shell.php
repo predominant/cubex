@@ -38,8 +38,8 @@ class Shell
   const COLOUR_BACKGROUND_CYAN       = '46';
   const COLOUR_BACKGROUND_LIGHT_GREY = '47';
 
-  private static $_foreground_colour;
-  private static $_background_colour;
+  private static $_foregroundColour;
+  private static $_backgroundColour;
 
   /**
    * Set forground colour for all shell output
@@ -48,7 +48,7 @@ class Shell
    */
   public static function setForeground($colour = self::COLOUR_FOREGROUND_WHITE)
   {
-    self::$_foreground_colour = $colour;
+    self::$_foregroundColour = $colour;
   }
 
   /**
@@ -58,17 +58,17 @@ class Shell
    */
   public static function setBackground($colour = self::COLOUR_BACKGROUND_BLACK)
   {
-    self::$_background_colour = $colour;
+    self::$_backgroundColour = $colour;
   }
 
   public static function clearForeground()
   {
-    self::$_foreground_colour = null;
+    self::$_foregroundColour = null;
   }
 
   public static function clearBackground()
   {
-    self::$_background_colour = null;
+    self::$_backgroundColour = null;
   }
 
   /**
@@ -80,19 +80,19 @@ class Shell
    */
   public static function colouredText($string)
   {
-    $colour_string = '';
+    $colourString = '';
 
-    if(self::$_foreground_colour !== null)
+    if(self::$_foregroundColour !== null)
     {
-      $colour_string .= "\033[" . self::$_foreground_colour . "m";
+      $colourString .= "\033[" . self::$_foregroundColour . "m";
     }
 
-    if(self::$_background_colour !== null)
+    if(self::$_backgroundColour !== null)
     {
-      $colour_string .= "\033[" . self::$_background_colour . "m";
+      $colourString .= "\033[" . self::$_backgroundColour . "m";
     }
 
-    return $colour_string . $string . "\033[0m";
+    return $colourString . $string . "\033[0m";
   }
 
   /**
@@ -106,8 +106,8 @@ class Shell
    */
   public static function colourText($string, $foreground = null, $background = null)
   {
-    $existing_foreground = self::$_foreground_colour;
-    $existing_background = self::$_background_colour;
+    $existingForeground = self::$_foregroundColour;
+    $existingBackground = self::$_backgroundColour;
 
     self::clearBackground();
     self::clearForeground();
@@ -117,8 +117,8 @@ class Shell
 
     $coloured = self::colouredText($string);
 
-    self::setForeground($existing_foreground);
-    self::setBackground($existing_background);
+    self::setForeground($existingForeground);
+    self::setBackground($existingBackground);
 
     return $coloured;
   }

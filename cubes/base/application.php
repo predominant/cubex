@@ -19,8 +19,8 @@ use Cubex\Events\Events;
 abstract class Application extends Translatable
 {
 
-  private $_uri_data = array();
-  protected $_processed_route = '';
+  private $_uriData = array();
+  protected $_processedRoute = '';
   private $_layout = 'default';
   /* @var $app Application */
   public static $app = null;
@@ -217,11 +217,11 @@ abstract class Application extends Translatable
   {
     if($key === null)
     {
-      return $this->_uri_data;
+      return $this->_uriData;
     }
-    else if(isset($this->_uri_data[$key]))
+    else if(isset($this->_uriData[$key]))
     {
-      return $this->_uri_data[$key];
+      return $this->_uriData[$key];
     }
     else return array();
   }
@@ -238,13 +238,13 @@ abstract class Application extends Translatable
   {
     $router     = new Router();
     $controller = $router->parseRoute($this->getRoutes(), $path);
-    if(\is_array($this->_uri_data))
+    if(\is_array($this->_uriData))
     {
-      $this->_uri_data = \array_merge($this->_uri_data, $router->getRouteData());
+      $this->_uriData = \array_merge($this->_uriData, $router->getRouteData());
     }
-    else $this->_uri_data = $router->getRouteData();
+    else $this->_uriData = $router->getRouteData();
 
-    $this->_processed_route = $router->processedRoute();
+    $this->_processedRoute = $router->processedRoute();
 
     return $controller === null ? $this->getDefaultController() : $controller;
   }
@@ -256,7 +256,7 @@ abstract class Application extends Translatable
    */
   public function processedRoute()
   {
-    return $this->_processed_route;
+    return $this->_processedRoute;
   }
 
   /**

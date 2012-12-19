@@ -14,33 +14,37 @@ interface Loader
   /**
    * Translate String
    *
-   * @param $textdomain
+   * @param $textDomain
    * @param $message
+   *
+   * @internal param $textdomain
    * @return string
    */
-  public function t($textdomain, $message);
+  public function t($textDomain, $message);
 
   /**
-   *
    * Translate plural, converting (s) to '' or 's'
    *
-   * @param      $textdomain
+   * @param      $textDomain
    * @param      $text
    * @param int  $number
+   *
+   * @internal param $textdomain
    * @return string
    */
-  public function tp($textdomain, $text, $number);
+  public function tp($textDomain, $text, $number);
 
   /**
    * Translate plural
    *
-   * @param      $textdomain
+   * @param      $textDomain
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
-  public function p($textdomain, $singular, $plural = null, $number = 0);
+  public function p($textDomain, $singular, $plural = null, $number = 0);
 
   public function bindLanguage($textdomain, $filepath);
 }
