@@ -31,9 +31,9 @@ if(!isset($_SERVER["DOCUMENT_ROOT"]))
 }
 
 // See page comment for info on the below
-$cubexEnv = ini_get('user_agent');
-$_ENV['CUBEX_ENV'] = $cubexEnv ?: 'development';
-$url = parse_url($_SERVER['REQUEST_URI']);
+$cubexEnv             = ini_get('user_agent');
+$_ENV['CUBEX_ENV']    = $cubexEnv ? : 'development';
+$url                  = parse_url($_SERVER['REQUEST_URI']);
 $_REQUEST['__path__'] = $url['path'];
 
-require $_SERVER["DOCUMENT_ROOT"].'/index.php';
+require $_SERVER["DOCUMENT_ROOT"] . '/index.php';
