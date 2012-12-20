@@ -5,19 +5,18 @@
  * Time: 18:59
  * Description:
  */
-namespace Cubex\Base;
+namespace Cubex\Application;
 
 use Cubex\Cubex;
-use \Cubex\Base\Application;
+use \Cubex\Application\Application;
 use \Cubex\Http\Request;
 use Cubex\Events\Events;
 
 /**
  * The app loader is essential a "project" router, defining which application should handle a request
  */
-abstract class AppLoader
+abstract class Loader
 {
-
   /**
    * Initialise the correct application for the request, processing sub methods to calculate the correct application
    *
@@ -27,7 +26,7 @@ abstract class AppLoader
    *
    * @param \Cubex\Http\Request $request
    */
-  public static function load(Request $request)
+  public function load(Request $request)
   {
     $application = static::getBySubAndPath($request->getSubDomain(), $request->getPath());
 
@@ -62,7 +61,7 @@ abstract class AppLoader
    *
    * @return Application|null
    */
-  public static function defaultApplication()
+  public function defaultApplication()
   {
     return null;
   }
@@ -75,7 +74,7 @@ abstract class AppLoader
    *
    * @return Application|null
    */
-  public static function getBySubAndPath($subdomain, $path)
+  public function getBySubAndPath($subdomain, $path)
   {
     switch($subdomain)
     {
@@ -95,7 +94,7 @@ abstract class AppLoader
    *
    * @return Application|null
    */
-  public static function getBySubDomain($subdomain)
+  public function getBySubDomain($subdomain)
   {
     switch($subdomain)
     {
@@ -110,7 +109,7 @@ abstract class AppLoader
    *
    * @return Application|null
    */
-  public static function getByPath($path)
+  public function getByPath($path)
   {
     switch($path)
     {

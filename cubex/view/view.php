@@ -8,8 +8,7 @@
 
 namespace Cubex\View;
 
-use Cubex\Base\Application;
-use Cubex\Language\Translatable;
+use Cubex\Application\Application;
 use Cubex\Dispatch\Dispatcher;
 
 abstract class View extends Dispatcher implements Renderable

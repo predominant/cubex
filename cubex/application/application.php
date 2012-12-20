@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Base;
+namespace Cubex\Application;
 
 use Cubex\Cubex;
 use Cubex\Language\Translatable;

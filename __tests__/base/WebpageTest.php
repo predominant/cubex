@@ -16,7 +16,7 @@ class Base_WebpageTest extends \PHPUnit_Framework_TestCase
     \Cubex\Cubex::core()->setRequest(new \Cubex\Http\Request());
     ob_start();
     $application = new Application();
-    \Cubex\Base\Application::initialise($application);
+    \Cubex\Application\Application::initialise($application);
     ob_end_clean();
     $this->_webpage = new \Cubex\Base\WebPage();
   }

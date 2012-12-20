@@ -10,13 +10,14 @@ namespace Cubex;
 /**
  * Cubex Framework
  */
-use Cubex\Base\Controller;
 use Cubex\Data\Handler;
 use Cubex\Http\Request;
 use Cubex\Events\Events;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
+use Cubex\Application\Loader;
+use Cubex\Controller\BaseController;
 
 /**
  * Cubex Framework Core
@@ -53,9 +54,13 @@ final class Cubex
 
     $env = \getenv('CUBEX_ENV'); // Apache Config
     if(!$env && isset($_ENV['CUBEX_ENV']))
+    {
       $env = $_ENV['CUBEX_ENV'];
+    }
     if(!$env)
+    {
       Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
+    }
 
     \register_shutdown_function('Cubex\Cubex::shutdown');
     \set_error_handler('Cubex\Cubex::error_handler');
@@ -103,7 +108,12 @@ final class Cubex
           Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
         }
 
-        \Cubex\Applications\Loader::load(Cubex::request());
+        $loader_class = '\Cubex\Applications\Loader';
+        $loader       = new $loader_class();
+        if($loader instanceof Loader)
+        {
+          $loader->load(Cubex::request());
+        }
       }
     }
     else
@@ -122,7 +132,9 @@ final class Cubex
   public static function core()
   {
     if(self::$cubex === null)
+    {
       self::$cubex = new Cubex();
+    }
 
     return self::$cubex;
   }
@@ -188,11 +200,11 @@ final class Cubex
   /**
    * Define active controller object for views to pull
    *
-   * @param \Cubex\Base\Controller $controller
+   * @param \Cubex\Controller\BaseController $controller
    *
    * @return \Cubex\Cubex
    */
-  public function setController(Controller $controller)
+  public function setController(BaseController $controller)
   {
     $this->_controller = $controller;
 
@@ -202,7 +214,7 @@ final class Cubex
   /**
    * Globally available HTTP Request object
    *
-   * @return \Cubex\Base\Controller
+   * @return \Cubex\Controller\BaseController
    */
   public static function controller()
   {
@@ -265,7 +277,9 @@ final class Cubex
     if(!isset(self::core()->_connections[$type][$connection]))
     {
       if(!isset(self::core()->_connections[$type]))
+      {
         self::core()->_connections[$type] = array();
+      }
       $config = self::config($type . "\\" . $connection);
       $layer  = "\\Cubex\\" . \ucwords($type) . "\\";
       $layer .= $config->getStr("engine", self::config($type)->getStr("engine", "mysql"));
@@ -327,7 +341,9 @@ final class Cubex
   public static function locale($locale = null)
   {
     if($locale === null)
+    {
       return self::core()->_locale;
+    }
     $loc                  = \explode(',', $locale);
     self::core()->_locale = $loc[0];
     \putenv('LC_ALL=' . $loc[0]);
@@ -393,7 +409,7 @@ final class Cubex
     if(self::core()->_allowShutdownDetails)
     {
       $renderType = '';
-      if(Cubex::core()->controller() instanceof Controller)
+      if(Cubex::core()->controller() instanceof BaseController)
       {
         if(Cubex::core()->controller()->getResponse() instanceof Response)
         {
@@ -404,10 +420,10 @@ final class Cubex
       if(\in_array(
         $renderType,
         array(
-          '',
-          Response::RENDER_RENDERABLE,
-          Response::RENDER_TEXT,
-          Response::RENDER_WEBPAGE,
+             '',
+             Response::RENDER_RENDERABLE,
+             Response::RENDER_TEXT,
+             Response::RENDER_WEBPAGE,
         )
       )
       )
@@ -419,9 +435,9 @@ final class Cubex
           $shutdownDebug = new HTMLElement(
             'div',
             array(
-              'id'    => 'cubex-shutdown-debug',
-              'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
-                'padding:3px; background:#FFFFFF; position:fixed;',
+                 'id'    => 'cubex-shutdown-debug',
+                 'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+                 'padding:3px; background:#FFFFFF; position:fixed;',
             )
           );
         }
@@ -432,7 +448,7 @@ final class Cubex
 
         echo $shutdownDebug->setContent(
           "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-            " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
+          " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
         );
       }
     }
@@ -482,8 +498,8 @@ final class Cubex
     {
       Cubex::fatal(
         ($e->getCode() > 0 ? "[" . $e->getCode() . "] " : '')
-          . $e->getMessage() . "\n" .
-          "In: " . $e->getFile() . ':' . $e->getLine()
+        . $e->getMessage() . "\n" .
+        "In: " . $e->getFile() . ':' . $e->getLine()
       );
     }
   }

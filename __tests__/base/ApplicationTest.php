@@ -12,7 +12,7 @@ class Base_ApplicationTest extends \PHPUnit_Framework_TestCase
   {
     $this->setExpectedException('Exception');
 
-    \Cubex\Base\Application::initialise(new ApplicationFailTest());
+    \Cubex\Application\Application::initialise(new ApplicationFailTest());
   }
 
   public function testApplicationInitiator()
@@ -22,7 +22,7 @@ class Base_ApplicationTest extends \PHPUnit_Framework_TestCase
     \Cubex\Cubex::core()->setRequest(new \Cubex\Http\Request());
 
     $this->expectOutputRegex('/^<!DOCTYPE html>.*/');
-    \Cubex\Base\Application::initialise(new Application());
+    \Cubex\Application\Application::initialise(new Application());
   }
 
   public function testGetName()
