@@ -10,7 +10,6 @@ namespace Cubex\Response;
 
 use \Cubex\Cubex;
 use Cubex\View\Renderable;
-use Cubex\View\Template;
 use Cubex\Dispatch\Prop;
 use Cubex\View\Partial;
 use Cubex\View\Render;
@@ -47,7 +46,7 @@ class WebPage
   /**
    * Get Controller shortcut
    *
-   * @return Controller
+   * @return \Cubex\Controller\BaseController
    */
   public function controller()
   {

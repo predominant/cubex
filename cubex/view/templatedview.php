@@ -10,45 +10,48 @@ namespace Cubex\View;
 
 use Cubex\Cubex;
 
+/**
+ * Rendered via phtml
+ */
 class TemplatedView extends View
 {
 
-  protected $_templatesPath;
-  protected $_templateFile;
-  /** @var Template */
-  protected $_template;
+  protected $_renderFile = null;
+  protected $_renderFolder = null;
 
   /**
-   * Automated way to pick out the correct views folder
+   * Set template file (excluding .phtml)
+   *
+   * @param $path
    */
-  /*public function __construct($templateFile = null)
+  public function setTemplateFile($path)
   {
-    if($templateFile !== null)
-    {
-      $backtrace = debug_backtrace(2);
-      if(isset($backtrace[1]))
-      {
-        $this->calculateTemplate($backtrace[1]['class']);
-      }
-      else
-      {
-        $this->_templatesPath = Cubex::config('general')->getStr('include_path');
-      }
-      $this->_templateFile = $templateFile;
-    }
-  }*/
+    $this->_renderFile = $path;
+  }
 
-  public function setTemplatesPath($path)
+  /**
+   * Configure a specific template base path
+   *
+   * @param $path
+   */
+  protected function setTemplatesPath($path)
   {
-    $this->_templatesPath = $path;
+    $this->_renderFolder = $path;
   }
 
 
-  protected function calculateTemplate($class = null)
+  /**
+   * Build template path and file
+   *
+   * @param null $class
+   *
+   * @return TemplatedView
+   */
+  private function calculateTemplate($class = null)
   {
     $reflector = new \ReflectionClass($class === null ? \get_class($this) : $class);
     $ns        = ltrim($reflector->getName(), "\\");
-    $nsParts  = explode('\\', $ns);
+    $nsParts   = explode('\\', $ns);
 
     foreach($nsParts as $part)
     {
@@ -74,40 +77,62 @@ class TemplatedView extends View
       }
     }
 
-    $this->_templatesPath = dirname($reflector->getFileName());
+    $templatesPath = dirname($reflector->getFileName());
     for($ii = 0; $ii < count($nsParts); $ii++)
     {
-      $this->_templatesPath = dirname($this->_templatesPath);
+      $templatesPath = dirname($templatesPath);
     }
 
-    $this->setTemplateFile(strtolower(implode('\\', $nsParts)));
+    if($this->_renderFolder === null)
+    {
+      $this->setTemplatesPath($templatesPath . DIRECTORY_SEPARATOR . 'templates');
+    }
+
+    if($this->_renderFile === null)
+    {
+      $this->setTemplateFile(strtolower(implode('\\', $nsParts)));
+    }
 
     return $this;
   }
 
-  protected function setTemplateFile($template)
-  {
-    $this->_templateFile = $template;
 
-    return $this;
-  }
-
+  /**
+   * Render the template file
+   *
+   * @return string
+   */
   public function render()
   {
-    if($this->_templateFile === null)
+    $this->calculateTemplate();
+    $rendered = '';
+
+    if($this->_renderFile !== null)
     {
-      $this->calculateTemplate();
+      $viewContent = $this->loadRaw();
+      \ob_start();
+      try //Make sure the view does not cause the entire render to fail
+      {
+        /* Close PHP tags to allow for html and opening tags */
+        eval('?>' . $viewContent);
+      }
+      catch(\Exception $e)
+      {
+        \ob_get_clean();
+      }
+
+      $rendered = \ob_get_clean();
     }
 
-    $this->_templatesPath = rtrim($this->_templatesPath, '/\\') . DIRECTORY_SEPARATOR;
+    return $rendered;
+  }
 
-    $this->_template = new Template($this->_templateFile, $this->_templatesPath . 'templates');
-    $this->_template->setDispatcher($this);
-    foreach($this as $k => $v)
-    {
-      $this->_template->setData($k, $v);
-    }
-
-    return $this->_template->render();
+  /**
+   * @return string File Data
+   */
+  protected function loadRaw()
+  {
+    $tmpFile = $this->_renderFolder . DIRECTORY_SEPARATOR . $this->_renderFile . '.phtml';
+    return \file_get_contents($tmpFile);
   }
 }

@@ -14,8 +14,8 @@ use \Cubex\Data\Handler;
 use \Cubex\Response\ErrorPage;
 use \Cubex\Http\Response;
 use \Cubex\Routing\Router;
-use \Cubex\View\Template;
 use \Exception;
+use \Cubex\Application\Layout;
 
 /**
  * Base Controller
@@ -353,11 +353,11 @@ abstract class BaseController extends Handler
   }
 
   /**
-   * @return \Cubex\View\Template
+   * @return \Cubex\Application\Layout
    */
   public function baseTemplate()
   {
-    return new Template('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
+    return new Layout();
   }
 
   /**

@@ -23,7 +23,7 @@ abstract class WebpageController extends BaseController
    */
   protected $_webpage;
   /**
-   * @var \Cubex\View\Template
+   * @var \Cubex\Application\Layout
    */
   protected $_view;
 
