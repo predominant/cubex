@@ -398,7 +398,13 @@ class Respond
   {
     $fab = new Fabricate();
 
-    $uri        = \trim($data[1], "'\" \r\t\n");
+    $uri = \trim($data[1], "'\" \r\t\n");
+
+    if(\in_array(substr($uri, 0, 7), array('http://', 'https:/')))
+    {
+      return "url('" . $uri . "')";
+    }
+
     $entityHash = $this->_entityHash;
 
     if(\substr($uri, 0, 1) == '/')
@@ -423,7 +429,19 @@ class Respond
     {
     }
 
-    $uri = "img/" . $uri;
+    $ext = \end(\explode('.', $uri));
+    if($ext == 'css')
+    {
+      $uri = "css/" . $uri;
+    }
+    else if($ext == 'js')
+    {
+      $uri = "js/" . $uri;
+    }
+    else
+    {
+      $uri = "img/" . $uri;
+    }
 
     if($resources)
     {
