@@ -10,6 +10,8 @@ namespace Cubex\View;
 
 use Cubex\Project\Application;
 use Cubex\Dispatch\Dispatcher;
+use Cubex\Cubex;
+use Cubex\Controller\WebpageController;
 
 /**
  * View
@@ -31,6 +33,23 @@ abstract class View extends Dispatcher implements Renderable
     {
       return $e->getMessage();
     }
+  }
+
+  /**
+   * Attempt to set page title
+   *
+   * @param string $title
+   *
+   * @return View
+   */
+  public function setTitle($title = '')
+  {
+    $controller = Cubex::controller();
+    if($controller instanceof WebpageController)
+    {
+      $controller->setTitle($title);
+    }
+    return $this;
   }
 
   /**
