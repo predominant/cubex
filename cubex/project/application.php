@@ -11,7 +11,7 @@ namespace Cubex\Project;
 use Cubex\Cubex;
 use Cubex\Language\Translatable;
 use Cubex\Routing\Router;
-use Cubex\Events\Events;
+use Cubex\Event\Events;
 
 /**
  * Applications are a base class to group all logic for specific entry points

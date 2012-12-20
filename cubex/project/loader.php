@@ -10,7 +10,7 @@ namespace Cubex\Project;
 use Cubex\Cubex;
 use \Cubex\Project\Application;
 use \Cubex\Http\Request;
-use Cubex\Events\Events;
+use Cubex\Event\Events;
 
 /**
  * The app loader is essential a "project" router, defining which application should handle a request

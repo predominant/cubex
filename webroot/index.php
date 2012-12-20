@@ -14,7 +14,7 @@ if(RUN_PROFILER && function_exists('xhprof_enable')) xhprof_enable(XHPROF_FLAGS_
 /**
  * Include and boot Cubex
  */
-require_once(dirname(dirname(__FILE__)) . '/cubex/base/cubex.php');
+require_once(dirname(dirname(__FILE__)) . '/cubex/cubex.php');
 \Cubex\Cubex::boot();
 
 if(RUN_PROFILER && function_exists("xhprof_disable"))

@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Events;
+namespace Cubex\Event;
 
 /**
  * Standard hooks for events

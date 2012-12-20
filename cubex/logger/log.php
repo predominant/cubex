@@ -7,7 +7,7 @@
  */
 namespace Cubex\Logger;
 
-use Cubex\Events\Events;
+use Cubex\Event\Events;
 
 /**
  * Base logger class (Triggers Cubex Log Events)

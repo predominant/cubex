@@ -11,7 +11,7 @@ namespace Cubex\Logger;
 /**
  * Standard debug access
  */
-use Cubex\Events\Events;
+use Cubex\Event\Events;
 
 class Debug extends Log
 {

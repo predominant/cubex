@@ -12,7 +12,7 @@ namespace Cubex;
  */
 use Cubex\Data\Handler;
 use Cubex\Http\Request;
-use Cubex\Events\Events;
+use Cubex\Event\Events;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
@@ -74,7 +74,7 @@ final class Cubex
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-    $dirName = \dirname(\dirname(__FILE__));
+    $dirName = \dirname(__FILE__);
     define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirName : \dirname($dirName));
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))

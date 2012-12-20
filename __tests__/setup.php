@@ -8,7 +8,7 @@
 
 namespace Cubex\Tests
 {
-  require_once dirname(dirname(__FILE__)) .'/cubex/base/cubex.php';
+  require_once dirname(dirname(__FILE__)) . '/cubex/cubex.php';
   \Cubex\Cubex::boot();
 
   final class Setup
