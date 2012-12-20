@@ -423,11 +423,13 @@ class Respond
     {
     }
 
+    $uri = "img/" . $uri;
+
     if($resources)
     {
-      if(isset($resources["img/" . $uri]))
+      if(isset($resources[$uri]))
       {
-        $resourceHash = $fab->generateResourceHash($resources["img/" . $uri]);
+        $resourceHash = $fab->generateResourceHash($resources[$uri]);
       }
     }
 
