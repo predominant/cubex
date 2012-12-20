@@ -515,7 +515,8 @@ final class Cubex
     {
       \header("Content-Type: text/plain; charset=utf-8", true, 500);
     }
-    echo "== Fatal Error ==\n\n";
+    echo "== Fatal Error ==\n";
+    echo "Environment: " . (defined("CUBEX_ENV")? CUBEX_ENV : 'Undefined') . "\n\n";
     echo $message . "\n";
     define("CUBEX_FATAL_ERROR", $message);
     exit(1);
