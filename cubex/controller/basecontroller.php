@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Base;
+namespace Cubex\Controller;
 
 use \Cubex\Cubex;
 use \Cubex\Base\Application;
@@ -17,7 +17,7 @@ use \Cubex\Routing\Router;
 use \Cubex\View\Template;
 use \Exception;
 
-abstract class Controller extends Handler
+abstract class BaseController extends Handler
 {
 
   /** @var Response */

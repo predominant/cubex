@@ -8,7 +8,6 @@
 
 namespace Cubex\Controller;
 
-use Cubex\Base\Controller;
 use Cubex\Base\WebPage;
 use Cubex\Http\Response;
 use Cubex\View\Renderable;
@@ -16,7 +15,7 @@ use Cubex\View\Renderable;
 /**
  * Standardised Webpage Controller
  */
-abstract class WebpageController extends Controller
+abstract class WebpageController extends BaseController
 {
 
   /**

@@ -24,7 +24,7 @@ class Base_WebpageTest extends \PHPUnit_Framework_TestCase
   public function testGetController()
   {
     $this->assertInstanceOf(
-      '\Cubex\Base\Controller',
+      '\Cubex\Controller\BaseController',
       $this->_webpage->controller()
     );
   }

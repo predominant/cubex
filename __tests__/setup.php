@@ -71,7 +71,7 @@ namespace Cubex\Tests
 
 namespace Cubex\Tests\Controllers
 {
-  class Controller extends \Cubex\Base\Controller
+  class Controller extends \Cubex\Controller\BaseController
   {
     public function processRequest()
     {
