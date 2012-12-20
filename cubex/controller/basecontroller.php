@@ -11,7 +11,7 @@ namespace Cubex\Controller;
 use \Cubex\Cubex;
 use \Cubex\Application\Application;
 use \Cubex\Data\Handler;
-use \Cubex\Base\ErrorPage;
+use \Cubex\Response\ErrorPage;
 use \Cubex\Http\Response;
 use \Cubex\Routing\Router;
 use \Cubex\View\Template;

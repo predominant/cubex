@@ -75,7 +75,7 @@ namespace Cubex\Tests\Controllers
   {
     public function processRequest()
     {
-      $webpage = new \Cubex\Base\WebPage();
+      $webpage = new \Cubex\Response\WebPage();
       $webpage->setTitle("Test Application");
 
       return new \Cubex\Http\Response($webpage);

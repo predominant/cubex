@@ -8,7 +8,7 @@
 namespace Cubex\Tests;
 class Base_WebpageTest extends \PHPUnit_Framework_TestCase
 {
-  /** @var \Cubex\Base\Webpage */
+  /** @var \Cubex\Response\Webpage */
   private $_webpage;
 
   public function setUp()
@@ -18,7 +18,7 @@ class Base_WebpageTest extends \PHPUnit_Framework_TestCase
     $application = new Application();
     \Cubex\Application\Application::initialise($application);
     ob_end_clean();
-    $this->_webpage = new \Cubex\Base\WebPage();
+    $this->_webpage = new \Cubex\Response\WebPage();
   }
 
   public function testGetController()

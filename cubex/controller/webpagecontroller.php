@@ -8,7 +8,7 @@
 
 namespace Cubex\Controller;
 
-use Cubex\Base\WebPage;
+use Cubex\Response\WebPage;
 use Cubex\Http\Response;
 use Cubex\View\Renderable;
 
@@ -19,7 +19,7 @@ abstract class WebpageController extends BaseController
 {
 
   /**
-   * @var \Cubex\Base\WebPage
+   * @var \Cubex\Response\WebPage
    */
   protected $_webpage;
   /**

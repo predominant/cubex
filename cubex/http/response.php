@@ -8,7 +8,7 @@
 
 namespace Cubex\Http;
 
-use \Cubex\Base\WebPage;
+use \Cubex\Response\WebPage;
 use Cubex\View\Renderable;
 
 /**
@@ -164,7 +164,7 @@ class Response
   /**
    * Set the response to be a web page result
    *
-   * @param \Cubex\Base\WebPage $page
+   * @param \Cubex\Response\WebPage $page
    *
    * @return Response
    */

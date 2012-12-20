@@ -6,7 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Base;
+namespace Cubex\Response;
 
 use \Cubex\Cubex;
 use Cubex\View\Renderable;
