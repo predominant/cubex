@@ -49,7 +49,7 @@ class Sprintf
    */
   final public static function parseQuery($connection, $args)
   {
-    return self::call(array("\\Cubex\\Base\\Sprintf", "query"), $connection, $args);
+    return self::call(array("\\Cubex\\Data\\Sprintf", "query"), $connection, $args);
   }
 
   final public static function call($callback, $user_data, $argv)
