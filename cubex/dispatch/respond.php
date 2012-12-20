@@ -23,6 +23,9 @@ class Respond
   protected $_entityMap = array();
   protected $_domainMap = array();
 
+  protected $_domainHash;
+  protected $_entityHash;
+
   /**
    * @param array $entityMap
    * @param array $domainMap
@@ -45,6 +48,8 @@ class Respond
   public function getResponse($path)
   {
     list($domainHash, $entityHash, $type, $rel) = \explode('/', $path, 4);
+    $this->_domainHash = $domainHash;
+    $this->_entityHash = $entityHash;
 
     list($type, $debug) = \explode(';', $type, 2);
 
@@ -66,7 +71,7 @@ class Respond
       return $response;
     }
 
-    $domain        = $this->getDomain($domainHash);
+    $domain       = $this->getDomain($domainHash);
     $entityPath   = $this->getEntityPath($entityHash);
     $resourceType = \end(\explode('.', $rel));
 
@@ -152,6 +157,7 @@ class Respond
         $data = \file_get_contents($file);
         if(!empty($data))
         {
+          $data = $this->dispatchContent($data);
           return $this->minifyData($data, \end(\explode('.', $filePath)));
         }
       }
@@ -259,7 +265,7 @@ class Respond
    */
   public function locateEntityPath($path, $match, $depth = 0)
   {
-    $base      = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
+    $base     = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
     $matchLen = \strlen($match);
 
     if($handle = \opendir($base . $path))
@@ -363,5 +369,75 @@ class Respond
     }
 
     return $data;
+  }
+
+  /**
+   * Dispatch nested images
+   *
+   * @param $data
+   *
+   * @return mixed
+   */
+  public function dispatchContent($data)
+  {
+    $data = preg_replace_callback(
+      '@url\s*\((\s*[\'"]?.*?)\)@s', array($this, "dispatchUri"), $data
+    );
+
+    return $data;
+  }
+
+  /**
+   * Calculate nested images
+   *
+   * @param $data
+   *
+   * @return string
+   */
+  public function dispatchUri($data)
+  {
+    $fab = new Fabricate();
+
+    $uri        = \trim($data[1], "'\" \r\t\n");
+    $entityHash = $this->_entityHash;
+
+    if(\substr($uri, 0, 1) == '/')
+    {
+      $uri        = \substr($uri, 1);
+      $entityHash = 'esabot';
+    }
+
+    $resources    = false;
+    $resourceHash = 'pamon';
+
+    try
+    {
+      $map = isset($this->_entityMap[$entityHash]) ? $this->_entityMap[$entityHash] : false;
+      if($map)
+      {
+        $basePath  = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $map;
+        $resources = \parse_ini_file($basePath . DIRECTORY_SEPARATOR . 'dispatch.ini', false);
+      }
+    }
+    catch(\Exception $e)
+    {
+    }
+
+    if($resources)
+    {
+      if(isset($resources["img/" . $uri]))
+      {
+        $resourceHash = $fab->generateResourceHash($resources["img/" . $uri]);
+      }
+    }
+
+    $parts = array(
+      $this->_domainHash,
+      $entityHash,
+      $resourceHash,
+      $uri,
+    );
+
+    return "url('/res/" . \implode('/', $parts) . "')";
   }
 }

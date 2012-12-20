@@ -70,7 +70,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
           $entityHash = Fabricate::generateEntityHash($entity);
           if(!isset($existingMap[$entityHash]))
           {
-            $projectIni .= "entityMap[" . $entityHash . "] = $entity\n";
+            $projectIni .= "entity_map[" . $entityHash . "] = $entity\n";
           }
           echo Shell::colourText("     Found ", Shell::COLOUR_FOREGROUND_LIGHT_CYAN);
           echo Shell::colourText($entityHash, Shell::COLOUR_FOREGROUND_PURPLE);
