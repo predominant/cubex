@@ -10,6 +10,9 @@ namespace Cubex\Dispatch;
 /**
  * Base for any dispatchable entity
  */
+use Cubex\Application\Layout;
+use \Cubex\Project\Application;
+
 abstract class Dispatcher
 {
   private $_fabrication;
@@ -27,7 +30,16 @@ abstract class Dispatcher
       return $this->_entityDispatchName;
     }
 
-    $reflector = new \ReflectionClass(\get_class($this));
+    if($this instanceof Layout)
+    {
+      $class = Application::getApp();
+    }
+    else
+    {
+      $class = \get_class($this);
+    }
+
+    $reflector = new \ReflectionClass($class);
     $parts     = \explode('\\', $reflector->getName());
     \array_shift($parts);
     $parts                     = \array_chunk($parts, 1, false);
@@ -115,7 +127,6 @@ abstract class Dispatcher
     {
       $file = 'img/' . $file;
     }
-
     return $this->getDispatchFabricator()->resource($file);
   }
 
@@ -138,7 +149,15 @@ abstract class Dispatcher
    */
   public function baseRelPath()
   {
-    $reflector = new \ReflectionClass(\get_class($this));
+    if($this instanceof Layout)
+    {
+      $class = Application::getApp();
+    }
+    else
+    {
+      $class = \get_class($this);
+    }
+    $reflector = new \ReflectionClass($class);
     $parts     = \explode('\\', $reflector->getName());
     \array_shift($parts);
     $parts = \array_chunk($parts, 2, false);
