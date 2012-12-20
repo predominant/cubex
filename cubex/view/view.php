@@ -11,11 +11,17 @@ namespace Cubex\View;
 use Cubex\Project\Application;
 use Cubex\Dispatch\Dispatcher;
 
+/**
+ * View
+ */
 abstract class View extends Dispatcher implements Renderable
 {
   abstract public function render();
 
-  public function __tostring()
+  /**
+   * @return string
+   */
+  public function __toString()
   {
     try
     {

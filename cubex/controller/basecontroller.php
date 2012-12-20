@@ -17,6 +17,9 @@ use \Cubex\Routing\Router;
 use \Cubex\View\Template;
 use \Exception;
 
+/**
+ * Base Controller
+ */
 abstract class BaseController extends Handler
 {
 
@@ -92,7 +95,8 @@ abstract class BaseController extends Handler
 
   /**
    * @param $response
-   * @return Controller
+   *
+   * @return BaseController
    */
   public function setResponse($response)
   {
@@ -125,6 +129,7 @@ abstract class BaseController extends Handler
    * response when canProcess() returns false
    *
    * @param \Exception $e
+   *
    * @return Response
    */
   public function failedProcess(Exception $e)
@@ -132,10 +137,10 @@ abstract class BaseController extends Handler
     $webpage = new ErrorPage(
       500, $e->getMessage(),
       array(
-        'path'             => $this->request()->getPath(),
-        'exception'        => $e->getMessage(),
-        'exception_code'   => $e->getCode(),
-        'exception_source' => $e->getFile() . ':' . $e->getLine(),
+           'path'             => $this->request()->getPath(),
+           'exception'        => $e->getMessage(),
+           'exception_code'   => $e->getCode(),
+           'exception_source' => $e->getFile() . ':' . $e->getLine(),
       )
     );
 
@@ -312,10 +317,11 @@ abstract class BaseController extends Handler
   /**
    * Delegate control to a new controller
    *
-   * @param Controller $newController
+   * @param BaseController $newController
+   *
    * @return bool
    */
-  public function delegate(Controller $newController)
+  public function delegate(BaseController $newController)
   {
     \ob_get_clean();
     $this->_delegated = true;
@@ -336,7 +342,8 @@ abstract class BaseController extends Handler
 
   /**
    * @param $layout
-   * @return Controller
+   *
+   * @return BaseController
    */
   public function setLayout($layout)
   {
@@ -353,11 +360,51 @@ abstract class BaseController extends Handler
     return new Template('layout' . DIRECTORY_SEPARATOR . $this->getLayout(), $this->app());
   }
 
+  /**
+   * Specify a CSS file to include (/css | .css are not required)
+   *
+   * @param $file
+   *
+   * @return BaseController
+   */
+  public function requireCss($file)
+  {
+    $this->app()->requireCss($file);
+    return $this;
+  }
+
+  /**
+   * Specify a JS file to include (/js | .js are not required)
+   *
+   * @param $file
+   *
+   * @return BaseController
+   */
+  public function requireJs($file)
+  {
+    $this->app()->requireJs($file);
+    return $this;
+  }
+
+  /**
+   * Require all $type files with the request
+   *
+   * @param string $type
+   *
+   * @return BaseController
+   */
+  public function requirePackage($type = 'css')
+  {
+    $this->app()->requirePackage($type);
+    return $this;
+  }
+
 
   /**
    * Translate string to locale
    *
    * @param $message string $string
+   *
    * @return string
    */
   public function t($message)
@@ -371,6 +418,7 @@ abstract class BaseController extends Handler
    * @param      $singular
    * @param null $plural
    * @param int  $number
+   *
    * @return string
    */
   public function p($singular, $plural = null, $number = 0)

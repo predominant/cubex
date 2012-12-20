@@ -30,7 +30,7 @@ abstract class Dispatcher
     $reflector = new \ReflectionClass(\get_class($this));
     $parts     = \explode('\\', $reflector->getName());
     \array_shift($parts);
-    $parts                       = \array_chunk($parts, 1, false);
+    $parts                     = \array_chunk($parts, 1, false);
     $this->_entityDispatchName = \strtolower($parts[1][0]);
     return $this->_entityDispatchName;
   }
@@ -39,10 +39,13 @@ abstract class Dispatcher
    * Require all $type files with the request
    *
    * @param string $type
+   *
+   * @return Dispatcher
    */
   public function requirePackage($type = 'css')
   {
     Prop::requirePackage($this, $this->dispatcherEntityName(), $type);
+    return $this;
   }
 
   /**
