@@ -13,7 +13,7 @@ namespace Cubex\Dispatch;
  */
 use Cubex\Http\Response;
 use Cubex\Cubex;
-use Cubex\Base\ErrorPage;
+use Cubex\Response\ErrorPage;
 
 class Respond
 {

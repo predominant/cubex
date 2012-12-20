@@ -16,7 +16,7 @@ namespace Cubex\Tests
 
   }
 
-  class Application extends \Cubex\Application\Application
+  class Application extends \Cubex\Project\Application
   {
     public function getDefaultController()
     {
@@ -29,7 +29,7 @@ namespace Cubex\Tests
     }
   }
 
-  class ApplicationFailTest extends \Cubex\Application\Application
+  class ApplicationFailTest extends \Cubex\Project\Application
   {
     public function launch()
     {
@@ -52,7 +52,7 @@ namespace Cubex\Tests
     }
   }
 
-  class Component extends \Cubex\Base\Component
+  class Component extends \Cubex\Project\Component
   {
 
   }

@@ -9,7 +9,6 @@
 namespace Cubex\Data;
 
 use Cubex\Cubex;
-use Cubex\Base\Sprintf;
 
 abstract class SQLModel extends Model
 {

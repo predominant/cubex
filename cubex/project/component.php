@@ -6,7 +6,7 @@
  * Description: Components are partial applications
  */
 
-namespace Cubex\Base;
+namespace Cubex\Project;
 
 use Cubex\Language\Translatable;
 

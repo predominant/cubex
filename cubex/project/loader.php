@@ -5,10 +5,10 @@
  * Time: 18:59
  * Description:
  */
-namespace Cubex\Application;
+namespace Cubex\Project;
 
 use Cubex\Cubex;
-use \Cubex\Application\Application;
+use \Cubex\Project\Application;
 use \Cubex\Http\Request;
 use Cubex\Events\Events;
 

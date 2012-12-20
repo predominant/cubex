@@ -9,7 +9,7 @@
 namespace Cubex\View;
 
 use Cubex\Data\Handler;
-use Cubex\Application\Application;
+use Cubex\Project\Application;
 use Cubex\Language\Translatable;
 use Cubex\Dispatch\Dispatcher;
 

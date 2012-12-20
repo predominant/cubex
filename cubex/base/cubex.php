@@ -16,7 +16,7 @@ use Cubex\Events\Events;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
-use Cubex\Application\Loader;
+use Cubex\Project\Loader;
 use Cubex\Controller\BaseController;
 
 /**

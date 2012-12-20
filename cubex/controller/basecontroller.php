@@ -9,7 +9,7 @@
 namespace Cubex\Controller;
 
 use \Cubex\Cubex;
-use \Cubex\Application\Application;
+use \Cubex\Project\Application;
 use \Cubex\Data\Handler;
 use \Cubex\Response\ErrorPage;
 use \Cubex\Http\Response;

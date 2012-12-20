@@ -81,7 +81,7 @@ abstract class WebpageController extends BaseController
   /**
    * Build the webpage return after processing actions
    *
-   * @return \Cubex\Base\WebPage|\Cubex\Http\Response
+   * @return \Cubex\Response\WebPage|\Cubex\Http\Response
    */
   public function processRequest()
   {

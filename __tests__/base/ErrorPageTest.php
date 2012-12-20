@@ -9,13 +9,13 @@ namespace Cubex\Tests;
 class Base_ErrorPageTest extends \PHPUnit_Framework_TestCase
 {
   /**
-   * @var \Cubex\Base\ErrorPage $_error_page
+   * @var \Cubex\Response\ErrorPage $_error_page
    */
   private $_error_page;
 
   protected function setUp()
   {
-    $this->_error_page = new \Cubex\Base\ErrorPage(
+    $this->_error_page = new \Cubex\Response\ErrorPage(
       404, 'Page Not Found', array('foo' => 'bar')
     );
   }

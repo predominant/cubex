@@ -6,10 +6,7 @@
  * Description:
  */
 
-namespace Cubex\Base;
-
-use \Cubex\Data\Connection;
-use Cubex\Data\SearchObject;
+namespace Cubex\Data;
 
 class Sprintf
 {
