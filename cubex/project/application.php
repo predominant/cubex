@@ -79,6 +79,7 @@ abstract class Application extends Translatable
       if(\class_exists($controller))
       {
         Cubex::core()->setController(new $controller());
+        Cubex::controller()->initiateController();
       }
       else
       {

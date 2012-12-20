@@ -33,7 +33,7 @@ abstract class BaseController extends Handler
   /**
    *
    */
-  final public function __construct()
+  final public function initiateController()
   {
     /* Populate data set with routes */
     $uri_data = $this->app()->getURIData();
