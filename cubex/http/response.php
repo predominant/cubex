@@ -297,7 +297,7 @@ class Response
       else
       {
         //Force no cache | Mayan EOW
-        $this->addHeader("Expires", "Fri, 21 Dec 2012 00:00:00 GMT");
+        $this->addHeader("Expires", "Fri, 21 Dec 2012 11:11:11 GMT");
         $this->addHeader("Pragma", "no-cache");
         $this->addHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
       }
