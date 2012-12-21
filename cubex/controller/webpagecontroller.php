@@ -32,8 +32,7 @@ abstract class WebpageController extends BaseController
   public function initialiseWebpage()
   {
     $this->_webpage = new WebPage();
-    $this->_view    = $this->baseTemplate();
-    $this->_webpage->setView($this->_view);
+    $this->_webpage->setView($this->currentLayout());
     $this->initialisedPage();
     $this->_webpage->beginCapture();
   }
