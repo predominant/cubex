@@ -30,6 +30,8 @@ abstract class BaseController extends Handler
 
   protected $_delegated = false;
 
+  public static $_layout;
+
   /**
    *
    */
@@ -353,11 +355,25 @@ abstract class BaseController extends Handler
   }
 
   /**
+   * Create new layout object
+   *
    * @return \Cubex\Application\Layout
    */
-  public function baseTemplate()
+  protected function createLayout()
   {
     return new Layout();
+  }
+
+  /**
+   * @return \Cubex\Application\Layout
+   */
+  public function currentLayout()
+  {
+    if(self::$_layout === null)
+    {
+      self::$_layout = $this->createLayout();
+    }
+    return self::$_layout;
   }
 
   /**
