@@ -30,7 +30,7 @@ final class Prop
       if(
         \substr($resource, 0, 7) == 'http://'
         || \substr($resource, 0, 8) == 'https://'
-        || \substr($resource, 0, 3) == '://'
+        || \substr($resource, 0, 2) == '//'
       )
       {
         $uri   = $resource;

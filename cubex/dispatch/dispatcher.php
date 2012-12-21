@@ -69,17 +69,20 @@ abstract class Dispatcher
    */
   public function requireCss($file)
   {
-    if(\substr($file, -4) != '.css')
+    if(!$this->isExternalUri($file))
     {
-      $file = $file . '.css';
-    }
-    if(\substr($file, 0, 1) == '/')
-    {
-      $file = '/css' . $file;
-    }
-    else
-    {
-      $file = 'css/' . $file;
+      if(\substr($file, -4) != '.css')
+      {
+        $file = $file . '.css';
+      }
+      if(\substr($file, 0, 1) == '/')
+      {
+        $file = '/css' . $file;
+      }
+      else
+      {
+        $file = 'css/' . $file;
+      }
     }
     Prop::requireResource($this, $file, 'css');
     return $this;
@@ -94,17 +97,20 @@ abstract class Dispatcher
    */
   public function requireJs($file)
   {
-    if(\substr($file, -3) != '.js')
+    if(!$this->isExternalUri($file))
     {
-      $file = $file . '.js';
-    }
-    if(\substr($file, 0, 1) == '/')
-    {
-      $file = '/js' . $file;
-    }
-    else
-    {
-      $file = 'js/' . $file;
+      if(\substr($file, -3) != '.js')
+      {
+        $file = $file . '.js';
+      }
+      if(\substr($file, 0, 1) == '/')
+      {
+        $file = '/js' . $file;
+      }
+      else
+      {
+        $file = 'js/' . $file;
+      }
     }
     Prop::requireResource($this, $file, 'js');
     return $this;
@@ -119,13 +125,16 @@ abstract class Dispatcher
    */
   public function imgUri($file)
   {
-    if(\substr($file, 0, 1) == '/')
+    if(!$this->isExternalUri($file))
     {
-      $file = '/img' . $file;
-    }
-    else
-    {
-      $file = 'img/' . $file;
+      if(\substr($file, 0, 1) == '/')
+      {
+        $file = '/img' . $file;
+      }
+      else
+      {
+        $file = 'img/' . $file;
+      }
     }
     return $this->getDispatchFabricator()->resource($file);
   }
@@ -186,5 +195,21 @@ abstract class Dispatcher
   public function packageUri($type = 'css')
   {
     return $this->getDispatchFabricator()->package($this->dispatcherEntityName(), $type);
+  }
+
+  /**
+   * Determine if a resource is external
+   *
+   * @param $resource
+   *
+   * @return bool
+   */
+  public function isExternalUri($resource)
+  {
+    return (
+    substr($resource, 0, 2) == '//'
+    || substr($resource, 0, 7) == 'http://'
+    || substr($resource, 0, 8) == 'https://'
+    );
   }
 }
