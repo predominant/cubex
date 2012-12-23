@@ -18,6 +18,14 @@ use Cubex\Event\Events;
 abstract class Loader
 {
   /**
+   * @return string
+   */
+  public function getProjectName()
+  {
+    return "Unknown";
+  }
+
+  /**
    * Initialise the correct application for the request, processing sub methods to calculate the correct application
    *
    * Processed in order: getBySubAndPath, getBySubDomain, getByPath, defaultApplication
