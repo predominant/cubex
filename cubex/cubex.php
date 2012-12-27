@@ -382,6 +382,7 @@ final class Cubex
         $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
       }
       $includeFile .= str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+      $includeFile = strtolower($includeFile);
 
       include_once($includeFile);
     }
