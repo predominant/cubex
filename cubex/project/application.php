@@ -8,6 +8,7 @@
 
 namespace Cubex\Project;
 
+use Cubex\Controller\BaseController;
 use Cubex\Cubex;
 use Cubex\Language\Translatable;
 use Cubex\Routing\Router;
@@ -68,17 +69,15 @@ abstract class Application extends Translatable
     if($this->canLaunch())
     {
       $this->registerAutoLoader();
-      $namespace = \substr(\get_called_class(), 0, -12);
-
       $this->bindLanguage();
 
       /**
        * Initiate Controller
        */
-      $controller = $namespace . '\Controllers\\' . $this->getController(Cubex::request()->getPath());
-      if(\class_exists($controller))
+      $controller = $this->getController(Cubex::request()->getPath());
+      if($controller !== null && $controller instanceof BaseController)
       {
-        Cubex::core()->setController(new $controller());
+        Cubex::core()->setController($controller);
         Cubex::controller()->initiateController();
       }
       else
@@ -153,13 +152,13 @@ abstract class Application extends Translatable
   }
 
   /**
-   * Default controller classname
+   * Default controller
    *
-   * @return string
+   * @return \Cubex\Controller\BaseController|null
    */
   public function getDefaultController()
   {
-    return 'DefaultController';
+    return null;
   }
 
   /**
