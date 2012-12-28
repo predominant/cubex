@@ -132,7 +132,7 @@ class Respond
    */
   public function getData($entityPath, $filePath, $domain = null)
   {
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex/' . $entityPath;
 
     if($domain !== null && !empty($domain))
     {
@@ -179,7 +179,7 @@ class Respond
    */
   public function getPackageData($entityPath, $filePath, $domain)
   {
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR . $entityPath;
 
     $response = '';
 

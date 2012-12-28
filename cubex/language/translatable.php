@@ -107,7 +107,6 @@ abstract class Translatable extends Dispatcher
   public function filePath()
   {
     $reflector = new \ReflectionClass(\get_class($this));
-
     return \dirname($reflector->getFileName());
   }
 }

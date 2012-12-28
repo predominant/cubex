@@ -363,16 +363,6 @@ final class Cubex
     $class = \ltrim($class, '\\');
     try
     {
-      if(\strpos($class, 'Cubex\\Modules\\') === 0
-      || \strpos($class, 'Cubex\\Widgets\\') === 0
-      || \strpos($class, 'Cubex\\Applications\\') === 0
-      || \strpos($class, 'Cubex\\Components\\') === 0
-      )
-      {
-        //Project specific groups
-        $class = \substr($class, 6);
-      }
-
       $class       = ltrim($class, '\\');
       $includeFile = '';
       if($lastNsPos = strrpos($class, '\\'))
@@ -381,8 +371,7 @@ final class Cubex
         $class       = substr($class, $lastNsPos + 1);
         $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
       }
-      $includeFile .= str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-      $includeFile = strtolower($includeFile);
+      $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
 
       include_once($includeFile);
     }
@@ -517,7 +506,7 @@ final class Cubex
       \header("Content-Type: text/plain; charset=utf-8", true, 500);
     }
     echo "== Fatal Error ==\n";
-    echo "Environment: " . (defined("CUBEX_ENV")? CUBEX_ENV : 'Undefined') . "\n\n";
+    echo "Environment: " . (defined("CUBEX_ENV") ? CUBEX_ENV : 'Undefined') . "\n\n";
     echo $message . "\n";
     define("CUBEX_FATAL_ERROR", $message);
     exit(1);

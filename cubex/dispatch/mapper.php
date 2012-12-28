@@ -34,7 +34,7 @@ class Mapper
     echo \str_repeat("\n", 100);
     Shell::clear();
 
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR;
 
     $mapper = '_____________                      _____      ______
 ___  __ \__(_)____________________ __  /_________  /_
