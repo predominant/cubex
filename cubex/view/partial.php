@@ -13,7 +13,10 @@ namespace Cubex\View;
  */
 class Partial implements Renderable
 {
-
+  /**
+   * @var bool
+   */
+  private $_escapeInput = true;
   /**
    * @var string
    */
@@ -38,12 +41,24 @@ class Partial implements Renderable
   /**
    * @param string $template  (HTML Template)
    * @param null   $variables (array of variables e.g. array("name","description");
+   * @param bool   $escapeInput
    */
-  public function __construct($template = '', $variables = null)
+  public function __construct($template = '', $variables = null, $escapeInput = true)
   {
-    $this->_template  = $template;
-    $this->_variables = $variables === null ? array() : $variables;
+    $this->_escapeInput = $escapeInput;
+    $this->_template    = $template;
+    $this->_variables   = $variables === null ? array() : $variables;
     $this->clearElements();
+  }
+
+  /**
+   * Switch escaping of input
+   *
+   * @param $escape
+   */
+  public function escapeInput($escape)
+  {
+    $this->_escapeInput = (bool)$escape;
   }
 
   /**
@@ -61,7 +76,7 @@ class Partial implements Renderable
    */
   private function addItem($args)
   {
-    $element               = $this->_template;
+    $element              = $this->_template;
     $this->_elementData[] = $args; //Allow for changing the template at a later point in time, or handling in render
 
     foreach($this->_variables as $arg => $key)
@@ -70,11 +85,25 @@ class Partial implements Renderable
     }
     if(\is_array($args))
     {
-      $this->_elements[] = \vsprintf($element, \array_map(array('\Cubex\View\HTMLElement', 'escape'), $args));
+      if($this->_escapeInput)
+      {
+        $this->_elements[] = \vsprintf($element, \array_map(array('\Cubex\View\HTMLElement', 'escape'), $args));
+      }
+      else
+      {
+        $this->_elements[] = \vsprintf($element, $args);
+      }
     }
     else
     {
-      $this->_elements[] = \sprintf($element, HTMLElement::escape($args));
+      if($this->_escapeInput)
+      {
+        $this->_elements[] = \sprintf($element, HTMLElement::escape($args));
+      }
+      else
+      {
+        $this->_elements[] = \sprintf($element, $args);
+      }
     }
   }
 
@@ -82,7 +111,8 @@ class Partial implements Renderable
    * @param array $elements
    *
    * @return Partial
-   */public function addElements(array $elements)
+   */
+  public function addElements(array $elements)
   {
     foreach($elements as $element)
     {
@@ -94,8 +124,10 @@ class Partial implements Renderable
 
   /**
    * @param string $glue
+   *
    * @return Partial
-   */public function setGlue($glue = '')
+   */
+  public function setGlue($glue = '')
   {
     $this->_glue = $glue;
 
@@ -112,7 +144,8 @@ class Partial implements Renderable
 
   /**
    * @return string
-   */public function __toString()
+   */
+  public function __toString()
   {
     return $this->render();
   }
@@ -127,8 +160,10 @@ class Partial implements Renderable
 
   /**
    * @param $template
+   *
    * @return Partial
-   */public static function single($template /*$element,$element,...*/)
+   */
+  public static function single($template /*$element,$element,...*/)
   {
     $partial = new Partial($template);
     $args    = \func_get_args();
