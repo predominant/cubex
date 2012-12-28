@@ -108,8 +108,8 @@ final class Cubex
           Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
         }
 
-        $loader_class = '\Cubex\Applications\Loader';
-        $loader       = new $loader_class();
+        $loaderClass = '\Cubex\Applications\Loader';
+        $loader      = new $loaderClass();
         if($loader instanceof Loader)
         {
           $loader->load(Cubex::request());
