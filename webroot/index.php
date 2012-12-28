@@ -6,8 +6,6 @@
  * Description: Web Handler for Cubex
  */
 
-
-
 define('RUN_PROFILER', false);
 if(RUN_PROFILER && function_exists('xhprof_enable')) xhprof_enable(XHPROF_FLAGS_NO_BUILTINS);
 
@@ -19,10 +17,10 @@ require_once(dirname(dirname(__FILE__)) . '/cubex/cubex.php');
 
 if(RUN_PROFILER && function_exists("xhprof_disable"))
 {
-  $xhprofData = xhprof_disable();
-  $XHPROF_ROOT = dirname(dirname(dirname(dirname(__FILE__)))) . '/facebook/xhprof';
-  include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_lib.php";
-  include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_runs.php";
+  $xhprofData  = xhprof_disable();
+  $xhprofRoot = dirname(dirname(dirname(dirname(__FILE__)))) . '/facebook/xhprof';
+  include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_lib.php";
+  include_once $xhprofRoot . "/xhprof_lib/utils/xhprof_runs.php";
 
   $xhprofRuns = new XHProfRuns_Default();
   $runId      = $xhprofRuns->save_run($xhprofData, "xhprof_cubex");
