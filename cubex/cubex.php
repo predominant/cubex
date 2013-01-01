@@ -155,19 +155,6 @@ final class Cubex
   {
     \set_include_path(\get_include_path() . PATH_SEPARATOR . CUBEX_ROOT);
     \spl_autoload_register("Cubex\\Cubex::loadClass");
-
-    if(!class_exists("Core", false))
-    {
-      try
-      {
-        $cached = CUBEX_ROOT . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'core.php';
-        include_once($cached);
-      }
-      catch(\Exception $e)
-      {
-      }
-    }
-
     return self::$cubex;
   }
 
