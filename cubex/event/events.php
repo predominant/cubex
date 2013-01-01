@@ -11,7 +11,7 @@ namespace Cubex\Event;
 /**
  * Standard hooks for events
  */
-final class Events
+class Events
 {
 
   const CUBEX_LAUNCH   = 'cubex.launch';
