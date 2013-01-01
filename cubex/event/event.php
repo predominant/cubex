@@ -5,6 +5,7 @@
  * Time: 19:29
  * Description: Standard Event
  */
+namespace Cubex\Event;
 
 class Event implements EventInterface
 {

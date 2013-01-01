@@ -6,6 +6,8 @@
  * Description:
  */
 
+namespace Cubex\Event;
+
 interface EventInterface
 {
   public function __construct($name, $args = [], $callee = null);

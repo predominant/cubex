@@ -68,7 +68,7 @@ class Events
     foreach($listeners as $listen)
     {
       if(!\is_callable($listen)) continue;
-      call_user_func($listen, new \Event($listen, $args, $callee));
+      call_user_func($listen, new Event($listen, $args, $callee));
     }
   }
 }
