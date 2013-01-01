@@ -109,10 +109,17 @@ final class Cubex
         }
 
         $loaderClass = '\Cubex\Applications\Loader';
-        $loader      = new $loaderClass();
-        if($loader instanceof Loader)
+        if(class_exists($loaderClass))
         {
-          $loader->load(Cubex::request());
+          $loader = new $loaderClass();
+          if($loader instanceof Loader)
+          {
+            $loader->load(Cubex::request());
+          }
+        }
+        else
+        {
+          static::fatal("No Project Loader could be found");
         }
       }
     }
