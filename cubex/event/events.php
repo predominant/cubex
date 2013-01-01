@@ -28,10 +28,25 @@ final class Events
   /**
    * Listen into an event
    *
-   * @param          $eventName
-   * @param callable $callback
+   * @param string|array         $eventName
+   * @param callable             $callback
    */
   public static function listen($eventName, callable $callback)
+  {
+    if(is_array($eventName))
+    {
+      foreach($eventName as $event)
+      {
+        self::_listen($event, $callback);
+      }
+    }
+    else if(is_scalar($eventName))
+    {
+      self::_listen($eventName, $callback);
+    }
+  }
+
+  private static function _listen($eventName, callable $callback)
   {
     if(!isset(self::$_listeners[$eventName]))
     {
@@ -45,14 +60,15 @@ final class Events
    *
    * @param       $eventName
    * @param array $args
+   * @param mixed $callee
    */
-  public static function trigger($eventName, $args = array())
+  public static function trigger($eventName, $args = array(), $callee = null)
   {
     $listeners = isset(self::$_listeners[$eventName]) ? self::$_listeners[$eventName] : array();
     foreach($listeners as $listen)
     {
       if(!\is_callable($listen)) continue;
-      \call_user_func_array($listen, $args);
+      call_user_func($listen, new \Event($listen, $args, $callee));
     }
   }
 }
