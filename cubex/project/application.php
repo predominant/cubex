@@ -154,12 +154,9 @@ abstract class Application extends Translatable
   /**
    * Default controller
    *
-   * @return \Cubex\Controller\BaseController|null
+   * @return \Cubex\Controller\BaseController
    */
-  public function getDefaultController()
-  {
-    return null;
-  }
+  abstract public function getDefaultController();
 
   /**
    * Access routes to be used by the router
@@ -232,7 +229,9 @@ abstract class Application extends Translatable
    *
    * @param $path
    *
-   * @return null|string
+   * @throws \BadMethodCallException
+   *
+   * @return BaseController
    */
   protected function getController($path)
   {
@@ -246,7 +245,26 @@ abstract class Application extends Translatable
 
     $this->_processedRoute = $router->processedRoute();
 
-    return $controller === null ? $this->getDefaultController() : $controller;
+    if($controller === null)
+    {
+      return $this->getDefaultController();
+    }
+    else if($controller instanceof BaseController)
+    {
+      return $controller;
+    }
+    else
+    {
+      if(class_exists($controller))
+      {
+        $controller = new $controller();
+        if($controller instanceof BaseController)
+        {
+          return $controller;
+        }
+      }
+      throw new \BadMethodCallException("Invalid Controller $controller");
+    }
   }
 
   /**
@@ -254,7 +272,8 @@ abstract class Application extends Translatable
    *
    * @return string
    */
-  public function processedRoute()
+  public
+  function processedRoute()
   {
     return $this->_processedRoute;
   }
@@ -262,7 +281,8 @@ abstract class Application extends Translatable
   /**
    * Called on application shutdown
    */
-  public function shutdown()
+  public
+  function shutdown()
   {
   }
 }
