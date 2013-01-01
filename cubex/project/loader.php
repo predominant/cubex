@@ -7,7 +7,9 @@
  */
 namespace Cubex\Project;
 
+use Cubex\Base\Dispatchable;
 use Cubex\Cubex;
+use Cubex\Http\Response;
 use \Cubex\Project\Application;
 use \Cubex\Http\Request;
 use Cubex\Event\Events;
@@ -15,7 +17,7 @@ use Cubex\Event\Events;
 /**
  * The app loader is essential a "project" router, defining which application should handle a request
  */
-abstract class Loader
+abstract class Loader implements Dispatchable
 {
   /**
    * @return string
@@ -32,9 +34,13 @@ abstract class Loader
    *
    * If an application cannot be found, a cubex fatal be triggered
    *
-   * @param \Cubex\Http\Request $request
+   * @param Request  $request
+   * @param Response $response
+   *
+   * @return Response
+   * @throws \Exception
    */
-  public function load(Request $request)
+  public function dispatch(Request $request, Response $response)
   {
     $application = static::getBySubAndPath($request->getSubDomain(), $request->getPath());
 
@@ -55,12 +61,11 @@ abstract class Loader
 
     if($application !== null && $application instanceof Application)
     {
-      Events::trigger(Events::CUBEX_LAUNCH);
-      Application::initialise($application);
+      return $application->dispatch($request, $response);
     }
     else
     {
-      Cubex::fatal("No application has been defined");
+      throw new \Exception("No application could be loaded");
     }
   }
 

@@ -20,6 +20,12 @@ class Events
   const CUBEX_RESPONSE_START = 'cubex.response.start';
   const CUBEX_RESPONSE_SENT  = 'cubex.response.sent';
 
+  const CUBEX_APPLICATION_CANLAUNCH   = 'cubex.application.canlaunch';
+  const CUBEX_APPLICATION_LAUNCHFAIL   = 'cubex.application.launchfailed';
+  const CUBEX_APPLICATION_PRELAUNCH   = 'cubex.application.launching';
+  const CUBEX_APPLICATION_POSTLAUNCH   = 'cubex.application.launched';
+  const CUBEX_APPLICATION_SHUTDOWN   = 'cubex.application.shutdown';
+
   const CUBEX_DEBUG = 'cubex.debug';
   const CUBEX_LOG   = 'cubex.log';
 

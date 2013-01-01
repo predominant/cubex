@@ -10,6 +10,7 @@ namespace Cubex;
 /**
  * Cubex Framework
  */
+use Cubex\Base\Dispatchable;
 use Cubex\Data\Handler;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
@@ -87,21 +88,23 @@ final class Cubex
     define("CUBEX_START", \microtime(true));
 
     self::core(); //Construct Cubex
+    $dispatcher = null;
+
+    $request = new Request($_REQUEST['__path__']);
+    Cubex::core()->setRequest($request);
+    $response = new Response();
 
     if(CUBEX_WEB)
     {
-      Cubex::core()->setRequest(new Request($_REQUEST['__path__']));
       list($verify, $dispatchPath) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
 
       if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
       {
-        $dispatch = new Respond(
+        $dispatcher = new Respond(
           Cubex::config("dispatch")->getArr("entity_map"),
-          Cubex::config("dispatch")->getArr("domain_map")
+          Cubex::config("dispatch")->getArr("domain_map"),
+          $dispatchPath
         );
-        $response = $dispatch->getResponse($dispatchPath);
-        $response->respond();
-        self::core()->_allowShutdownDetails = false;
       }
       else
       {
@@ -113,11 +116,7 @@ final class Cubex
         $loaderClass = '\Cubex\Applications\Loader';
         if(class_exists($loaderClass))
         {
-          $loader = new $loaderClass();
-          if($loader instanceof Loader)
-          {
-            $loader->load(Cubex::request());
-          }
+          $dispatcher = new $loaderClass();
         }
         else
         {
@@ -128,6 +127,21 @@ final class Cubex
     else
     {
       Cubex::core();
+    }
+
+    if($dispatcher instanceof Dispatchable)
+    {
+      $respond = $dispatcher->dispatch($request, $response);
+      if($respond instanceof Response)
+      {
+        Events::trigger(Events::CUBEX_RESPONSE_START, [], $respond);
+        $respond->respond();
+        Events::trigger(Events::CUBEX_RESPONSE_SENT, [], $respond);
+      }
+      else
+      {
+        throw new \RuntimeException("Invalid response from dispatcher");
+      }
     }
 
     Events::trigger(Events::CUBEX_SHUTDOWN);
@@ -143,6 +157,7 @@ final class Cubex
     if(self::$cubex === null)
     {
       self::$cubex = new Cubex();
+      Events::trigger(Events::CUBEX_LAUNCH, [], self::$cubex);
     }
 
     return self::$cubex;
@@ -417,6 +432,11 @@ final class Cubex
   public function projectBasePath()
   {
     return $this->_projectBase;
+  }
+
+  public static function setShutdownDetails($enabled = false)
+  {
+    self::core()->_allowShutdownDetails = (bool)$enabled;
   }
 
   /**

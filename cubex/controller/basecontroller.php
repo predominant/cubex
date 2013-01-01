@@ -8,7 +8,9 @@
 
 namespace Cubex\Controller;
 
+use Cubex\Base\Dispatchable;
 use \Cubex\Cubex;
+use Cubex\Http\Request;
 use \Cubex\Project\Application;
 use \Cubex\Data\Handler;
 use \Cubex\Response\ErrorPage;
@@ -20,25 +22,49 @@ use \Cubex\Application\Layout;
 /**
  * Base Controller
  */
-abstract class BaseController extends Handler
+abstract class BaseController extends Handler implements Dispatchable
 {
-
-  /** @var Response */
+  /**
+   * @var Request
+   */
+  protected $_request;
+  /**
+   * @var Response
+   */
   protected $_response;
-  /** @var \Exception */
+
+  /**
+   * @var Application
+   */
+  private $_app;
+
+  /**
+   * @var \Exception
+   */
   protected $_exception;
 
   protected $_delegated = false;
 
   public static $_layout;
 
-  /**
-   *
-   */
-  final public function initiateController()
+  public function setApp(Application $app)
   {
+    $this->_app = $app;
+    return $this;
+  }
+
+  public function getApp()
+  {
+    return $this->_app;
+  }
+
+  public function dispatch(Request $request, Response $response)
+  {
+    $this->_request  = $request;
+    $this->_response = $response;
+
     /* Populate data set with routes */
-    $uri_data = $this->app()->getURIData();
+    $uri_data = $this->getApp()->getURIData();
     if($uri_data !== null)
     {
       foreach($uri_data as $k => $v)
@@ -47,7 +73,7 @@ abstract class BaseController extends Handler
       }
     }
 
-    $this->setData('_route', $this->app()->processedRoute());
+    $this->setData('_route', $this->getApp()->processedRoute());
     $this->setData('_path', $this->request()->getPath());
 
     try
@@ -59,22 +85,16 @@ abstract class BaseController extends Handler
       }
 
       $this->preProcess();
-      $this->setResponse($this->processRequest());
+      $this->_response->fromSource($this->processRequest());
       $this->postProcess();
     }
     catch(\Exception $e)
     {
       $this->_exception = $e;
-      $this->setResponse($this->failedProcess($e));
+      $this->_response->fromSource($this->failedProcess($e));
     }
-  }
 
-  /**
-   * @return Application
-   */
-  public function app()
-  {
-    return Application::getApp();
+    return $this->_response;
   }
 
   /* Handling the request */
@@ -146,7 +166,7 @@ abstract class BaseController extends Handler
       )
     );
 
-    return new Response($webpage);
+    return $webpage;
   }
 
   /**
@@ -339,7 +359,7 @@ abstract class BaseController extends Handler
    */
   public function getLayout()
   {
-    return $this->app()->getLayout();
+    return $this->getApp()->getLayout();
   }
 
   /**
@@ -349,7 +369,7 @@ abstract class BaseController extends Handler
    */
   public function setLayout($layout)
   {
-    $this->app()->setLayout($layout);
+    $this->getApp()->setLayout($layout);
 
     return $this;
   }
@@ -361,7 +381,7 @@ abstract class BaseController extends Handler
    */
   protected function createLayout()
   {
-    return new Layout();
+    return new Layout($this->getApp());
   }
 
   /**
@@ -385,7 +405,7 @@ abstract class BaseController extends Handler
    */
   public function requireCss($file)
   {
-    $this->app()->requireCss($file);
+    $this->getApp()->requireCss($file);
     return $this;
   }
 
@@ -398,7 +418,7 @@ abstract class BaseController extends Handler
    */
   public function requireJs($file)
   {
-    $this->app()->requireJs($file);
+    $this->getApp()->requireJs($file);
     return $this;
   }
 
@@ -411,7 +431,7 @@ abstract class BaseController extends Handler
    */
   public function requirePackage($type = 'css')
   {
-    $this->app()->requirePackage($type);
+    $this->getApp()->requirePackage($type);
     return $this;
   }
 
@@ -425,7 +445,7 @@ abstract class BaseController extends Handler
    */
   public function t($message)
   {
-    return $this->app()->t($message);
+    return $this->getApp()->t($message);
   }
 
   /**
@@ -439,7 +459,7 @@ abstract class BaseController extends Handler
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    return $this->app()->p($singular, $plural, $number);
+    return $this->getApp()->p($singular, $plural, $number);
   }
 
   /**
@@ -448,6 +468,6 @@ abstract class BaseController extends Handler
    */
   public function tp($text, $number)
   {
-    $this->app()->tp($text, $number);
+    $this->getApp()->tp($text, $number);
   }
 }

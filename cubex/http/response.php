@@ -55,7 +55,11 @@ class Response
   {
     $this->addHeader("X-Powered-By", "Cubex");
     $this->addHeader("X-Frame-Options", "deny");
+    $this->fromSource($source);
+  }
 
+  public function fromSource($source)
+  {
     if($source instanceof WebPage)
     {
       $this->webpage($source);
@@ -77,6 +81,8 @@ class Response
       $this->_source     = $source;
       $this->_renderType = self::RENDER_UNKNOWN;
     }
+
+    return $this;
   }
 
   /**
@@ -228,7 +234,9 @@ class Response
         {
           $this->_source->redirect();
           if($this->_source->getDieRender())
+          {
             die;
+          }
         }
         break;
       case self::RENDER_RENDERABLE:
@@ -283,7 +291,7 @@ class Response
   {
     if(!\headers_sent())
     {
-      \header("HTTP/1.1 " . $this->_httpStatus . ' ' . $this->getStatusReason());
+      \header("HTTP/1.0 " . $this->_httpStatus . ' ' . $this->getStatusReason());
 
       if($this->_lastModified)
       {

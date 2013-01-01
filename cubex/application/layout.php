@@ -17,10 +17,30 @@ use Cubex\View\Renderable;
  */
 class Layout extends TemplatedView
 {
+  /**
+   * @var Application
+   */
+  private $_app;
   private $_nested = array();
   private $_layout_template = 'default';
 
   protected $_render_hooks = array('before' => array(), 'after' => array());
+
+  public function __construct(Application $app)
+  {
+    $this->_app = $app;
+  }
+
+  public function setApp(Application $app)
+  {
+    $this->_app = $app;
+    return $this;
+  }
+
+  public function getApp()
+  {
+    return $this->_app;
+  }
 
   /**
    * Set new template file for layout
@@ -42,7 +62,7 @@ class Layout extends TemplatedView
     if($this->_renderFolder === null)
     {
       $this->setTemplatesPath(
-        Application::getApp()->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'layout'
+        $this->getApp()->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'layout'
       );
     }
     $this->setTemplateFile($this->_layout_template);

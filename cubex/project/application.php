@@ -8,8 +8,11 @@
 
 namespace Cubex\Project;
 
+use Cubex\Base\Dispatchable;
 use Cubex\Controller\BaseController;
 use Cubex\Cubex;
+use Cubex\Http\Request;
+use Cubex\Http\Response;
 use Cubex\Language\Translatable;
 use Cubex\Routing\Router;
 use Cubex\Event\Events;
@@ -17,14 +20,20 @@ use Cubex\Event\Events;
 /**
  * Applications are a base class to group all logic for specific entry points
  */
-abstract class Application extends Translatable
+abstract class Application extends Translatable implements Dispatchable
 {
-
+  /**
+   * @var Request
+   */
+  protected $_request;
+  /**
+   * @var Response
+   */
+  protected $_response;
   private $_uriData = array();
   protected $_processedRoute = '';
   private $_layout = 'default';
-  /* @var $app Application */
-  public static $app = null;
+  protected static $app = null;
 
   /**
    * @return Application
@@ -34,29 +43,19 @@ abstract class Application extends Translatable
     return self::$app;
   }
 
-  /**
-   * Application initialiser
-   *
-   * @param Application $application
-   *
-   * @throws \Exception
-   */
-  final public static function initialise(Application $application)
+  public function dispatch(Request $request, Response $response)
   {
-    try
-    {
-      self::$app = $application;
-      Cubex::core()->appendClassMap(Cubex::loadClassMap($application->filePath()));
-      self::$app->launch();
-    }
-    catch(\Exception $e)
-    {
-      throw new \Exception(
-        "Application '" . $application->getName() . "' is unstable\n\n" .
-        'From: ' . $e->getFile() . ':' . $e->getLine() . "\n\n" .
-        "Message: " . $e->getMessage() . "\n", 503
-      );
-    }
+    static::$app     = $this;
+    $this->_request  = $request;
+    $this->_response = $response;
+
+    Cubex::core()->appendClassMap(Cubex::loadClassMap($this->filePath()));
+    Events::trigger(Events::CUBEX_APPLICATION_PRELAUNCH, [], $this);
+    $this->launch();
+    Events::trigger(Events::CUBEX_APPLICATION_POSTLAUNCH, [], $this);
+
+    $this->shutdown();
+    return $this->_response;
   }
 
   /**
@@ -75,27 +74,21 @@ abstract class Application extends Translatable
       /**
        * Initiate Controller
        */
-      $controller = $this->getController(Cubex::request()->getPath());
+      $controller = $this->getController($this->_request->getPath());
       if($controller !== null && $controller instanceof BaseController)
       {
-        Cubex::core()->setController($controller);
-        Cubex::controller()->initiateController();
+        $controller->setApp($this)->dispatch($this->_request, $this->_response);
       }
       else
       {
-        Cubex::fatal("No controller could be located for " . $this->getName());
+        throw new \Exception("No controller could be located for " . $this->getName());
       }
-
       $this->launched();
-      Events::trigger(Events::CUBEX_RESPONSE_START);
-      Cubex::core()->controller()->getResponse()->respond();
-      Events::trigger(Events::CUBEX_RESPONSE_SENT);
     }
     else
     {
       $this->launchFailed();
     }
-    $this->shutdown();
   }
 
   /**
@@ -105,6 +98,7 @@ abstract class Application extends Translatable
    */
   public function canLaunch()
   {
+    Events::trigger(Events::CUBEX_APPLICATION_CANLAUNCH, [], $this);
     return true;
   }
 
@@ -113,6 +107,7 @@ abstract class Application extends Translatable
    */
   public function launchFailed()
   {
+    Events::trigger(Events::CUBEX_APPLICATION_LAUNCHFAIL, [], $this);
   }
 
   /**
@@ -273,8 +268,7 @@ abstract class Application extends Translatable
    *
    * @return string
    */
-  public
-  function processedRoute()
+  public function processedRoute()
   {
     return $this->_processedRoute;
   }
@@ -282,8 +276,8 @@ abstract class Application extends Translatable
   /**
    * Called on application shutdown
    */
-  public
-  function shutdown()
+  public function shutdown()
   {
+    Events::trigger(Events::CUBEX_APPLICATION_SHUTDOWN, [], $this);
   }
 }

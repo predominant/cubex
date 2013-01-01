@@ -20,6 +20,7 @@ abstract class View extends Dispatcher implements Renderable
 {
   abstract public function render();
 
+
   /**
    * @return string
    */
@@ -61,7 +62,7 @@ abstract class View extends Dispatcher implements Renderable
    */
   public function t($message)
   {
-    return Application::$app->t($message);
+    return Application::getApp()->t($message);
   }
 
   /**
@@ -75,7 +76,7 @@ abstract class View extends Dispatcher implements Renderable
    */
   public function p($singular, $plural = null, $number = 0)
   {
-    return Application::$app->p($singular, $plural, $number);
+    return Application::getApp()->p($singular, $plural, $number);
   }
 
   /**
@@ -85,6 +86,6 @@ abstract class View extends Dispatcher implements Renderable
    */
   public function tp($text, $number)
   {
-    return Application::$app->tp($text, $number);
+    return Application::getApp()->tp($text, $number);
   }
 }

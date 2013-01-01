@@ -11,11 +11,13 @@ namespace Cubex\Dispatch;
 /**
  * Respond to dispatch requests
  */
+use Cubex\Base\Dispatchable;
+use Cubex\Http\Request;
 use Cubex\Http\Response;
 use Cubex\Cubex;
 use Cubex\Response\ErrorPage;
 
-class Respond
+class Respond implements Dispatchable
 {
   protected $_cacheTime = 2592000; //60 * 60 * 24 * 30
 
@@ -25,15 +27,24 @@ class Respond
 
   protected $_domainHash;
   protected $_entityHash;
+  protected $_dispatchPath;
 
   /**
-   * @param array $entityMap
-   * @param array $domainMap
+   * @param array       $entityMap
+   * @param array       $domainMap
+   * @param null|string $dispatchPath
    */
-  public function __construct($entityMap = array(), $domainMap = array())
+  public function __construct($entityMap = array(), $domainMap = array(), $dispatchPath = null)
   {
-    $this->_entityMap = $entityMap;
-    $this->_domainMap = $domainMap;
+    $this->_entityMap    = $entityMap;
+    $this->_domainMap    = $domainMap;
+    $this->_dispatchPath = $dispatchPath;
+  }
+
+  public function dispatch(Request $request, Response $response)
+  {
+    Cubex::setShutdownDetails(false);
+    return $this->getResponse($this->_dispatchPath, $response);
   }
 
   /**
@@ -41,11 +52,12 @@ class Respond
    *
    * Path is created from domainhash/entityhash/type(;debug)/relative_path
    *
-   * @param $path
+   * @param          $path
+   * @param Response $response
    *
    * @return Response
    */
-  public function getResponse($path)
+  public function getResponse($path, Response $response)
   {
     list($domainHash, $entityHash, $type, $rel) = \explode('/', $path, 4);
     $this->_domainHash = $domainHash;
@@ -63,7 +75,6 @@ class Respond
      */
     if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $debug != 'nocache' && $type != 'pamon')
     {
-      $response = new Response("");
       $response->addHeader("X-Powered-By", "Cubex:Dispatch");
       $response->setStatus(304);
       $response->setCacheable($this->_cacheTime); //Dispatch content should never change
@@ -85,7 +96,7 @@ class Respond
      */
     if(\preg_match('@(//|\.\.)@', $rel))
     {
-      return new Response(new ErrorPage(400));
+      return $response->webpage(new ErrorPage(400));
     }
 
     $types = $this->supportedTypes();
@@ -95,7 +106,7 @@ class Respond
      */
     if(empty($types[$resourceType]))
     {
-      return new Response(new ErrorPage(404));
+      return $response->webpage(new ErrorPage(404));
     }
 
     if($type == 'pkg')
@@ -112,10 +123,10 @@ class Respond
      */
     if(empty($data))
     {
-      return new Response(new ErrorPage(404));
+      return $response->webpage(new ErrorPage(404));
     }
 
-    $response = new Response($data);
+    $response->fromSource($data);
     $response->addHeader("Content-Type", $types[$resourceType]);
     $response->addHeader("X-Powered-By", "Cubex:Dispatch");
     $response->setStatus(200);
