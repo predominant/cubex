@@ -46,6 +46,7 @@ abstract class Application extends Translatable
     try
     {
       self::$app = $application;
+      Cubex::core()->appendClassMap(Cubex::loadClassMap($application->filePath()));
       self::$app->launch();
     }
     catch(\Exception $e)

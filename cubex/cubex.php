@@ -37,6 +37,8 @@ final class Cubex
 
   private $_allowShutdownDetails = true;
 
+  private $_classmap = array();
+
   /**
    * Verify and setup the environment for cubex to run in
    */
@@ -164,6 +166,7 @@ final class Cubex
   private function __construct()
   {
     $this->configure();
+    $this->appendClassMap(static::loadClassMap(__DIR__));
     $this->register();
   }
 
@@ -357,15 +360,19 @@ final class Cubex
     $class = \ltrim($class, '\\');
     try
     {
-      $class       = ltrim($class, '\\');
-      $includeFile = '';
-      if($lastNsPos = strrpos($class, '\\'))
+      $includeFile = static::core()->getMappedClass($class);
+      if($includeFile === null)
       {
-        $namespace   = substr($class, 0, $lastNsPos);
-        $class       = substr($class, $lastNsPos + 1);
-        $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        $class       = ltrim($class, '\\');
+        $includeFile = '';
+        if($lastNsPos = strrpos($class, '\\'))
+        {
+          $namespace   = substr($class, 0, $lastNsPos);
+          $class       = substr($class, $lastNsPos + 1);
+          $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        }
+        $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
       }
-      $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
 
       include_once($includeFile);
     }
@@ -374,6 +381,33 @@ final class Cubex
     }
   }
 
+  public function appendClassMap(array $classmap)
+  {
+    $this->_classmap = array_merge($this->_classmap, $classmap);
+    return $this;
+  }
+
+  public function getMappedClass($class)
+  {
+    return isset($this->_classmap[$class]) ? $this->_classmap[$class] : null;
+  }
+
+  public static function loadClassMap($directory)
+  {
+    try
+    {
+      $map = parse_ini_file($directory . DIRECTORY_SEPARATOR . 'classmap.ini');
+      foreach($map as $class => $location)
+      {
+        $map[$class] = $directory . DIRECTORY_SEPARATOR . $location;
+      }
+      return $map;
+    }
+    catch(\Exception $e)
+    {
+    }
+    return [];
+  }
 
   /**
    * Get full path to project
