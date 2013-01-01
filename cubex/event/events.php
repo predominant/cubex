@@ -17,7 +17,7 @@ class Events
   const CUBEX_LAUNCH   = 'cubex.launch';
   const CUBEX_SHUTDOWN = 'cubex.shutdown';
 
-  const CUBEX_RESPONSE_START = 'cubex.response.start';
+  const CUBEX_RESPONSE_PREPARE = 'cubex.response.start';
   const CUBEX_RESPONSE_SENT  = 'cubex.response.sent';
 
   const CUBEX_APPLICATION_CANLAUNCH   = 'cubex.application.canlaunch';

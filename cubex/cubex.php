@@ -134,7 +134,7 @@ final class Cubex
       $respond = $dispatcher->dispatch($request, $response);
       if($respond instanceof Response)
       {
-        Events::trigger(Events::CUBEX_RESPONSE_START, [], $respond);
+        Events::trigger(Events::CUBEX_RESPONSE_PREPARE, [], $respond);
         $respond->respond();
         Events::trigger(Events::CUBEX_RESPONSE_SENT, [], $respond);
       }
