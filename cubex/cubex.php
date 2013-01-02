@@ -100,7 +100,7 @@ final class Cubex
     Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responsePrepareHook'));
 
     $dispatcher = null;
-    $request = new Request($_REQUEST['__path__']);
+    $request    = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
 
     $response = new Response();
@@ -448,6 +448,11 @@ final class Cubex
 
   public function responsePrepareHook(Event $e)
   {
+    if(self::config('response')->getBool('gzip', true))
+    {
+      ini_set('zlib.output_compression', 'On');
+    }
+
     if(self::core()->_allowShutdownDetails)
     {
       $response = $e->getCallee();
