@@ -391,11 +391,10 @@ final class Cubex
         {
           $namespace   = substr($class, 0, $lastNsPos);
           $class       = substr($class, $lastNsPos + 1);
-          $includeFile = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+          $includeFile = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR);
         }
         $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
       }
-
       include_once($includeFile);
     }
     catch(\Exception $e)
