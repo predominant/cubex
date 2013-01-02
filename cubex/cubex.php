@@ -89,6 +89,7 @@ final class Cubex
     define("CUBEX_START", \microtime(true));
 
     $cubex = self::core(); //Construct Cubex
+    Events::trigger(Events::CUBEX_LAUNCH, [], self::$cubex);
 
     Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responsePrepareHook'));
 
@@ -164,7 +165,6 @@ final class Cubex
     if(self::$cubex === null)
     {
       self::$cubex = new Cubex();
-      Events::trigger(Events::CUBEX_LAUNCH, [], self::$cubex);
     }
 
     return self::$cubex;
