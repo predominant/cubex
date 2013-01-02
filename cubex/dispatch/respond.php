@@ -44,6 +44,7 @@ class Respond implements Dispatchable
   public function dispatch(Request $request, Response $response)
   {
     Cubex::setShutdownDetails(false);
+    $response->addHeader("Vary", "Accept-Encoding");
     return $this->getResponse($this->_dispatchPath, $response);
   }
 
