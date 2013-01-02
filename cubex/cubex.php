@@ -66,8 +66,8 @@ final class Cubex
     }
 
     \register_shutdown_function('Cubex\Cubex::shutdown');
-    \set_error_handler('Cubex\Cubex::error_handler');
-    \set_exception_handler('Cubex\Cubex::exception_handler');
+    \set_error_handler('Cubex\Cubex::errorHandler');
+    \set_exception_handler('Cubex\Cubex::exceptionHandler');
 
     /**
      * Define helpful bits :)
@@ -513,7 +513,7 @@ final class Cubex
    *
    * @throws \Exception
    */
-  final public static function error_handler($code, $message, $file, $line, $context)
+  final public static function errorHandler($code, $message, $file, $line, $context)
   {
     switch($code)
     {
@@ -530,7 +530,7 @@ final class Cubex
    *
    * @param \Exception $e
    */
-  final public static function exception_handler($e)
+  final public static function exceptionHandler($e)
   {
     if($e instanceof \Exception)
     {
