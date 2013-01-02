@@ -17,7 +17,6 @@ use Cubex\Event\Events;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
-use Cubex\Project\Loader;
 use Cubex\Controller\BaseController;
 
 /**
@@ -113,7 +112,7 @@ final class Cubex
           Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
         }
 
-        $loaderClass = '\Cubex\Applications\Loader';
+        $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
         if(class_exists($loaderClass))
         {
           $dispatcher = new $loaderClass();
