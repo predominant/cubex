@@ -49,18 +49,19 @@ class Debug extends Log
    */
   protected static function _log($level, $message, $type, $code)
   {
-    $backtrace   = \debug_backtrace();
+    $backtrace  = \debug_backtrace();
     $sourceLine = $backtrace[1]['line'];
     $sourceFile = $backtrace[1]['file'];
 
     Events::trigger(
       Events::CUBEX_DEBUG, array(
-                                'level'   => $level,
-                                'message' => $message,
-                                'type'    => $type,
-                                'code'    => $code,
-                                'file'    => $sourceFile,
-                                'line'    => $sourceLine,
+                                'level'          => $level,
+                                'message'        => $message,
+                                'type'           => $type,
+                                'code'           => $code,
+                                'file'           => $sourceFile,
+                                'line'           => $sourceLine,
+                                'transaction_id' => CUBEX_TRANSACTION,
                            )
     );
   }

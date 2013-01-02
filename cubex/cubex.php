@@ -71,12 +71,32 @@ final class Cubex
   }
 
   /**
+   * Generate a transaction specific ID
+   *
+   * @return string Transaction ID
+   */
+  public static function createTransaction()
+  {
+    $host = explode('.', php_uname('n'));
+    if(count($host) > 2)
+    {
+      array_pop($host);
+      array_pop($host);
+    }
+
+    $hash = md5(serialize($_SERVER));
+
+    return substr(md5(implode('.', $host)), 0, 10) . time() . substr($hash, 0, 8);
+  }
+
+  /**
    * Verify and setup the environment for cubex to run in
    */
   final public static function boot()
   {
     static::canBoot();
     static::setupEnv();
+    define("CUBEX_TRANSACTION", static::createTransaction());
 
     \register_shutdown_function('Cubex\Cubex::shutdown');
     \set_error_handler('Cubex\Cubex::errorHandler');
@@ -458,8 +478,9 @@ final class Cubex
       $response = $e->getCallee();
       if($response instanceof Response)
       {
-        $shutdownContent = "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
+        $shutdownContent = "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms" .
+        "\nTransaction: " . (defined("CUBEX_TRANSACTION") ? CUBEX_TRANSACTION : 'UNKNOWN');
 
         if(\defined('CUBEX_FATAL_ERROR'))
         {
@@ -474,7 +495,7 @@ final class Cubex
           case Response::RENDER_TEXT:
             $shutdownDebug = new HTMLElement('');
             $shutdownDebug->setContent($shutdownContent);
-            $response->text($source . $shutdownContent);
+            $response->text($source . "\n" . $shutdownContent);
             break;
           case Response::RENDER_WEBPAGE:
             $shutdownDebug = new HTMLElement(
@@ -484,7 +505,7 @@ final class Cubex
                    'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
                    'padding:3px; background:#FFFFFF; position:fixed;',
               ),
-              $shutdownContent
+              nl2br($shutdownContent)
             );
             if($source instanceof WebPage)
             {
