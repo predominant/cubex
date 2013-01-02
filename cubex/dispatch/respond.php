@@ -289,13 +289,25 @@ class Respond implements Dispatchable
         {
           return $path . '/' . $filename . '/src';
         }
-
-        if($depth == 0 && \is_dir($base . $path . DIRECTORY_SEPARATOR . $filename))
+        else if($depth == 2)
         {
-          $match = $this->locateEntityPath($path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . $filename, $match, 1);
-          if($match !== null)
+          $opath = $path;
+          list(, $path) = explode('/', $path, 2);
+          if(\substr(\md5($path . '/' . $filename . '/src'), 0, $matchLen) == $match)
           {
-            return $match;
+            return $path . '/' . $filename . '/src';
+          }
+          $path = $opath;
+        }
+
+        if($depth < 2 && \is_dir($base . $path . DIRECTORY_SEPARATOR . $filename))
+        {
+          $matched = $this->locateEntityPath(
+            $path . (empty($path) ? '' : DIRECTORY_SEPARATOR) . $filename, $match, $depth + 1
+          );
+          if($matched !== null)
+          {
+            return $matched;
           }
         }
       }
