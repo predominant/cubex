@@ -82,6 +82,25 @@ namespace Cubex\Tests
       self::$log_arguments = func_get_args();
     }
   }
+
+  class Bool extends \Cubex\Type\Enum
+  {
+    const __default = self::TRUE;
+
+    const TRUE = "1";
+    const FALSE = "0";
+  }
+
+  class EnumNoDefault extends \Cubex\Type\Enum
+  {
+    const TRUE = "1";
+    const FALSE = "0";
+  }
+
+  class EnumNoConstants extends \Cubex\Type\Enum
+  {
+    const __default = "0";
+  }
 }
 
 namespace Cubex\Tests\Controllers
