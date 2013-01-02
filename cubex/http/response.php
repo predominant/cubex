@@ -273,7 +273,14 @@ class Response
 
         break;
       default:
-        throw new \Exception("Unsupported response type");
+        if($this->_source instanceof Response)
+        {
+          $this->_source->respond();
+        }
+        else
+        {
+          throw new \Exception("Unsupported response type");
+        }
         break;
     }
 

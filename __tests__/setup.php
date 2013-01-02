@@ -3,6 +3,7 @@
  * File: setup.php
  * Date: 09/12/12
  * Time: 16:15
+ *
  * @author: gareth.evans
  */
 
@@ -18,9 +19,14 @@ namespace Cubex\Tests
 
   class Application extends \Cubex\Project\Application
   {
+    /**
+     * Default controller
+     *
+     * @return \Cubex\Controller\BaseController
+     */
     public function getDefaultController()
     {
-      return 'Controller';
+      return new Controllers\Controller();
     }
 
     public function getName()
@@ -39,6 +45,16 @@ namespace Cubex\Tests
     public function getName()
     {
       return 'ApplicationFailTest';
+    }
+
+    /**
+     * Default controller
+     *
+     * @return \Cubex\Controller\BaseController
+     */
+    public function getDefaultController()
+    {
+      return new Controllers\Controller();
     }
   }
 
@@ -66,7 +82,6 @@ namespace Cubex\Tests
       self::$log_arguments = func_get_args();
     }
   }
-
 }
 
 namespace Cubex\Tests\Controllers
@@ -90,5 +105,4 @@ namespace Cubex\Tests\Views
   {
 
   }
-
 }

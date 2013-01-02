@@ -13,10 +13,11 @@ class Base_WebpageTest extends \PHPUnit_Framework_TestCase
 
   public function setUp()
   {
-    \Cubex\Cubex::core()->setRequest(new \Cubex\Http\Request());
     ob_start();
+    $request     = new \Cubex\Http\Request();
+    $response    = new \Cubex\Http\Response();
     $application = new Application();
-    \Cubex\Project\Application::initialise($application);
+    $application->dispatch($request, $response);
     ob_end_clean();
     $this->_webpage = new \Cubex\Response\WebPage();
   }
