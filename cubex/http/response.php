@@ -53,9 +53,12 @@ class Response
    */
   public function __construct($source = null)
   {
-    $this->addHeader("X-Powered-By", "Cubex");
-    $this->addHeader("X-Frame-Options", "deny");
     $this->fromSource($source);
+  }
+
+  public function getSource()
+  {
+    return $this->_source;
   }
 
   public function fromSource($source)

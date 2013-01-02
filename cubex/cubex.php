@@ -12,8 +12,10 @@ namespace Cubex;
  */
 use Cubex\Base\Dispatchable;
 use Cubex\Data\Handler;
+use Cubex\Event\Event;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
+use Cubex\Response\WebPage;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
@@ -86,12 +88,18 @@ final class Cubex
 
     define("CUBEX_START", \microtime(true));
 
-    self::core(); //Construct Cubex
+    $cubex = self::core(); //Construct Cubex
+
+    Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responsePrepareHook'));
+
     $dispatcher = null;
 
     $request = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
+
     $response = new Response();
+    $response->addHeader("X-Powered-By", "Cubex");
+    $response->addHeader("X-Frame-Options", "deny");
 
     if(CUBEX_WEB)
     {
@@ -438,58 +446,56 @@ final class Cubex
     self::core()->_allowShutdownDetails = (bool)$enabled;
   }
 
+  public function responsePrepareHook(Event $e)
+  {
+    if(self::core()->_allowShutdownDetails)
+    {
+      $response = $e->getCallee();
+      if($response instanceof Response)
+      {
+        $shutdownContent = "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms";
+
+        if(\defined('CUBEX_FATAL_ERROR'))
+        {
+          echo $shutdownContent;
+          return;
+        }
+
+        $source = $response->getSource();
+
+        switch($response->getRenderType())
+        {
+          case Response::RENDER_TEXT:
+            $shutdownDebug = new HTMLElement('');
+            $shutdownDebug->setContent($shutdownContent);
+            $response->text($source . $shutdownContent);
+            break;
+          case Response::RENDER_WEBPAGE:
+            $shutdownDebug = new HTMLElement(
+              'div',
+              array(
+                   'id'    => 'cubex-shutdown-debug',
+                   'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
+                   'padding:3px; background:#FFFFFF; position:fixed;',
+              ),
+              $shutdownContent
+            );
+            if($source instanceof WebPage)
+            {
+              $source->closing .= $shutdownDebug;
+            }
+            break;
+        }
+      }
+    }
+  }
+
   /**
    * Shutdown handler
    */
   final public static function shutdown()
   {
-    if(self::core()->_allowShutdownDetails)
-    {
-      $renderType = '';
-      if(Cubex::core()->controller() instanceof BaseController)
-      {
-        if(Cubex::core()->controller()->getResponse() instanceof Response)
-        {
-          $renderType = Cubex::core()->controller()->getResponse()->getRenderType();
-        }
-      }
-
-      if(\in_array(
-        $renderType,
-        array(
-             '',
-             Response::RENDER_RENDERABLE,
-             Response::RENDER_TEXT,
-             Response::RENDER_WEBPAGE,
-        )
-      )
-      )
-      {
-
-        $fatal = \defined('CUBEX_FATAL_ERROR');
-        if(CUBEX_WEB && !$fatal && $renderType != Response::RENDER_TEXT)
-        {
-          $shutdownDebug = new HTMLElement(
-            'div',
-            array(
-                 'id'    => 'cubex-shutdown-debug',
-                 'style' => 'bottom:0; left:0; border:1px solid #666; border-left:0; border-bottom: 0;' .
-                 'padding:3px; background:#FFFFFF; position:fixed;',
-            )
-          );
-        }
-        else
-        {
-          $shutdownDebug = new HTMLElement("");
-        }
-
-        echo $shutdownDebug->setContent(
-          "\nCompleted in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
-          " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms"
-        );
-      }
-    }
-
     $event = \error_get_last();
     if(!$event || ($event['type'] != E_ERROR && $event['type'] != E_PARSE))
     {

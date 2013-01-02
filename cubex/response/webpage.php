@@ -29,6 +29,8 @@ class WebPage
   private $_view;
   private $_bodyAttributes = array();
 
+  public $closing = '';
+
   /**
    * Set page body to be a renderable object
    *
@@ -188,7 +190,7 @@ class WebPage
     {
       $jsItems->addElements($jsUris);
     }
-    return $jsItems;
+    return $jsItems . $this->closing;
   }
 
   /**
@@ -260,8 +262,7 @@ class WebPage
    *
    * @return string
    */
-  public
-  function renderClosing()
+  public function renderClosing()
   {
     return $this->getClosing() . '</body></html>';
   }
@@ -271,8 +272,7 @@ class WebPage
    *
    * @return string
    */
-  public
-  function render()
+  public function render()
   {
     $this->preRender();
     return $this->renderHead() . $this->renderBody() . $this->renderClosing();
