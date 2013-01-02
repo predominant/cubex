@@ -138,6 +138,11 @@ final class Cubex
       }
     }
 
+    if(self::config('response')->getBool('gzip', true))
+    {
+      ini_set('zlib.output_compression', 'On');
+    }
+
     if($dispatcher instanceof Dispatchable)
     {
       $respond = $dispatcher->dispatch($request, $response);
@@ -448,11 +453,6 @@ final class Cubex
 
   public function responsePrepareHook(Event $e)
   {
-    if(self::config('response')->getBool('gzip', true))
-    {
-      ini_set('zlib.output_compression', 'On');
-    }
-
     if(self::core()->_allowShutdownDetails)
     {
       $response = $e->getCallee();
