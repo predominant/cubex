@@ -52,6 +52,12 @@ class Events
     }
   }
 
+  /**
+   * Listen into an event
+   *
+   * @param string|array         $eventName
+   * @param callable             $callback
+   */
   private static function _listen($eventName, callable $callback)
   {
     if(!isset(self::$_listeners[$eventName]))

@@ -124,7 +124,7 @@ final class Cubex
     Cubex::core()->setRequest($request);
 
     $response = new Response();
-    $response->addHeader("X-Powered-By", "Cubex");
+    $response->addHeader("X-Cubex-TID", CUBEX_TRANSACTION);
     $response->addHeader("X-Frame-Options", "deny");
 
     if(CUBEX_WEB)
@@ -276,9 +276,17 @@ final class Cubex
       $this->_configuration = \parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
       if(isset($this->_configuration['general']['include_path']))
       {
-        $applicationDir     = $this->_configuration['general']['include_path'];
-        $this->_projectBase = \realpath($applicationDir);
-        \set_include_path(\get_include_path() . PATH_SEPARATOR . $this->_projectBase);
+        $applicationDir = $this->_configuration['general']['include_path'];
+        $dirs           = explode(PATH_SEPARATOR, $applicationDir);
+        foreach($dirs as $i => $dir)
+        {
+          $dir = \realpath($dir);
+          if($i == 0)
+          {
+            $this->_projectBase = $dir;
+          }
+          \set_include_path(\get_include_path() . PATH_SEPARATOR . $dir);
+        }
       }
     }
     catch(\Exception $e)
