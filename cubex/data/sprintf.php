@@ -49,10 +49,10 @@ class Sprintf
    */
   final public static function parseQuery($connection, $args)
   {
-    return self::call(array("\\Cubex\\Data\\Sprintf", "query"), $connection, $args);
+    return self::call(array("\\Cubex\\Data\\Sprintf", "_query"), $connection, $args);
   }
 
-  final public static function call($callback, $user_data, $argv)
+  final public static function call($callback, $userData, $argv)
   {
     $argc    = \count($argv);
     $arg     = 0;
@@ -83,7 +83,7 @@ class Sprintf
             throw new \Exception("Too few arguments to Sprintf::call().");
           }
 
-          $callback($user_data, $pattern, $pos, $argv[$arg], $len);
+          $callback($userData, $pattern, $pos, $argv[$arg], $len);
         }
       }
 
@@ -132,8 +132,9 @@ class Sprintf
     }
   }
 
-  final private static function query(Connection $connection, &$pattern, &$pos, &$value,
-                                      &$length)
+  final private static function _query(
+    Connection $connection, &$pattern, &$pos, &$value, &$length
+  )
   {
     $type = $pattern[$pos];
     $next = (\strlen($pattern) > $pos + 1) ? $pattern[$pos + 1] : null;
@@ -199,9 +200,18 @@ class Sprintf
             $qu = array();
             foreach($value as $k => $v)
             {
-              if(\is_int($v)) $val = (int)$v;
-              else if(\is_float($v)) $val = (float)$v;
-              else if(\is_bool($v)) $val = (int)$v;
+              if(\is_int($v))
+              {
+                $val = (int)$v;
+              }
+              else if(\is_float($v))
+              {
+                $val = (float)$v;
+              }
+              else if(\is_bool($v))
+              {
+                $val = (int)$v;
+              }
               else $val = "'" . $connection->escapeString($v) . "'";
 
               if($next == 'O' && $value instanceof SearchObject)
@@ -337,7 +347,6 @@ class Sprintf
 
         default:
           throw new \Exception("Unknown conversion '%{$type}'.");
-
       }
     }
 
