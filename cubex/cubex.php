@@ -41,12 +41,10 @@ final class Cubex
 
   private $_classmap = array();
 
-  /**
-   * Verify and setup the environment for cubex to run in
-   */
-  final public static function boot()
+  public static function canBoot()
   {
-    if(\defined('PHP_MAJOR_VERSION')) //Do not check version if running through a compiler
+    //Do not check version if running through a compiler
+    if(\defined('PHP_MAJOR_VERSION'))
     {
       $requiredVersion = '5.4.0';
       $currentVersion  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
@@ -55,7 +53,10 @@ final class Cubex
         Cubex::fatal("You are running PHP '" . $currentVersion . "', version '{$requiredVersion}' required");
       }
     }
+  }
 
+  public static function setupEnv()
+  {
     $env = \getenv('CUBEX_ENV'); // Apache Config
     if(!$env && isset($_ENV['CUBEX_ENV']))
     {
@@ -66,15 +67,21 @@ final class Cubex
       Cubex::fatal("The 'CUBEX_ENV' environmental variable is not defined.");
     }
 
+    define("CUBEX_ENV", $env);
+  }
+
+  /**
+   * Verify and setup the environment for cubex to run in
+   */
+  final public static function boot()
+  {
+    static::canBoot();
+    static::setupEnv();
+
     \register_shutdown_function('Cubex\Cubex::shutdown');
     \set_error_handler('Cubex\Cubex::errorHandler');
     \set_exception_handler('Cubex\Cubex::exceptionHandler');
 
-    /**
-     * Define helpful bits :)
-     */
-
-    define("CUBEX_ENV", $env);
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
@@ -89,12 +96,10 @@ final class Cubex
     define("CUBEX_START", \microtime(true));
 
     $cubex = self::core(); //Construct Cubex
-    Events::trigger(Events::CUBEX_LAUNCH, [], self::$cubex);
-
+    Events::trigger(Events::CUBEX_LAUNCH, [], $cubex);
     Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responsePrepareHook'));
 
     $dispatcher = null;
-
     $request = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
 
@@ -131,10 +136,6 @@ final class Cubex
           static::fatal("No Project Loader could be found");
         }
       }
-    }
-    else
-    {
-      Cubex::core();
     }
 
     if($dispatcher instanceof Dispatchable)
