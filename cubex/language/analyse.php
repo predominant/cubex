@@ -7,6 +7,9 @@
  */
 namespace Cubex\Language;
 
+/**
+ * Analyse codebase
+ */
 class Analyse
 {
 
@@ -26,7 +29,9 @@ class Analyse
       while(false !== ($entry = \readdir($handle)))
       {
         if(\in_array($entry, array('.', '..', 'locale')))
+        {
           continue;
+        }
 
         if(\is_dir($base . $directory . DIRECTORY_SEPARATOR . $entry))
         {
@@ -165,7 +170,7 @@ class Analyse
           else
           {
             $result .= 'msgid ""' . "\n";
-            $result .= '"' . $this->iconv_wordwrap($message, 76, " \"\n\"") . '"';
+            $result .= '"' . $this->iconvWordwrap($message, 76, " \"\n\"") . '"';
           }
           $result .= "\n";
           if(\strlen($translated) < 80)
@@ -175,7 +180,7 @@ class Analyse
           else
           {
             $result .= 'msgstr ""' . "\n";
-            $result .= '"' . $this->iconv_wordwrap($translated, 76, " \"\n\"") . '"';
+            $result .= '"' . $this->iconvWordwrap($translated, 76, " \"\n\"") . '"';
           }
           $result .= "\n\n";
         }
@@ -191,7 +196,7 @@ class Analyse
           else
           {
             $result .= 'msgid ""' . "\n";
-            $result .= '"' . $this->iconv_wordwrap($message[0], 76, " \"\n\"") . '"';
+            $result .= '"' . $this->iconvWordwrap($message[0], 76, " \"\n\"") . '"';
           }
 
           $result .= "\n";
@@ -203,7 +208,7 @@ class Analyse
           else
           {
             $result .= 'msgid_plural ""' . "\n";
-            $result .= '"' . $this->iconv_wordwrap($message[1], 76, " \"\n\"") . '"';
+            $result .= '"' . $this->iconvWordwrap($message[1], 76, " \"\n\"") . '"';
           }
 
           $result .= "\n";
@@ -228,7 +233,7 @@ class Analyse
    * @return string
    * @throws \Exception
    */
-  function iconv_wordwrap($string, $width = 75, $break = "\n", $cut = false, $charset = 'utf-8')
+  protected function iconvWordwrap($string, $width = 75, $break = "\n", $cut = false, $charset = 'utf-8')
   {
     $stringWidth = \iconv_strlen($string, $charset);
     $breakWidth  = \iconv_strlen($break, $charset);

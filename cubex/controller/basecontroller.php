@@ -49,27 +49,42 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
 
   public static $_layout;
 
+  /**
+   * @param \Cubex\Project\Application $app
+   *
+   * @return $this
+   */
   public function setApp(Application $app)
   {
     $this->_app = $app;
     return $this;
   }
 
+  /**
+   * @return \Cubex\Project\Application
+   */
   public function getApp()
   {
     return $this->_app;
   }
 
+  /**
+   * @param \Cubex\Http\Request  $request
+   * @param \Cubex\Http\Response $response
+   *
+   * @return \Cubex\Http\Response
+   * @throws \Exception
+   */
   public function dispatch(Request $request, Response $response)
   {
     $this->_request  = $request;
     $this->_response = $response;
 
     /* Populate data set with routes */
-    $uri_data = $this->getApp()->getURIData();
-    if($uri_data !== null)
+    $uriData = $this->getApp()->getURIData();
+    if($uriData !== null)
     {
-      foreach($uri_data as $k => $v)
+      foreach($uriData as $k => $v)
       {
         $this->setData($k, $v);
       }

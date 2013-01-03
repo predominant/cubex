@@ -41,18 +41,29 @@ class Router
       else if($attempt[0])
       {
         $this->_processedRoute = $prepend . $route;
-
-        if($control == self::ROUTE_DYNAMIC && isset($this->_routeData["_dynamic"]))
-        {
-          $control = ltrim($this->_routeData["_dynamic"], '/');
-          $control = str_replace(' ', '', ucwords(str_replace('/', ' ', $control)));
-        }
-
+        $control               = $this->dynamicRoute($control);
         return $control;
       }
     }
 
     return null;
+  }
+
+  /**
+   * Validate for dynamic route
+   *
+   * @param $control
+   *
+   * @return mixed
+   */
+  protected function dynamicRoute($control)
+  {
+    if($control == self::ROUTE_DYNAMIC && isset($this->_routeData["_dynamic"]))
+    {
+      $control = ltrim($this->_routeData["_dynamic"], '/');
+      $control = str_replace(' ', '', ucwords(str_replace('/', ' ', $control)));
+    }
+    return $control;
   }
 
   protected function tryRoute($route, $path, $second = false)
@@ -84,8 +95,14 @@ class Router
 
   public function getRouteData($key = null)
   {
-    if($key === null) return $this->_routeData;
-    else if(isset($this->_routeData[$key])) return $this->_routeData[$key];
+    if($key === null)
+    {
+      return $this->_routeData;
+    }
+    else if(isset($this->_routeData[$key]))
+    {
+      return $this->_routeData[$key];
+    }
     else return array();
   }
 }

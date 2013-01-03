@@ -226,7 +226,8 @@ class Respond implements Dispatchable
     {
       if(!empty($resources))
       {
-        foreach($resources as $resource => $checksum)
+        $resources = array_keys($resources);
+        foreach($resources as $resource)
         {
           if(\end(\explode('.', $resource)) == $matchExt)
           {

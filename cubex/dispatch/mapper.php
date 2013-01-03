@@ -32,27 +32,13 @@ class Mapper
   private function cli()
   {
     echo \str_repeat("\n", 100);
-    Shell::clear();
 
     $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
+    $this->cliStartMapper();
 
-    $mapper = '_____________                      _____      ______
-___  __ \__(_)____________________ __  /_________  /_
-__  / / /_  /__  ___/__  __ \  __ `/  __/  ___/_  __ \
-_  /_/ /_  / _(__  )__  /_/ / /_/ // /_ / /__ _  / / /
-/_____/ /_/  /____/ _  .___/\__,_/ \__/ \___/ /_/ /_/
-                    /_/
-______  ___
-___   |/  /_____ _____________________________
-__  /|_/ /_  __ `/__  __ \__  __ \  _ \_  ___/
-_  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
-/_/  /_/  \__,_/ _  .___/_  .___/\___//_/
-                 /_/     /_/                  ';
-
-    $projectIni = '';
+    $projectIni  = '';
     $existingMap = Cubex::config("dispatch")->getArr("entity_map");
 
-    echo Shell::colourText("\n$mapper\n\n", Shell::COLOUR_FOREGROUND_LIGHT_RED);
     echo Shell::colourText("Using Path: ", Shell::COLOUR_FOREGROUND_CYAN) . $basePath . "\n\n";
 
     foreach(array("", "applications", "components", "modules", "widgets") as $entityGroup)
@@ -95,6 +81,28 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       echo "\n";
     }
 
+    $this->cliCompleteMapper($projectIni);
+  }
+
+  protected function cliStartMapper()
+  {
+    $mapper = '_____________                      _____      ______
+___  __ \__(_)____________________ __  /_________  /_
+__  / / /_  /__  ___/__  __ \  __ `/  __/  ___/_  __ \
+_  /_/ /_  / _(__  )__  /_/ / /_/ // /_ / /__ _  / / /
+/_____/ /_/  /____/ _  .___/\__,_/ \__/ \___/ /_/ /_/
+                    /_/
+______  ___
+___   |/  /_____ _____________________________
+__  /|_/ /_  __ `/__  __ \__  __ \  _ \_  ___/
+_  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
+/_/  /_/  \__,_/ _  .___/_  .___/\___//_/
+                 /_/     /_/                  ';
+    echo Shell::colourText("\n$mapper\n\n", Shell::COLOUR_FOREGROUND_LIGHT_RED);
+  }
+
+  protected function cliCompleteMapper($projectIni)
+  {
     if(!empty($projectIni))
     {
       echo "\n\n";
@@ -113,7 +121,6 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       echo Shell::colourText("\n|  DISPATCH MAPPER COMPLETE  |", Shell::COLOUR_FOREGROUND_LIGHT_GREEN);
       echo Shell::colourText("\n==============================", Shell::COLOUR_FOREGROUND_GREEN);
     }
-
     echo "\n";
   }
 

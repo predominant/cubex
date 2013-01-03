@@ -17,9 +17,7 @@ use Cubex\Http\Request;
 use Cubex\Event\Events;
 use Cubex\ServiceManager\ServiceConfig;
 use Cubex\ServiceManager\ServiceManager;
-use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
-use Cubex\Dispatch\Respond;
 use Cubex\Controller\BaseController;
 
 /**
@@ -138,7 +136,7 @@ final class Cubex
 
       if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
       {
-        $dispatcher = new Respond(
+        $dispatcher = new \Cubex\Dispatch\Respond(
           Cubex::config("dispatch")->getArr("entity_map"),
           Cubex::config("dispatch")->getArr("domain_map"),
           $dispatchPath
@@ -446,12 +444,12 @@ final class Cubex
         switch($response->getRenderType())
         {
           case Response::RENDER_TEXT:
-            $shutdownDebug = new HTMLElement('');
+            $shutdownDebug = new \Cubex\View\HTMLElement('');
             $shutdownDebug->setContent($shutdownContent);
             $response->text($source . "\n" . $shutdownContent);
             break;
           case Response::RENDER_WEBPAGE:
-            $shutdownDebug = new HTMLElement(
+            $shutdownDebug = new \Cubex\View\HTMLElement(
               'div',
               array(
                    'id'    => 'cubex-shutdown-debug',
@@ -503,7 +501,6 @@ final class Cubex
     {
       case E_WARNING:
         throw new \Exception($message, $code);
-        break;
       default:
         break;
     }
