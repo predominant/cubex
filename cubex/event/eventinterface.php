@@ -10,7 +10,7 @@ namespace Cubex\Event;
 
 interface EventInterface
 {
-  public function __construct($name, $args = [], $callee = null);
+  public function __construct($name, $args = array(), $callee = null);
 
   public function setName($name);
 

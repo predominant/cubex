@@ -13,7 +13,7 @@ class Event implements EventInterface
   private $_args;
   private $_callee;
 
-  public function __construct($name, $args = [], $callee = null)
+  public function __construct($name, $args = array(), $callee = null)
   {
     $this->_name   = $name;
     $this->_args   = $args;

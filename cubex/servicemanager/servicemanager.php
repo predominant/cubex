@@ -18,8 +18,8 @@ use Cubex\Session\Session;
 
 class ServiceManager
 {
-  protected $services = [];
-  protected $shared = [];
+  protected $services = array();
+  protected $shared = array();
 
   /**
    * @param $name
