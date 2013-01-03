@@ -310,7 +310,6 @@ class Response
     if(!\headers_sent())
     {
       \header("HTTP/1.0 " . $this->_httpStatus . ' ' . $this->getStatusReason());
-      $this->addHeader("X-Brooke", "Random");
 
       if($this->_lastModified)
       {
