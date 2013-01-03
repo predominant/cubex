@@ -10,6 +10,9 @@ namespace Cubex\Data;
 
 use Cubex\Cubex;
 
+/**
+ * Database Model
+ */
 abstract class SQLModel extends Model
 {
 
@@ -18,7 +21,7 @@ abstract class SQLModel extends Model
    */
   public function dataConnection()
   {
-    return Cubex::db();
+    return Cubex::core()->getServiceManager()->db();
   }
 
   /**

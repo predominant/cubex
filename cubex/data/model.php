@@ -10,6 +10,9 @@ namespace Cubex\Data;
 
 use Cubex\Base\Callback;
 
+/**
+ * Base Model
+ */
 abstract class Model implements \IteratorAggregate
 {
 
