@@ -27,18 +27,18 @@ class ServiceConfig implements \IteratorAggregate
   /**
    * Callable for generating the service
    *
-   * @param callable $factory
+   * @param ServiceFactory $factory
    *
    * @return $this
    */
-  public function setFactory(callable $factory)
+  public function setFactory(ServiceFactory $factory)
   {
     $this->_factory = $factory;
     return $this;
   }
 
   /**
-   * @return callable
+   * @return ServiceFactory
    */
   public function getFactory()
   {
@@ -52,15 +52,18 @@ class ServiceConfig implements \IteratorAggregate
    */
   public function fromConfig(Config $config)
   {
-    $factory = $config->getArr("factory");
+    $factory = $config->getStr("factory");
     if($factory !== null)
     {
-      $this->setFactory($factory);
+      $this->setFactory(new $factory());
     }
 
     foreach($config as $k => $v)
     {
-      $this->$k = $v;
+      if(!in_array($k, ['factory', 'register_service_as']))
+      {
+        $this->$k = $v;
+      }
     }
 
     return $this;

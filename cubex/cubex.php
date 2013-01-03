@@ -140,10 +140,7 @@ final class Cubex
       }
       else
       {
-        $localeServiceConfig = new ServiceConfig();
-        $localeServiceConfig->setFactory(array('Cubex\Locale\Locale', 'instance'));
-        $localeServiceConfig->fromConfig($cubex->config('locale'));
-        $cubex->serviceManager->register("locale", $localeServiceConfig, true);
+        self::configureServiceManager($cubex->serviceManager, $cubex->configuration());
 
         $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
         if(class_exists($loaderClass))
@@ -178,6 +175,39 @@ final class Cubex
     }
 
     Events::trigger(Events::CUBEX_SHUTDOWN);
+  }
+
+  /**
+   * @param \Cubex\ServiceManager\ServiceManager $sm
+   * @param \Cubex\Config\Config                 $config
+   *
+   * @return \Cubex\ServiceManager\ServiceManager
+   */
+  public function configureServiceManager(ServiceManager $sm, Config $config)
+  {
+    $localeServiceConfig = new ServiceConfig();
+    $localeServiceConfig->setFactory(new \Cubex\Locale\Factory());
+    $localeServiceConfig->fromConfig(new Config($config->getArr('locale')));
+    $sm->register("locale", $localeServiceConfig, true);
+
+    foreach($config as $section => $conf)
+    {
+      if(stristr($section, '\\'))
+      {
+        $parent = current(explode('\\', $section));
+        $conf   = array_merge($config->getArr($parent, []), $conf);
+      }
+
+      if(isset($conf['factory']) && isset($conf['register_service_as']))
+      {
+        $service = new ServiceConfig();
+        $service->fromConfig(new Config($conf));
+        $shared = isset($conf['register_service_shared']) ? (bool)$conf['register_service_shared'] : true;
+        $sm->register($conf['register_service_as'], $service, $shared);
+      }
+    }
+
+    return $sm;
   }
 
   /**
