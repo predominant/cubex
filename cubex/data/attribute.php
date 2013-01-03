@@ -158,6 +158,11 @@ class Attribute
 
   public function addFilters($filters)
   {
+    if(\is_string($filters) || $filters instanceof Callback)
+    {
+      $filters = array($filters);
+    }
+
     if(\is_array($filters))
     {
       foreach($filters as $filter)
@@ -178,14 +183,6 @@ class Attribute
           $this->addFilter($filter);
         }
       }
-    }
-    else if(\is_string($filters))
-    {
-      $this->addFilter(Callback::_($filters, array(), 'filter'));
-    }
-    else if($filters instanceof Callback)
-    {
-      $this->addFilter($filters);
     }
   }
 
@@ -211,6 +208,11 @@ class Attribute
 
   public function addValidators($validators)
   {
+    if(\is_string($validators) || $validators instanceof Callback)
+    {
+      $validators = array($validators);
+    }
+
     if(\is_array($validators))
     {
       foreach($validators as $validator)
@@ -232,14 +234,6 @@ class Attribute
         }
       }
     }
-    else if(\is_string($validators))
-    {
-      $this->addValidator(Callback::_($validators, array(), "validator"));
-    }
-    else if($validators instanceof Callback)
-    {
-      $this->addValidator($validators);
-    }
   }
 
   public function validators($replaceValidators = null)
@@ -255,15 +249,18 @@ class Attribute
     return $this->_validators;
   }
 
-  public function valid($process_all = false)
+  public function valid($processAll = false)
   {
     if($this->required() && !$this->populated())
     {
       $this->_exceptions[] = new \Exception("Required Field " . $this->name());
-
       return false;
     }
-    if(!\is_array($this->_validators)) return true;
+
+    if(!\is_array($this->_validators))
+    {
+      return true;
+    }
 
     $valid = true;
     foreach($this->_validators as $validator)
@@ -274,10 +271,6 @@ class Attribute
         try
         {
           $passed = $validator->process($this->data());
-          if(!$passed)
-          {
-            throw new \Exception("Validation failed");
-          }
         }
         catch(\Exception $e)
         {
@@ -286,7 +279,10 @@ class Attribute
         if(!$passed)
         {
           $valid = false;
-          if(!$process_all) break;
+          if(!$processAll)
+          {
+            break;
+          }
         }
       }
     }
@@ -364,10 +360,8 @@ class Attribute
     {
       case self::SERIALIZATION_JSON:
         return json_encode($this->rawData());
-        break;
       case self::SERIALIZATION_PHP:
         return serialize($this->rawData());
-        break;
     }
     return $this->rawData();
   }
@@ -378,10 +372,8 @@ class Attribute
     {
       case self::SERIALIZATION_JSON:
         return json_decode($data);
-        break;
       case self::SERIALIZATION_PHP:
         return unserialize($data);
-        break;
     }
 
     return $data;

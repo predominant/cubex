@@ -54,7 +54,7 @@ class Callback
    */
   public static function _($method, $options = array(), $callbackType = self::TYPE_GENERIC)
   {
-    return new callback($method, $options, $callbackType);
+    return new Callback($method, $options, $callbackType);
   }
 
   /**
@@ -67,7 +67,7 @@ class Callback
    */
   public static function validator($method, $options = array())
   {
-    return new callback($method, $options, self::TYPE_VALIDATOR);
+    return new Callback($method, $options, self::TYPE_VALIDATOR);
   }
 
   /**
@@ -80,7 +80,7 @@ class Callback
    */
   public static function filter($method, $options = array())
   {
-    return new callback($method, $options, self::TYPE_FILTER);
+    return new Callback($method, $options, self::TYPE_FILTER);
   }
 
   /**
@@ -90,7 +90,7 @@ class Callback
    *
    * @return mixed
    */
-  public function Process($input = null)
+  public function process($input = null)
   {
     if($this->_type == self::TYPE_FILTER && \is_string($this->_method))
     {
