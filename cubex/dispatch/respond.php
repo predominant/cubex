@@ -246,7 +246,7 @@ class Respond implements Dispatchable
   {
     if(in_array($entityHash, ['esabot']))
     {
-      return 'src';
+      return 'cubex/src';
     }
     else if(isset($this->_entityMap[$entityHash]))
     {
