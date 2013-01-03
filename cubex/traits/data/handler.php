@@ -12,7 +12,7 @@ trait Handler
   /**
    * @var array
    */
-  protected $_data;
+  protected $_data = [];
 
   /**
    * @param null $data
