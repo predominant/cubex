@@ -107,7 +107,7 @@ class Respond implements Dispatchable
      */
     if(empty($types[$resourceType]))
     {
-      return $response->webpage(new ErrorPage(404));
+      return $response->webpage(new ErrorPage(404,"Invalid Resource Type"));
     }
 
     if($type == 'pkg')
@@ -124,7 +124,7 @@ class Respond implements Dispatchable
      */
     if(empty($data))
     {
-      return $response->webpage(new ErrorPage(404));
+      return $response->webpage(new ErrorPage(404,"No Data Found"));
     }
 
     $response->fromSource($data);
@@ -144,7 +144,7 @@ class Respond implements Dispatchable
    */
   public function getData($entityPath, $filePath, $domain = null)
   {
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex/' . $entityPath;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
 
     if($domain !== null && !empty($domain))
     {
@@ -244,7 +244,7 @@ class Respond implements Dispatchable
    */
   public function getEntityPath($entityHash = '')
   {
-    if($entityHash == 'esabot')
+    if(in_array($entityHash, ['esabot']))
     {
       return 'src';
     }
@@ -442,7 +442,7 @@ class Respond implements Dispatchable
 
     try
     {
-      $map = isset($this->_entityMap[$entityHash]) ? $this->_entityMap[$entityHash] : false;
+      $map = $this->getEntityPath($entityHash);
       if($map)
       {
         $basePath  = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $map;

@@ -168,8 +168,7 @@ abstract class Dispatcher
     }
     $reflector = new \ReflectionClass($class);
     $parts     = \explode('\\', $reflector->getName());
-    \array_shift($parts);
-    $parts = \array_chunk($parts, 2, false);
+    $parts = \array_chunk($parts, 3, false);
     return \strtolower(\implode('/', $parts[0])) . '/';
   }
 

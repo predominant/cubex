@@ -32,7 +32,7 @@ class Fabricate
   public function __construct($entityBase = null)
   {
     $entityBase        = \rtrim($entityBase, '/') . '/';
-    $this->_realPath   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex/' . $entityBase . 'src';
+    $this->_realPath   = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityBase . 'src';
     $this->_path       = $entityBase . 'src';
     $this->_entityHash = $this->generateEntityHash($this->_path);
   }

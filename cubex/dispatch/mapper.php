@@ -34,7 +34,7 @@ class Mapper
     echo \str_repeat("\n", 100);
     Shell::clear();
 
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR;
+    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR;
 
     $mapper = '_____________                      _____      ______
 ___  __ \__(_)____________________ __  /_________  /_
@@ -50,7 +50,6 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
                  /_/     /_/                  ';
 
     $projectIni = '';
-
     $existingMap = Cubex::config("dispatch")->getArr("entity_map");
 
     echo Shell::colourText("\n$mapper\n\n", Shell::COLOUR_FOREGROUND_LIGHT_RED);
@@ -61,7 +60,8 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       echo Shell::colourText("=======================================\n\n", Shell::COLOUR_FOREGROUND_DARK_GREY);
       echo Shell::colourText("Processing ", Shell::COLOUR_FOREGROUND_CYAN);
       echo ($entityGroup == '' ? 'Base' : \ucwords($entityGroup)) . "\n";
-      $entities = $this->cliFindEntities($basePath, $entityGroup);
+      $entityGroup = 'cubex' . (empty($entityGroup) ? '' : '/') . $entityGroup;
+      $entities    = $this->cliFindEntities($basePath, $entityGroup);
       if($entities)
       {
         foreach($entities as $entity)
