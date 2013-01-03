@@ -36,7 +36,6 @@ final class Cubex
   protected $_serviceManager = null;
 
   private $_request = null;
-  private $_controller = null;
   private $_configuration = null;
   private $_projectBase = '';
   private $_allowShutdownDetails = true;
@@ -428,7 +427,7 @@ final class Cubex
    */
   public function responseDebugInfo(Event $e)
   {
-    if(self::core()->_allowShutdownDetails)
+    if($this->_allowShutdownDetails)
     {
       $response = $e->getCallee();
       if($response instanceof Response)
