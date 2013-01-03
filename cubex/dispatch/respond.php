@@ -107,7 +107,7 @@ class Respond implements Dispatchable
      */
     if(empty($types[$resourceType]))
     {
-      return $response->webpage(new ErrorPage(404,"Invalid Resource Type"));
+      return $response->webpage(new ErrorPage(404, "Invalid Resource Type"));
     }
 
     if($type == 'pkg')
@@ -124,7 +124,7 @@ class Respond implements Dispatchable
      */
     if(empty($data))
     {
-      return $response->webpage(new ErrorPage(404,"No Data Found"));
+      return $response->webpage(new ErrorPage(404, "No Data Found"));
     }
 
     $response->fromSource($data);
@@ -424,7 +424,7 @@ class Respond implements Dispatchable
 
     $uri = \trim($data[1], "'\" \r\t\n");
 
-    if(\in_array(substr($uri, 0, 7), array('http://', 'https:/')))
+    if(\in_array(substr($uri, 0, 7), ['data:im', 'http://', 'https:/']))
     {
       return "url('" . $uri . "')";
     }
