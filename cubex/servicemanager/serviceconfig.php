@@ -8,6 +8,7 @@
 
 namespace Cubex\ServiceManager;
 
+use Cubex\Config\Config;
 use Cubex\Traits\Data\Handler;
 
 /**
@@ -42,5 +43,26 @@ class ServiceConfig implements \IteratorAggregate
   public function getFactory()
   {
     return $this->_factory;
+  }
+
+  /**
+   * @param \Cubex\Config\Config $config
+   *
+   * @return ServiceConfig
+   */
+  public function fromConfig(Config $config)
+  {
+    $factory = $config->getArr("factory");
+    if($factory !== null)
+    {
+      $this->setFactory($factory);
+    }
+
+    foreach($config as $k => $v)
+    {
+      $this->$k = $v;
+    }
+
+    return $this;
   }
 }

@@ -11,6 +11,11 @@ namespace Cubex\ServiceManager;
  * Container for services
  */
 
+use Cubex\Cache\Cache;
+use Cubex\Database\Database;
+use Cubex\Locale\Locale;
+use Cubex\Session\Session;
+
 class ServiceManager
 {
   protected $services = [];
@@ -113,5 +118,65 @@ class ServiceManager
     {
       throw new \InvalidArgumentException("Service does not exist");
     }
+  }
+
+  /**
+   * @param string $connection
+   *
+   * @return \Cubex\Database\Database
+   * @throws \Exception
+   */
+  public function db($connection = 'db')
+  {
+    $database = $this->get($connection);
+    if($database instanceof Database)
+    {
+      return $database;
+    }
+    throw new \Exception("No database service available");
+  }
+
+  /**
+   * @param string $connection
+   *
+   * @return \Cubex\Cache\Cache
+   * @throws \Exception
+   */
+  public function cache($connection = 'local')
+  {
+    $cache = $this->get($connection);
+    if($cache instanceof Cache)
+    {
+      return $cache;
+    }
+    throw new \Exception("No cache service available");
+  }
+
+  /**
+   * @return \Cubex\Session\Session
+   * @throws \Exception
+   */
+  public function session()
+  {
+    $session = $this->get("session");
+    if($session instanceof Session)
+    {
+      return $session;
+    }
+    throw new \Exception("No session service available");
+  }
+
+  /**
+   * @return \Cubex\Locale\Locale
+   * @throws \Exception
+   */
+  public function locale()
+  {
+    $session = $this->get("locale");
+    if($session instanceof Locale)
+    {
+      return $session;
+    }
+    throw new \Exception("No locale service available");
   }
 }

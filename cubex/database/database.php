@@ -11,7 +11,9 @@ namespace Cubex\Database;
 /**
  * Database Connection Rules
  */
-interface Connection extends \Cubex\Data\Connection
+use Cubex\Data\Connection;
+
+interface Database extends Connection
 {
 
   /**

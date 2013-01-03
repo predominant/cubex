@@ -10,13 +10,21 @@ namespace Cubex\Session\Standard;
 /**
  * Standard PHP Session handler
  */
-class Container implements \Cubex\Session\Container
+use Cubex\ServiceManager\ServiceConfig;
+
+class Session implements \Cubex\Session\Session
 {
 
   /**
-   * @param array $config
+   * @param \Cubex\ServiceManager\ServiceConfig $config
+   *
+   * @return mixed|void
    */
-  public function __construct(array $config)
+  public function configure(ServiceConfig $config)
+  {
+  }
+
+  public function init()
   {
     \session_start();
     if(!isset($_SESSION['cubex'])) $_SESSION['cubex'] = array();

@@ -11,13 +11,11 @@ namespace Cubex\Session;
 /**
  * Session container
  */
-interface Container
-{
+use Cubex\ServiceManager\Service;
 
-  /**
-   * @param array $configuration
-   */
-  public function __construct(array $configuration);
+interface Session extends Service
+{
+  public function init();
 
   /**
    * @param $key

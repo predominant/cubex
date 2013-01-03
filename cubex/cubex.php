@@ -16,6 +16,8 @@ use Cubex\Event\Event;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
 use Cubex\Response\WebPage;
+use Cubex\ServiceManager\ServiceConfig;
+use Cubex\ServiceManager\ServiceManager;
 use Cubex\View\HTMLElement;
 use Cubex\Http\Response;
 use Cubex\Dispatch\Respond;
@@ -26,19 +28,15 @@ use Cubex\Controller\BaseController;
  */
 final class Cubex
 {
-
   public static $cubex = null;
+
+  public $serviceManager = null;
 
   private $_request = null;
   private $_controller = null;
   private $_configuration = null;
-  private $_connections = null;
-  private $_locale = null;
-
   private $_projectBase = '';
-
   private $_allowShutdownDetails = true;
-
   private $_classmap = array();
 
   public static function canBoot()
@@ -94,6 +92,8 @@ final class Cubex
    */
   final public static function boot()
   {
+    define("CUBEX_START", \microtime(true));
+
     static::canBoot();
     static::setupEnv();
     define("CUBEX_TRANSACTION", static::createTransaction());
@@ -113,14 +113,13 @@ final class Cubex
       Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
     }
 
-    define("CUBEX_START", \microtime(true));
-
     $cubex = self::core(); //Construct Cubex
     Events::trigger(Events::CUBEX_LAUNCH, [], $cubex);
-    Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responsePrepareHook'));
+    Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responseDebugInfo'));
 
-    $dispatcher = null;
-    $request    = new Request($_REQUEST['__path__']);
+    $cubex->serviceManager = new ServiceManager();
+    $dispatcher            = null;
+    $request               = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
 
     $response = new Response();
@@ -141,10 +140,10 @@ final class Cubex
       }
       else
       {
-        if(Cubex::config('locale')->getBool('enabled'))
-        {
-          Cubex::locale(Cubex::config('locale')->getStr('default', 'en_US'));
-        }
+        $localeServiceConfig = new ServiceConfig();
+        $localeServiceConfig->setFactory(array('Cubex\Locale\Locale', 'instance'));
+        $localeServiceConfig->fromConfig($cubex->config('locale'));
+        $cubex->serviceManager->register("locale", $localeServiceConfig, true);
 
         $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
         if(class_exists($loaderClass))
@@ -296,73 +295,6 @@ final class Cubex
   }
 
   /**
-   * Database Connection
-   *
-   * @param string $connection
-   *
-   * @return \Cubex\Database\Connection
-   */
-  public static function db($connection = 'db')
-  {
-    return self::getConnection("database", $connection);
-  }
-
-  /**
-   * Cache Connection
-   *
-   * @param string $connection
-   *
-   * @return \Cubex\Cache\Connection
-   */
-  public static function cache($connection = 'local')
-  {
-    return self::getConnection("cache", $connection);
-  }
-
-  /**
-   * @param $type
-   * @param $connection
-   *
-   * @return \Cubex\Data\Connection
-   */
-  private static function getConnection($type, $connection)
-  {
-    if(!isset(self::core()->_connections[$type][$connection]))
-    {
-      if(!isset(self::core()->_connections[$type]))
-      {
-        self::core()->_connections[$type] = array();
-      }
-      $config = self::config($type . "\\" . $connection);
-      $layer  = "\\Cubex\\" . \ucwords($type) . "\\";
-      $layer .= $config->getStr("engine", self::config($type)->getStr("engine", "mysql"));
-      $layer .= "\\Connection";
-      //Store connection
-      self::core()->_connections[$type][$connection] = new $layer($config);
-    }
-
-    return self::core()->_connections[$type][$connection];
-  }
-
-  /**
-   * Session Connection
-   *
-   * @return \Cubex\Session\Container
-   */
-  public static function session()
-  {
-    if(!isset(self::core()->_connections["session"]))
-    {
-      $layer = "\\Cubex\\Session\\";
-      $layer .= self::config("session")->getStr("container", 'standard') . "\\Container";
-      //Store Container
-      self::core()->_connections["session"] = new $layer(self::config("session"));
-    }
-
-    return self::core()->_connections["session"];
-  }
-
-  /**
    * Get configuration object, within specific area
    *
    * @param $area
@@ -382,28 +314,6 @@ final class Cubex
   public static function configuration()
   {
     return new Config(self::core()->_configuration);
-  }
-
-  /**
-   * Set locale and return Cubex or get locale
-   *
-   * @param null|string $locale
-   *
-   * @return Cubex|string
-   */
-  public static function locale($locale = null)
-  {
-    if($locale === null)
-    {
-      return self::core()->_locale;
-    }
-    $loc                  = \explode(',', $locale);
-    self::core()->_locale = $loc[0];
-    \putenv('LC_ALL=' . $loc[0]);
-    \array_unshift($loc, LC_ALL);
-    \call_user_func_array('setlocale', $loc);
-
-    return self::$cubex;
   }
 
   /**
@@ -429,24 +339,39 @@ final class Cubex
         }
         $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
       }
-      include_once($includeFile);
+      include_once $includeFile;
     }
     catch(\Exception $e)
     {
     }
   }
 
+  /**
+   * @param array $classmap
+   *
+   * @return $this
+   */
   public function appendClassMap(array $classmap)
   {
     $this->_classmap = array_merge($this->_classmap, $classmap);
     return $this;
   }
 
+  /**
+   * @param $class
+   *
+   * @return null
+   */
   public function getMappedClass($class)
   {
     return isset($this->_classmap[$class]) ? $this->_classmap[$class] : null;
   }
 
+  /**
+   * @param $directory
+   *
+   * @return array
+   */
   public static function loadClassMap($directory)
   {
     try
@@ -460,8 +385,8 @@ final class Cubex
     }
     catch(\Exception $e)
     {
+      return [];
     }
-    return [];
   }
 
   /**
@@ -479,7 +404,7 @@ final class Cubex
     self::core()->_allowShutdownDetails = (bool)$enabled;
   }
 
-  public function responsePrepareHook(Event $e)
+  public function responseDebugInfo(Event $e)
   {
     if(self::core()->_allowShutdownDetails)
     {

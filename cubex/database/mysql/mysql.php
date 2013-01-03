@@ -7,12 +7,13 @@
  */
 namespace Cubex\Database\MySQL;
 
-use Cubex\Data\Handler;
+use Cubex\Database\Database;
+use Cubex\ServiceManager\ServiceConfig;
 
 /**
  * Connection
  */
-class Connection implements \Cubex\Database\Connection
+class MySQL implements Database
 {
 
   /**
@@ -20,15 +21,17 @@ class Connection implements \Cubex\Database\Connection
    */
   protected $_connection;
   /**
-   * @var \Cubex\Data\Handler
+   * @var \Cubex\ServiceManager\ServiceConfig
    */
   protected $_config;
   private $_connected = false;
 
   /**
-   * @param \Cubex\Data\Handler $config
+   * @param \Cubex\ServiceManager\ServiceConfig $config
+   *
+   * @return mixed|void
    */
-  public function __construct(Handler $config)
+  public function configure(ServiceConfig $config)
   {
     $this->_config = $config;
   }
@@ -36,7 +39,7 @@ class Connection implements \Cubex\Database\Connection
   /**
    * @param string $mode
    *
-   * @return Connection
+   * @return MySQL
    */
   public function connect($mode = 'w')
   {
@@ -191,9 +194,9 @@ class Connection implements \Cubex\Database\Connection
   public function getKeyedRows($query)
   {
     $this->prepareConnection('r');
-    $result         = $this->doQuery($query);
-    $rows           = array();
-    $keyField       = $valueKey = null;
+    $result       = $this->doQuery($query);
+    $rows         = array();
+    $keyField     = $valueKey = null;
     $valueAsArray = true;
     if($result->num_rows > 0)
     {
@@ -205,12 +208,12 @@ class Connection implements \Cubex\Database\Connection
           if(count($keyField) == 2)
           {
             $valueAsArray = false;
-            $valueKey      = $keyField[1];
+            $valueKey     = $keyField[1];
           }
           else if(count($keyField) == 1)
           {
             $valueAsArray = false;
-            $valueKey      = $keyField[0];
+            $valueKey     = $keyField[0];
           }
           $keyField = $keyField[0];
         }

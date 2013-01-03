@@ -15,13 +15,6 @@ use Cubex\ServiceManager\Service;
 interface Connection extends Service
 {
   /**
-   * Pass through connection configuration
-   *
-   * @param Handler $configuration
-   */
-  public function __construct(Handler $configuration);
-
-  /**
    * @param string $mode Either 'r' (reading) or 'w' (reading and writing)
    */
   public function connect($mode = 'w');
