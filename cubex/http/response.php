@@ -211,8 +211,16 @@ class Response
    */
   public function respond()
   {
-    $this->addHeader("X-Cubex-Render", $this->_renderType);
     $this->addHeader("Status", $this->_httpStatus);
+
+    if($this->_httpStatus == 304)
+    {
+      $this->sendHeaders();
+      $this->_rendered = true;
+      return $this;
+    }
+
+    $this->addHeader("X-Cubex-Render", $this->_renderType);
 
     switch($this->_renderType)
     {
@@ -282,7 +290,7 @@ class Response
         }
         else
         {
-          throw new \Exception("Unsupported response type");
+          throw new \Exception("Unsupported response type " . json_encode($this->_source));
         }
         break;
     }
@@ -302,6 +310,7 @@ class Response
     if(!\headers_sent())
     {
       \header("HTTP/1.0 " . $this->_httpStatus . ' ' . $this->getStatusReason());
+      $this->addHeader("X-Brooke", "Random");
 
       if($this->_lastModified)
       {
@@ -390,6 +399,16 @@ class Response
   public function setStatus($code)
   {
     $this->_httpStatus = $code;
+  }
+
+  /**
+   * Current HTTP Status Code
+   *
+   * @return int
+   */
+  public function getStatus()
+  {
+    return $this->_httpStatus;
   }
 
   /**
