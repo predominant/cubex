@@ -15,7 +15,6 @@ use Cubex\Config\Config;
 use Cubex\Event\Event;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
-use Cubex\Response\WebPage;
 use Cubex\ServiceManager\ServiceConfig;
 use Cubex\ServiceManager\ServiceManager;
 use Cubex\View\HTMLElement;
@@ -461,7 +460,7 @@ final class Cubex
               ),
               nl2br($shutdownContent)
             );
-            if($source instanceof WebPage)
+            if($source instanceof \Cubex\Response\WebPage)
             {
               $source->closing .= $shutdownDebug;
             }
