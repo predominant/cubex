@@ -22,8 +22,10 @@ use \Cubex\Application\Layout;
 /**
  * Base Controller
  */
-abstract class BaseController extends Handler implements Dispatchable
+abstract class BaseController implements Dispatchable, \IteratorAggregate
 {
+  use \Cubex\Traits\Data\Handler;
+
   /**
    * @var Request
    */

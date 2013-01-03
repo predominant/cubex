@@ -8,14 +8,15 @@
 
 namespace Cubex\Http;
 
-use Cubex\Data\Handler;
 use Cubex\Cubex;
+use Cubex\Traits\Data\Handler;
 
 /**
  * Standard Request Handler
  */
-class Request extends Handler
+class Request implements \IteratorAggregate
 {
+  use Handler;
 
   const TYPE_AJAX     = '_cubex_ajax_';
   const TYPE_FORM     = '_cubex_form_';
@@ -90,10 +91,12 @@ class Request extends Handler
   private function processHost($host)
   {
     if($this->_processedHost)
+    {
       return $this;
+    }
     $extraTlds = Cubex::config("general")->getArr("tlds", array());
     $hardTlds  = array('co', 'com', 'org', 'me', 'gov', 'net', 'edu');
-    $parts      = \array_reverse(\explode('.', $host));
+    $parts     = \array_reverse(\explode('.', $host));
 
     if(\strstr($parts[0], ':') !== false)
     {
@@ -109,9 +112,9 @@ class Request extends Handler
       else if(empty($this->_domain))
       {
         if($i < 2
-          && (\strlen($part) == 2
-            || \in_array($part . '.' . $this->_tld, $extraTlds)
-            || \in_array($part, $hardTlds))
+        && (\strlen($part) == 2
+        || \in_array($part . '.' . $this->_tld, $extraTlds)
+        || \in_array($part, $hardTlds))
         )
         {
           $this->_tld = $part . '.' . $this->_tld;
@@ -155,7 +158,9 @@ class Request extends Handler
   final public function getSubDomain()
   {
     if($this->_subdomain === null)
+    {
       $this->processHost($this->_host);
+    }
 
     return $this->_subdomain;
   }
@@ -166,7 +171,9 @@ class Request extends Handler
   final public function getDomain()
   {
     if($this->_domain === null)
+    {
       $this->processHost($this->_host);
+    }
 
     return $this->_domain;
   }
@@ -177,7 +184,9 @@ class Request extends Handler
   final public function getTld()
   {
     if($this->_tld === null)
+    {
       $this->processHost($this->_host);
+    }
 
     return $this->_tld;
   }
@@ -188,7 +197,9 @@ class Request extends Handler
   final public function getPort()
   {
     if($this->_port === null)
+    {
       $this->processHost($this->_host);
+    }
 
     return $this->_port;
   }
@@ -250,7 +261,9 @@ class Request extends Handler
     foreach($_REQUEST as $k => $v)
     {
       if(\substr($k, 0, 2) !== '__')
+      {
         $variables[$k] = $v;
+      }
     }
 
     return $variables;
