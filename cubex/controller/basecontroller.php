@@ -106,7 +106,7 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
    */
   public function request()
   {
-    return Cubex::request();
+    return $this->_request;
   }
 
   /**
