@@ -129,6 +129,11 @@ final class Cubex
     $response->addHeader("X-Cubex-TID", CUBEX_TRANSACTION);
     $response->addHeader("X-Frame-Options", "deny");
 
+    if(self::config('response')->getBool('gzip', true))
+    {
+      ini_set('zlib.output_compression', 'On');
+    }
+
     if(CUBEX_WEB)
     {
       list($verify, $dispatchPath) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
@@ -157,17 +162,11 @@ final class Cubex
       }
     }
 
-    if(self::config('response')->getBool('gzip', true))
-    {
-      ini_set('zlib.output_compression', 'On');
-    }
-
     if($dispatcher instanceof Dispatchable)
     {
       $respond = $dispatcher->dispatch($request, $response);
       if($respond instanceof Response)
       {
-        Events::trigger(Events::CUBEX_RESPONSE_PREPARE, [], $respond);
         $respond->respond();
         Events::trigger(Events::CUBEX_RESPONSE_SENT, [], $respond);
       }

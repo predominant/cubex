@@ -8,6 +8,7 @@
 
 namespace Cubex\Http;
 
+use Cubex\Event\Events;
 use \Cubex\Response\WebPage;
 use Cubex\View\Renderable;
 
@@ -211,6 +212,7 @@ class Response
    */
   public function respond()
   {
+    Events::trigger(Events::CUBEX_RESPONSE_PREPARE, [], $this);
     $this->addHeader("Status", $this->_httpStatus);
 
     if($this->_httpStatus == 304)
