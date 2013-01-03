@@ -349,7 +349,6 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
   {
     \ob_get_clean();
     $this->_delegated = true;
-    Cubex::core()->setController($newController);
 
     return $newController->getResponse();
   }

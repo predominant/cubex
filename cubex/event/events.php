@@ -20,6 +20,8 @@ class Events
   const CUBEX_RESPONSE_PREPARE = 'cubex.response.start';
   const CUBEX_RESPONSE_SENT  = 'cubex.response.sent';
 
+  const CUBEX_PAGE_TITLE  = 'cubex.page.title';
+
   const CUBEX_APPLICATION_CANLAUNCH   = 'cubex.application.canlaunch';
   const CUBEX_APPLICATION_LAUNCHFAIL   = 'cubex.application.launchfailed';
   const CUBEX_APPLICATION_PRELAUNCH   = 'cubex.application.launching';

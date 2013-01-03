@@ -8,6 +8,7 @@
 
 namespace Cubex\View;
 
+use Cubex\Event\Events;
 use Cubex\Project\Application;
 use Cubex\Dispatch\Dispatcher;
 use Cubex\Cubex;
@@ -45,11 +46,7 @@ abstract class View extends Dispatcher implements Renderable
    */
   public function setTitle($title = '')
   {
-    $controller = Cubex::controller();
-    if($controller instanceof WebpageController)
-    {
-      $controller->setTitle($title);
-    }
+    Events::trigger(Events::CUBEX_PAGE_TITLE, ['title' => $title], $this);
     return $this;
   }
 

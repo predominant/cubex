@@ -77,7 +77,6 @@ abstract class Application extends Translatable implements Dispatchable
       $controller = $this->getController($this->_request->getPath());
       if($controller !== null && $controller instanceof BaseController)
       {
-        Cubex::core()->setController($controller);
         $controller->setApp($this)->dispatch($this->_request, $this->_response);
       }
       else

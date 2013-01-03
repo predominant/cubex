@@ -9,6 +9,8 @@
 namespace Cubex\Response;
 
 use \Cubex\Cubex;
+use Cubex\Event\Event;
+use Cubex\Event\Events;
 use Cubex\View\Renderable;
 use Cubex\Dispatch\Prop;
 use Cubex\View\Partial;
@@ -31,6 +33,11 @@ class WebPage
 
   public $closing = '';
 
+  public function __construct()
+  {
+    Events::listen(Events::CUBEX_PAGE_TITLE, array($this, "setTitle"));
+  }
+
   /**
    * Set page body to be a renderable object
    *
@@ -43,16 +50,6 @@ class WebPage
     $this->_view = $view;
 
     return $this;
-  }
-
-  /**
-   * Get Controller shortcut
-   *
-   * @return \Cubex\Controller\BaseController
-   */
-  public function controller()
-  {
-    return Cubex::core()->controller();
   }
 
   /**
@@ -103,7 +100,18 @@ class WebPage
    */
   public function setTitle($title)
   {
-    $this->_title = $title;
+    if($title instanceof Event)
+    {
+      $title = $title->getParam("title");
+      if($title !== null)
+      {
+        $this->_title = $title;
+      }
+    }
+    else
+    {
+      $this->_title = $title;
+    }
 
     return $this;
   }

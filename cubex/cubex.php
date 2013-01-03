@@ -283,30 +283,6 @@ final class Cubex
   }
 
   /**
-   * Define active controller object for views to pull
-   *
-   * @param \Cubex\Controller\BaseController $controller
-   *
-   * @return \Cubex\Cubex
-   */
-  public function setController(BaseController $controller)
-  {
-    $this->_controller = $controller;
-
-    return $this;
-  }
-
-  /**
-   * Globally available HTTP Request object
-   *
-   * @return \Cubex\Controller\BaseController
-   */
-  public static function controller()
-  {
-    return self::core()->_controller;
-  }
-
-  /**
    * Load environment configuration (ini)
    */
   private function _configure()
