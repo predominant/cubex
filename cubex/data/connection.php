@@ -10,7 +10,9 @@ namespace Cubex\Data;
 /**
  * Base connection interface
  */
-interface Connection
+use Cubex\ServiceManager\Service;
+
+interface Connection extends Service
 {
   /**
    * Pass through connection configuration
