@@ -7,7 +7,6 @@
  */
 namespace Cubex\Logger;
 
-use Cubex\Event\Event;
 use Cubex\Event\Events;
 
 /**
@@ -40,7 +39,7 @@ class Log
    * @param        $code
    * @param string $type
    */
-  public static function info($message, $code, $type = self::TYPE_GENERIC)
+  public static function info($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_INFO, $message, $type, $code);
   }
@@ -52,7 +51,7 @@ class Log
    * @param        $code
    * @param string $type
    */
-  public static function success($message, $code, $type = self::TYPE_GENERIC)
+  public static function success($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_SUCCESS, $message, $type, $code);
   }
@@ -64,7 +63,7 @@ class Log
    * @param        $code
    * @param string $type
    */
-  public static function warning($message, $code, $type = self::TYPE_GENERIC)
+  public static function warning($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_WARNING, $message, $type, $code);
   }
@@ -76,7 +75,7 @@ class Log
    * @param        $code
    * @param string $type
    */
-  public static function critical($message, $code, $type = self::TYPE_GENERIC)
+  public static function critical($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_CRITICAL, $message, $type, $code);
   }
@@ -88,7 +87,7 @@ class Log
    * @param        $code
    * @param string $type
    */
-  public static function fatal($message, $code, $type = self::TYPE_GENERIC)
+  public static function fatal($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_FATAL, $message, $type, $code);
   }
@@ -97,10 +96,11 @@ class Log
    * You need to brush up on your coding skills
    *
    * @param $message
-   * @param $type
    * @param $code
+   * @param $type
+   *
    */
-  public static function parseError($message, $type, $code)
+  public static function parseError($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_PARSE, $message, $type, $code);
   }
@@ -110,10 +110,10 @@ class Log
    * Notify of a deprecated action
    *
    * @param $message
-   * @param $type
    * @param $code
+   * @param $type
    */
-  public static function deprecated($message, $type, $code)
+  public static function deprecated($message, $code = 0, $type = self::TYPE_GENERIC)
   {
     static::_log(self::LEVEL_DEPRECATED, $message, $type, $code);
   }
