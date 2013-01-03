@@ -131,7 +131,7 @@ class Respond implements Dispatchable
     $response->addHeader("Content-Type", $types[$resourceType]);
     $response->addHeader("X-Powered-By", "Cubex:Dispatch");
     $response->setStatus(200);
-    if($debug != 'nocache')
+    if($debug != 'nocache' || ($type == 'pamon' && Cubex::config('general')->getBool("debug", false)))
     {
       $response->setCacheable($this->_cacheTime);
       $response->setLastModified(time());
