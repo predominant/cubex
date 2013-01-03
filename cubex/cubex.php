@@ -30,7 +30,10 @@ final class Cubex
 {
   public static $cubex = null;
 
-  public $serviceManager = null;
+  /**
+   * @var ServiceManager
+   */
+  protected $_serviceManager = null;
 
   private $_request = null;
   private $_controller = null;
@@ -117,9 +120,9 @@ final class Cubex
     Events::trigger(Events::CUBEX_LAUNCH, [], $cubex);
     Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responseDebugInfo'));
 
-    $cubex->serviceManager = new ServiceManager();
-    $dispatcher            = null;
-    $request               = new Request($_REQUEST['__path__']);
+    $cubex->_serviceManager = new ServiceManager();
+    $dispatcher             = null;
+    $request                = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
 
     $response = new Response();
@@ -140,7 +143,7 @@ final class Cubex
       }
       else
       {
-        self::configureServiceManager($cubex->serviceManager, $cubex->configuration());
+        self::configureServiceManager($cubex->_serviceManager, $cubex->configuration());
 
         $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
         if(class_exists($loaderClass))
@@ -208,6 +211,14 @@ final class Cubex
     }
 
     return $sm;
+  }
+
+  /**
+   * @return ServiceManager
+   */
+  public function getServiceManager()
+  {
+    return $this->_serviceManager;
   }
 
   /**
@@ -429,11 +440,17 @@ final class Cubex
     return $this->_projectBase;
   }
 
+  /**
+   * @param bool $enabled
+   */
   public static function setShutdownDetails($enabled = false)
   {
     self::core()->_allowShutdownDetails = (bool)$enabled;
   }
 
+  /**
+   * @param \Cubex\Event\Event $e
+   */
   public function responseDebugInfo(Event $e)
   {
     if(self::core()->_allowShutdownDetails)
