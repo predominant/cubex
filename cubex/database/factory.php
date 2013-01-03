@@ -28,7 +28,6 @@ class Factory implements ServiceFactory
     {
       case 'mysql':
         return new MySQL();
-        break;
     }
     throw new \Exception("Invalid service configuration");
   }
