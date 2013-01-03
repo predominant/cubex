@@ -11,7 +11,7 @@ namespace Cubex;
  * Cubex Framework
  */
 use Cubex\Base\Dispatchable;
-use Cubex\Data\Handler;
+use Cubex\Config\Config;
 use Cubex\Event\Event;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
@@ -213,7 +213,7 @@ final class Cubex
    */
   private function __construct()
   {
-    $this->configure();
+    $this->_configure();
     $this->appendClassMap(static::loadClassMap(__DIR__));
     $this->register();
   }
@@ -269,7 +269,7 @@ final class Cubex
   /**
    * Load environment configuration (ini)
    */
-  private function configure()
+  private function _configure()
   {
     try
     {
@@ -367,21 +367,21 @@ final class Cubex
    *
    * @param $area
    *
-   * @return Data\Handler
+   * @return Config
    */
   public static function config($area)
   {
-    return new Handler(self::core()->_configuration[$area]);
+    return new Config(self::core()->_configuration[$area]);
   }
 
   /**
    * Entire environment configuration
    *
-   * @return Data\Handler
+   * @return Config
    */
   public static function configuration()
   {
-    return new Handler(self::core()->_configuration);
+    return new Config(self::core()->_configuration);
   }
 
   /**
