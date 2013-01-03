@@ -220,7 +220,15 @@ abstract class Model implements \IteratorAggregate
     }
     else
     {
-      return $this->attribute($this->getIDKey())->rawData();
+      $attr = $this->attribute($this->getIDKey());
+      if($attr !== null)
+      {
+        return $attr->rawData();
+      }
+      else
+      {
+        return null;
+      }
     }
   }
 
