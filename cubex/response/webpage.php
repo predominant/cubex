@@ -231,7 +231,7 @@ class WebPage
     . '<meta name="viewport" content="width=device-width">'
     . '<script>function envPop(a){function b(c) {for (var d in a)c[d] = a[d];};'
     . 'window.Env = Env = window.Env || {};b(Env);};'
-    . "!function(d){d.className=d.className.replace('no_js', '');}(document.documentElement);"
+    . "!function(d){d.className=d.className.replace('no-js', '');}(document.documentElement);"
     . 'envPop({"method":"' . $method . '"});</script><noscript>' . $noscript . '</noscript>'
     . '<title>' . $title . '</title>' . $head . '</head><body' . $this->bodyAttributes() . '>';
 
