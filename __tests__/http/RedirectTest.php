@@ -9,7 +9,7 @@ namespace Cubex\Tests;
 class Http_RedirectTest extends \PHPUnit_Framework_TestCase
 {
   /**
-   * @var Cubex\Http\Redirect
+   * @var \Cubex\Http\Redirect
    */
   private $_redirect;
 
