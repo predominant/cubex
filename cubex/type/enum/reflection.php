@@ -3,6 +3,7 @@
  * File: reflection.php
  * Date: 02/01/13
  * Time: 11:18
+ *
  * @author: gareth.evans
  */
 
@@ -24,15 +25,16 @@ abstract class Reflection
   public function __construct($enum = null, $strict = false)
   {
     $reflection = new \ReflectionClass($this);
-    $constants = $reflection->getConstants();
+    $constants  = $reflection->getConstants();
 
     $this->_setDefault($constants)
-      ->_setEnums($constants)
-      ->_setEnum($enum);
+    ->_setEnums($constants)
+    ->_setEnum($enum);
   }
 
   /**
    * @param array $constants
+   *
    * @return Reflection $this
    * @throws \UnexpectedValueException
    */
@@ -50,6 +52,7 @@ abstract class Reflection
 
   /**
    * @param array $constants
+   *
    * @return Reflection $this
    * @throws \UnexpectedValueException
    */
@@ -74,6 +77,7 @@ abstract class Reflection
 
   /**
    * @param $enum
+   *
    * @return Reflection $this
    * @throws \UnexpectedValueException
    */
