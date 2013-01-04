@@ -9,8 +9,11 @@
 
 namespace Cubex\Tests
 {
+  use Cubex\Cubex;
+  use Cubex\Type\Enum;
+
   require_once dirname(dirname(__FILE__)) . '/cubex/cubex.php';
-  \Cubex\Cubex::boot();
+  Cubex::boot();
 
   final class Setup
   {
@@ -75,15 +78,15 @@ namespace Cubex\Tests
 
   class Log extends \Cubex\Logger\Log
   {
-    public static $log_arguments = array();
+    public static $logArguments = array();
 
     protected static function _log()
     {
-      self::$log_arguments = func_get_args();
+      self::$logArguments = func_get_args();
     }
   }
 
-  class Bool extends \Cubex\Type\Enum
+  class Bool extends Enum
   {
     const __default = self::TRUE;
 
@@ -91,13 +94,13 @@ namespace Cubex\Tests
     const FALSE = "0";
   }
 
-  class EnumNoDefault extends \Cubex\Type\Enum
+  class EnumNoDefault extends Enum
   {
     const TRUE = "1";
     const FALSE = "0";
   }
 
-  class EnumNoConstants extends \Cubex\Type\Enum
+  class EnumNoConstants extends Enum
   {
     const __default = "0";
   }
@@ -105,14 +108,18 @@ namespace Cubex\Tests
 
 namespace Cubex\Tests\Controllers
 {
-  class Controller extends \Cubex\Controller\BaseController
+  use Cubex\Controller\BaseController;
+  use Cubex\Http\Response;
+  use Cubex\Response\WebPage;
+
+  class Controller extends BaseController
   {
     public function processRequest()
     {
-      $webpage = new \Cubex\Response\WebPage();
+      $webpage = new WebPage();
       $webpage->setTitle("Test Application");
 
-      return new \Cubex\Http\Response($webpage);
+      return new Response($webpage);
     }
   }
 }

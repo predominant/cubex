@@ -14,7 +14,7 @@ abstract class Reflection
   private $_enum;
   private $_enumsReversed = array();
 
-  private static $_DEFAULT_KEY = "__default";
+  private static $_defaultKey = "__default";
 
 
   /**
@@ -38,12 +38,12 @@ abstract class Reflection
    */
   private function _setDefault(array $constants)
   {
-    if(!isset($constants[self::$_DEFAULT_KEY]))
+    if(!isset($constants[self::$_defaultKey]))
     {
       throw new \UnexpectedValueException("No default enum set");
     }
 
-    $this->_default = $constants[self::$_DEFAULT_KEY];
+    $this->_default = $constants[self::$_defaultKey];
 
     return $this;
   }
@@ -57,9 +57,9 @@ abstract class Reflection
   {
     $tempConstants = $constants;
 
-    if(\array_key_exists(self::$_DEFAULT_KEY, $tempConstants))
+    if(\array_key_exists(self::$_defaultKey, $tempConstants))
     {
-      unset($tempConstants[self::$_DEFAULT_KEY]);
+      unset($tempConstants[self::$_defaultKey]);
     }
 
     if(empty($tempConstants))
