@@ -7,16 +7,19 @@
  */
 namespace Cubex\Event;
 
+use Cubex\Traits\Data\Handler;
+
 class Event implements EventInterface
 {
+  use Handler;
+
   private $_name;
-  private $_args;
   private $_callee;
 
   public function __construct($name, $args = array(), $callee = null)
   {
     $this->_name   = $name;
-    $this->_args   = $args;
+    $this->_data   = $args;
     $this->_callee = $callee;
   }
 
@@ -44,23 +47,23 @@ class Event implements EventInterface
 
   public function getParams()
   {
-    return $this->_args;
+    return $this->_data;
   }
 
   public function getParam($name, $default = null)
   {
-    return isset($this->_args[$name]) ? $this->_args[$name] : $default;
+    return isset($this->_data[$name]) ? $this->_data[$name] : $default;
   }
 
   public function setParams($params)
   {
-    $this->_args = $params;
+    $this->_data = $params;
     return $this;
   }
 
   public function setParam($name, $value)
   {
-    $this->_args[$name] = $value;
+    $this->_data[$name] = $value;
     return $this;
   }
 }

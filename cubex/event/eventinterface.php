@@ -8,7 +8,9 @@
 
 namespace Cubex\Event;
 
-interface EventInterface
+use Cubex\Data\HandlerInterface;
+
+interface EventInterface extends HandlerInterface
 {
   public function __construct($name, $args = array(), $callee = null);
 
