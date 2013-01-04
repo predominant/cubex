@@ -15,7 +15,7 @@ class Locale_FactoryTest extends \PHPUnit_Framework_TestCase
   {
     $factory = new \Cubex\Locale\Factory();
     $this->assertInstanceOf(
-      '\Cubex\Locale\Locales', $factory->createService(new ServiceConfig())
+      '\Cubex\Locale\Locale', $factory->createService(new ServiceConfig())
     );
   }
 }
