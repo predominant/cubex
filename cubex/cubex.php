@@ -120,6 +120,7 @@ final class Cubex
     $dispatcher             = null;
     $request                = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
+    self::configureServiceManager($cubex->_serviceManager, $cubex->configuration());
 
     $response = new Response();
     $response->addHeader("X-Cubex-TID", CUBEX_TRANSACTION);
@@ -144,8 +145,6 @@ final class Cubex
       }
       else
       {
-        self::configureServiceManager($cubex->_serviceManager, $cubex->configuration());
-
         $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
         if(class_exists($loaderClass))
         {
