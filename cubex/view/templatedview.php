@@ -47,7 +47,7 @@ class TemplatedView extends View
    *
    * @return TemplatedView
    */
-  private function calculateTemplate($class = null)
+  private function _calculateTemplate($class = null)
   {
     $reflector = new \ReflectionClass($class === null ? \get_class($this) : $class);
     $ns        = ltrim($reflector->getName(), "\\");
@@ -61,12 +61,7 @@ class TemplatedView extends View
       }
 
       $part = \strtolower($part);
-      if(\in_array($part, array('controllers', 'views')))
-      {
-        break;
-      }
-
-      if(\substr($part, -10) == 'controller')
+      if(\in_array($part, array('controllers', 'views')) || \substr($part, -10) == 'controller')
       {
         break;
       }
@@ -78,7 +73,8 @@ class TemplatedView extends View
     }
 
     $templatesPath = dirname($reflector->getFileName());
-    for($ii = 0; $ii < count($nsParts); $ii++)
+    $partCount     = count($nsParts);
+    for($ii = 0; $ii < $partCount; $ii++)
     {
       $templatesPath = dirname($templatesPath);
     }
@@ -104,7 +100,7 @@ class TemplatedView extends View
    */
   public function render()
   {
-    $this->calculateTemplate();
+    $this->_calculateTemplate();
     $rendered = '';
 
     if($this->_renderFile !== null)
