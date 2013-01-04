@@ -13,7 +13,7 @@ use Cubex\Base\Callback;
 /**
  * Base Model
  */
-abstract class Model implements \IteratorAggregate
+abstract class Model implements \IteratorAggregate, \JsonSerializable
 {
 
   const CONFIG_IDS = 'id-mechanism';
@@ -103,19 +103,42 @@ abstract class Model implements \IteratorAggregate
   public function __toString()
   {
     $properties = array();
-    foreach($this->_attributes as $attr)
+    $attributes = $this->_getRawAttributesArr($this->_attributes);
+    foreach($attributes as $name => $value)
     {
-      if($attr instanceof Attribute)
-      {
-        if(!$attr->isEmpty())
-        {
-          $properties[] = $attr->getName() . ' = ' .
-            (is_scalar($attr->data()) ? $attr->data() : print_r($attr->data(), true));
-        }
-      }
+      $property = "$name = ";
+      $property .= is_scalar($value) ? $value : print_r($value, true);
+      $properties[] = $property;
     }
 
     return \get_class($this) . " {" . implode(', ', $properties) . "}";
+  }
+
+  /**
+   * @return array|mixed
+   */
+  public function jsonSerialize()
+  {
+    return $this->_getRawAttributesArr($this->_attributes);
+  }
+
+  /**
+   * @param array $attributes
+   * @return array
+   */
+  protected function _getRawAttributesArr(array $attributes)
+  {
+    $rawAttributes = [];
+
+    foreach($attributes as $attribute)
+    {
+      if($attribute instanceof Attribute)
+      {
+        $rawAttributes[$attribute->getName()] = $attribute->data();
+      }
+    }
+
+    return $rawAttributes;
   }
 
   /**
