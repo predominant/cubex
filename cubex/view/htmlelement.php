@@ -18,6 +18,8 @@ class HTMLElement implements Renderable
   private $_nested = array();
   private $_attributes = array();
   private $_content = '';
+  private $_preRender;
+  private $_postRender;
 
   /**
    * @param string $tag
@@ -41,6 +43,8 @@ class HTMLElement implements Renderable
     $this->_tag        = $tag;
     $this->_content    = $content;
     $this->_attributes = $attributes;
+    $this->_preRender  = new Group();
+    $this->_postRender = new Group();
   }
 
   /**
@@ -126,7 +130,9 @@ class HTMLElement implements Renderable
    */
   public function render()
   {
-    $return = empty($this->_tag) ? '' : '<' . $this->_tag . $this->renderAttributes() . '>';
+    $return = $this->_preRender->render();
+
+    $return .= empty($this->_tag) ? '' : '<' . $this->_tag . $this->renderAttributes() . '>';
     $return .= $this->_content;
     foreach($this->_nested as $nest)
     {
@@ -136,6 +142,8 @@ class HTMLElement implements Renderable
       }
     }
     $return .= empty($this->_tag) ? '' : '</' . $this->_tag . '>';
+
+    $return .= $this->_postRender->render();
 
     return $return;
   }
@@ -156,5 +164,17 @@ class HTMLElement implements Renderable
   public static function escape($content)
   {
     return \htmlspecialchars($content, ENT_QUOTES, 'UTF-8');
+  }
+
+  public function renderBefore(Renderable $item)
+  {
+    $this->_preRender->add($item);
+    return $this;
+  }
+
+  public function renderAfter(Renderable $item)
+  {
+    $this->_postRender->add($item);
+    return $this;
   }
 }
