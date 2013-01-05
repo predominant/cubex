@@ -12,6 +12,8 @@ namespace Cubex;
  */
 use Cubex\Base\Dispatchable;
 use Cubex\Config\Config;
+use Cubex\Dispatch\Fabricate;
+use Cubex\Dispatch\Respond;
 use Cubex\Event\Event;
 use Cubex\Http\Request;
 use Cubex\Event\Events;
@@ -28,11 +30,14 @@ final class Cubex
   public static $cubex = null;
 
   /**
-   * @var ServiceManager
+   * @var \Cubex\ServiceManager\ServiceManager
    */
   protected $_serviceManager = null;
 
   private $_request = null;
+  /**
+   * @var array
+   */
   private $_configuration = null;
   private $_projectBase = '';
   private $_allowShutdownDetails = true;
@@ -47,7 +52,9 @@ final class Cubex
       $currentVersion  = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION . '.' . PHP_RELEASE_VERSION;
       if($currentVersion < $requiredVersion)
       {
-        Cubex::fatal("You are running PHP '" . $currentVersion . "', version '{$requiredVersion}' required");
+        Cubex::fatal(
+          "You are running PHP '" . $currentVersion . "', version '{$requiredVersion}' required"
+        );
       }
     }
   }
@@ -105,7 +112,9 @@ final class Cubex
     define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
     $dirName = \dirname(__FILE__);
-    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirName : \dirname($dirName));
+    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirName : \dirname(
+      $dirName
+    ));
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))
     {
@@ -131,7 +140,14 @@ final class Cubex
       ini_set('zlib.output_compression', 'On');
     }
 
-    if(CUBEX_WEB)
+    if($_SERVER['REQUEST_URI'] == '/favicon.ico')
+    {
+      $domainHash = Fabricate::generateDomainHash(
+        $request->getSubDomain() . '.' . $request->getDomain() . $request->getTld()
+      );
+      $dispatcher = new Respond([], [], $domainHash . '/esabot/pamon/favicon.ico');
+    }
+    else if(CUBEX_WEB)
     {
       list($verify, $dispatchPath) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
 
@@ -346,7 +362,9 @@ final class Cubex
         {
           $namespace   = substr($class, 0, $lastNsPos);
           $class       = substr($class, $lastNsPos + 1);
-          $includeFile = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR);
+          $includeFile = strtolower(
+            str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR
+          );
         }
         $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
       }
@@ -428,7 +446,9 @@ final class Cubex
       $response = $e->getCallee();
       if($response instanceof Response)
       {
-        $shutdownContent = "Completed in: " . \number_format((\microtime(true) - CUBEX_START), 4) . " sec" .
+        $shutdownContent = "Completed in: " . \number_format(
+          (\microtime(true) - CUBEX_START), 4
+        ) . " sec" .
         " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms" .
         "\nTransaction: " . (defined("CUBEX_TRANSACTION") ? CUBEX_TRANSACTION : 'UNKNOWN');
 

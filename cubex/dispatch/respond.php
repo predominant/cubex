@@ -131,7 +131,9 @@ class Respond implements Dispatchable
     $response->addHeader("Content-Type", $types[$resourceType]);
     $response->addHeader("X-Powered-By", "Cubex:Dispatch");
     $response->setStatus(200);
-    if($debug == 'nocache' || (!$this->_useMap && Cubex::config('general')->getBool("debug", false)))
+    if($debug == 'nocache'
+    || (!$this->_useMap && Cubex::config('general')->getBool("debug", false))
+    )
     {
       $response->disbleCache();
     }
@@ -195,7 +197,8 @@ class Respond implements Dispatchable
    */
   public function getPackageData($entityPath, $filePath, $domain)
   {
-    $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR . $entityPath;
+    $basePath = Cubex::core()->projectBasePath(
+    ) . DIRECTORY_SEPARATOR . 'cubex' . DIRECTORY_SEPARATOR . $entityPath;
 
     $response = '';
 
@@ -350,6 +353,7 @@ class Respond implements Dispatchable
   protected function supportedTypes()
   {
     return array(
+      'ico' => 'image/x-icon',
       'css' => 'text/css; charset=utf-8',
       'js'  => 'text/javascript; charset=utf-8',
       'png' => 'image/png',
