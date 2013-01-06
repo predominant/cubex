@@ -10,12 +10,32 @@ namespace Cubex\Tests;
 
 class Data_ModelTest extends \PHPUnit_Framework_TestCase
 {
+  /**
+   * @var Model $_model
+   */
+  private $_model;
+  private $_modelAttributes;
+
+  public function setUp()
+  {
+    $this->_model = new Model();
+    $this->_modelAttributes = array('foo' => 'bar', 'bar' => 'foo');
+  }
+
   public function testClassImplementsJsonSerializable()
   {
-    $expect = json_encode(array('foo' => 'bar', 'bar' => 'foo'));
-    $model = new Model();
+    $this->assertInstanceOf('\JsonSerializable', $this->_model);
+    $this->assertEquals(
+      json_encode($this->_modelAttributes),
+      json_encode($this->_model)
+    );
+  }
 
-    $this->assertInstanceOf('\JsonSerializable', $model);
-    $this->assertEquals($expect, json_encode($model));
+  public function testIterator()
+  {
+    $iterator = $this->_model->getIterator();
+
+    $this->assertInstanceOf('\ArrayIterator', $iterator);
+    $this->assertEquals($this->_modelAttributes, $iterator->getArrayCopy());
   }
 }

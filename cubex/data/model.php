@@ -82,17 +82,7 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
    */
   public function getIterator()
   {
-    $attrs = array();
-    foreach($this->_attributes as $attr)
-    {
-      if($attr instanceof Attribute)
-      {
-        if(!$attr->isEmpty())
-        {
-          $attrs[$attr->getName()] = $attr->data();
-        }
-      }
-    }
+    $attrs = $this->_getRawAttributesArr($this->_attributes);
 
     return new \ArrayIterator($attrs);
   }
