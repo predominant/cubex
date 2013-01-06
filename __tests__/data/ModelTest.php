@@ -38,4 +38,44 @@ class Data_ModelTest extends \PHPUnit_Framework_TestCase
     $this->assertInstanceOf('\ArrayIterator', $iterator);
     $this->assertEquals($this->_modelAttributes, $iterator->getArrayCopy());
   }
+
+  public function testClone()
+  {
+    $modelClone = clone $this->_model;
+
+    $this->assertEquals($modelClone, $this->_model);
+  }
+
+  public function testToString()
+  {
+    $modelToStringExpected = "Cubex\\Tests\\Model {foo = bar, bar = foo}";
+
+    $this->assertEquals($modelToStringExpected, (string)$this->_model);
+  }
+
+  public function testGetAndSet()
+  {
+    $this->assertEquals('foo', $this->_model->getBar());
+    $this->assertEquals('foo', $this->_model->bar);
+
+    $this->_model->setFoo('bartest');
+    $this->_model->bar = 'footest';
+
+    $this->assertEquals('bartest', $this->_model->getFoo());
+    $this->assertEquals('footest', $this->_model->bar);
+
+    // Make sure we change everything back.
+    $this->_model->foo = 'bar';
+    $this->_model->bar = 'foo';
+
+    $this->setExpectedException('Exception', 'Invalid Attribute testset');
+    $this->_model->setTestSet(null);
+    $this->setExpectedException('Exception', 'Invalid Attribute testget');
+    $this->_model->getTestGet();
+  }
+
+  public function testGetTableName()
+  {
+    $this->assertEquals('cubex_tests_model', $this->_model->getTableName());
+  }
 }
