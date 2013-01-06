@@ -39,13 +39,6 @@ class Data_ModelTest extends \PHPUnit_Framework_TestCase
     $this->assertEquals($this->_modelAttributes, $iterator->getArrayCopy());
   }
 
-  public function testClone()
-  {
-    $modelClone = clone $this->_model;
-
-    $this->assertEquals($modelClone, $this->_model);
-  }
-
   public function testToString()
   {
     $modelToStringExpected = "Cubex\\Tests\\Model {foo = bar, bar = foo}";
