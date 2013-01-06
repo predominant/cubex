@@ -10,6 +10,7 @@
 namespace Cubex\Tests
 {
   use Cubex\Cubex;
+  use Cubex\Data\SQLModel;
   use Cubex\Type\Enum;
 
   require_once dirname(dirname(__FILE__)) . '/cubex/cubex.php';
@@ -103,6 +104,12 @@ namespace Cubex\Tests
   class EnumNoConstants extends Enum
   {
     const __default = "0";
+  }
+
+  class Model extends SQLModel
+  {
+    public $foo = 'bar';
+    public $bar = 'foo';
   }
 }
 
