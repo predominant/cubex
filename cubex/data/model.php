@@ -63,7 +63,7 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
   /**
    *
    */
-  public function __clone()
+  protected function __clone()
   {
     $attrs             = $this->_attributes;
     $this->_attributes = array();
@@ -114,6 +114,7 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
 
   /**
    * @param array $attributes
+   *
    * @return array
    */
   protected function _getRawAttributesArr(array $attributes)
@@ -211,7 +212,8 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
   public function getTableName()
   {
     return \str_replace(
-      '_models', '', \str_replace('cubex_modules_', '', \strtolower(\str_replace('\\', '_', \get_class($this))))
+      '_models', '',
+      \str_replace('cubex_modules_', '', \strtolower(\str_replace('\\', '_', \get_class($this))))
     );
   }
 
@@ -350,7 +352,9 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
   final protected function addAttributeFilter($attribute, Callback $filter)
   {
     if(!isset($this->_attributes[$attribute]))
+    {
       return false;
+    }
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -371,7 +375,9 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
   final protected function addAttributeValidator($attribute, Callback $filter)
   {
     if(!isset($this->_attributes[$attribute]))
+    {
       return false;
+    }
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -392,7 +398,9 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
   final protected function addAttributeOption($attribute, $option)
   {
     if(!isset($this->_attributes[$attribute]))
+    {
       return false;
+    }
     $attr = $this->_attributes[$attribute];
     if($attr instanceof Attribute)
     {
@@ -432,7 +440,9 @@ abstract class Model implements \IteratorAggregate, \JsonSerializable
             $valid                                = false;
             $this->_invalidAttributes[$attribute] = $attr->errors();
             if($fail_first)
+            {
               return false;
+            }
           }
         }
       }
