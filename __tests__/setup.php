@@ -39,6 +39,11 @@ namespace Cubex\Tests
     }
   }
 
+  class Application2 extends Application
+  {
+
+  }
+
   class ApplicationFailTest extends \Cubex\Project\Application
   {
     public function launch()
@@ -137,5 +142,21 @@ namespace Cubex\Tests\Views
   class ViewTest
   {
 
+  }
+}
+
+namespace Cubex\Tests\Application
+{
+  class Layout extends \Cubex\Application\Layout
+  {
+    public function getLayoutTemplate()
+    {
+      return $this->_layoutTemplate;
+    }
+
+    public function getRenderHooks()
+    {
+      return $this->_renderHooks;
+    }
   }
 }
