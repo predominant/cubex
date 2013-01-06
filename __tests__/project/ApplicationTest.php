@@ -8,7 +8,7 @@
  */
 namespace Cubex\Tests;
 
-class Base_ApplicationTest extends \PHPUnit_Framework_TestCase
+class Project_ApplicationTest extends \PHPUnit_Framework_TestCase
 {
   public function testExceptionThrownWhenBadParamPassedToInitiator()
   {

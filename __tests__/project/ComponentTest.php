@@ -8,7 +8,7 @@
 namespace Cubex\Tests;
 use Cubex\Tests\Views\ViewTest;
 
-class Base_ComponentTest extends \PHPUnit_Framework_TestCase
+class Project_ComponentTest extends \PHPUnit_Framework_TestCase
 {
   private $_component;
 

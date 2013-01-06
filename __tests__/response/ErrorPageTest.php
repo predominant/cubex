@@ -6,16 +6,16 @@
  * @author: gareth.evans
  */
 namespace Cubex\Tests;
-class Base_ErrorPageTest extends \PHPUnit_Framework_TestCase
+class Response_ErrorPageTest extends \PHPUnit_Framework_TestCase
 {
   /**
    * @var \Cubex\Response\ErrorPage $_error_page
    */
-  private $_error_page;
+  private $_errorPage;
 
   protected function setUp()
   {
-    $this->_error_page = new \Cubex\Response\ErrorPage(
+    $this->_errorPage = new \Cubex\Response\ErrorPage(
       404, 'Page Not Found', array('foo' => 'bar')
     );
   }
@@ -23,14 +23,14 @@ class Base_ErrorPageTest extends \PHPUnit_Framework_TestCase
   public function testGetBodyReturnImplementsRenderableObject()
   {
     $this->assertInstanceOf(
-      '\\Cubex\\View\\Renderable', $this->_error_page->getBody()
+      '\\Cubex\\View\\Renderable', $this->_errorPage->getBody()
     );
   }
 
   public function testParamsGetSet()
   {
     $this->assertStringStartsWith(
-      'foo = bar', $this->_error_page->getBody()->render()
+      'foo = bar', $this->_errorPage->getBody()->render()
     );
   }
 }

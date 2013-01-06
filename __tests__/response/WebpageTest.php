@@ -6,7 +6,7 @@
  * @author: gareth.evans
  */
 namespace Cubex\Tests;
-class Base_WebpageTest extends \PHPUnit_Framework_TestCase
+class Response_WebpageTest extends \PHPUnit_Framework_TestCase
 {
   /** @var \Cubex\Response\Webpage */
   private $_webpage;

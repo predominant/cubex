@@ -6,7 +6,7 @@
  * @author: gareth.evans <gareth.evans@jdiuk.com>
  */
 namespace Cubex\Tests;
-class Base_CubexTest extends \PHPUnit_Framework_TestCase
+class CubexTest extends \PHPUnit_Framework_TestCase
 {
   public function testCubexHasLoaded()
   {
