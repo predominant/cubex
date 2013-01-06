@@ -22,9 +22,9 @@ class Layout extends TemplatedView
    */
   private $_app;
   private $_nested = array();
-  private $_layout_template = 'default';
+  protected $_layoutTemplate = 'default';
 
-  protected $_render_hooks = array('before' => array(), 'after' => array());
+  protected $_renderHooks = array('before' => array(), 'after' => array());
 
   public function __construct(Application $app)
   {
@@ -43,13 +43,13 @@ class Layout extends TemplatedView
   }
 
   /**
-   * Set new template file for layout
+   * Set new templates file for layout
    *
    * @param string $fileName
    */
   public function setLayoutTemplate($fileName = 'default')
   {
-    $this->_layout_template = $fileName;
+    $this->_layoutTemplate = $fileName;
   }
 
   /**
@@ -65,7 +65,7 @@ class Layout extends TemplatedView
         $this->getApp()->filePath() . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'layout'
       );
     }
-    $this->setTemplateFile($this->_layout_template);
+    $this->setTemplateFile($this->_layoutTemplate);
     return parent::render();
   }
 
@@ -98,9 +98,9 @@ class Layout extends TemplatedView
   {
     $rendered = '';
 
-    if(isset($this->_render_hooks['before'][$name]))
+    if(isset($this->_renderHooks['before'][$name]))
     {
-      foreach($this->_render_hooks['before'][$name] as $renderHook)
+      foreach($this->_renderHooks['before'][$name] as $renderHook)
       {
         if($renderHook instanceof Renderable)
         {
@@ -118,6 +118,17 @@ class Layout extends TemplatedView
       }
     }
 
+    if(isset($this->_renderHooks['after'][$name]))
+    {
+      foreach($this->_renderHooks['after'][$name] as $renderHook)
+      {
+        if($renderHook instanceof Renderable)
+        {
+          $rendered .= $renderHook->render();
+        }
+      }
+    }
+
     if($containDivId !== false)
     {
       if(\is_string($containDivId))
@@ -126,17 +137,6 @@ class Layout extends TemplatedView
       }
 
       $rendered = HTMLElement::create('div', array('id' => $name), $rendered)->render();
-    }
-
-    if(isset($this->_render_hooks['after'][$name]))
-    {
-      foreach($this->_render_hooks['after'][$name] as $renderHook)
-      {
-        if($renderHook instanceof Renderable)
-        {
-          $rendered .= $renderHook->render();
-        }
-      }
     }
 
     return $rendered;
@@ -149,7 +149,7 @@ class Layout extends TemplatedView
    */
   protected function hookRender($when, $nest, Renderable $render)
   {
-    $this->_render_hooks[$when][$nest][] = $render;
+    $this->_renderHooks[$when][$nest][] = $render;
   }
 
   /**
