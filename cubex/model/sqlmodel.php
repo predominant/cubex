@@ -6,14 +6,14 @@
  * Description:
  */
 
-namespace Cubex\Data;
+namespace Cubex\Model;
 
 use Cubex\Cubex;
 
 /**
  * Database Model
  */
-abstract class SQLModel extends Model
+abstract class SQLModel extends DataModel
 {
 
   /**
