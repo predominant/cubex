@@ -15,6 +15,9 @@ use Cubex\Cubex;
 
 class Mapper
 {
+  private $_ignoredDirectories = array('.', '..');
+  private $_ignoredFiles = array('.gitignore', 'dispatch.ini');
+
   /**
    * When called from the CLI, the CLI process will be kicked off
    */
@@ -25,11 +28,11 @@ class Mapper
      **/
     if(CUBEX_CLI)
     {
-      $this->cli();
+      $this->_cli();
     }
   }
 
-  private function cli()
+  private function _cli()
   {
     echo \str_repeat("\n", 100);
 
@@ -47,7 +50,7 @@ class Mapper
       echo Shell::colourText("Processing ", Shell::COLOUR_FOREGROUND_CYAN);
       echo ($entityGroup == '' ? 'Base' : \ucwords($entityGroup)) . "\n";
       $entityGroup = 'cubex' . (empty($entityGroup) ? '' : '/') . $entityGroup;
-      $entities    = $this->cliFindEntities($basePath, $entityGroup);
+      $entities    = $this->_cliFindEntities($basePath, $entityGroup);
       if($entities)
       {
         foreach($entities as $entity)
@@ -148,7 +151,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
     return $result;
   }
 
-  private function cliFindEntities($path, $group)
+  private function _cliFindEntities($path, $group)
   {
     $entities = array();
     try
@@ -189,7 +192,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
    *
    * @return array
    */
-  public static function mapDirectory($directory, $subDirectory = '')
+  public function mapDirectory($directory, $subDirectory = '')
   {
     $map = array();
 
@@ -199,18 +202,25 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       {
         while(false !== ($filename = \readdir($handle)))
         {
-          if(\substr($filename, 0, 1) == '.') continue;
-          if($filename == 'dispatch.ini') continue;
+          if($this->_shouldMap($filename))
+          {
+            $rel = $subDirectory . DIRECTORY_SEPARATOR . $filename;
+            $file = $directory . $rel;
 
-          if(\is_dir($directory . $subDirectory . DIRECTORY_SEPARATOR . $filename))
-          {
-            $map = \array_merge($map, self::mapDirectory($directory, $subDirectory . DIRECTORY_SEPARATOR . $filename));
-          }
-          else
-          {
-            $rel            = $subDirectory . DIRECTORY_SEPARATOR . $filename;
-            $safe_rel       = \ltrim(\str_replace('\\', '/', $rel), '/');
-            $map[$safe_rel] = \md5_file($directory . $rel);
+            if(\is_dir($file))
+            {
+              $map = \array_merge($map, $this->mapDirectory($directory, $rel));
+            }
+            else
+            {
+              $safeRel       = \ltrim(\str_replace('\\', '/', $rel), '/');
+              $map[$safeRel] = md5(
+                $this->_concatAllRelatedContent(
+                  $directory, $subDirectory, $filename
+                )
+              );
+              echo $map[$safeRel] . PHP_EOL;
+            }
           }
         }
 
@@ -222,8 +232,120 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
       if(CUBEX_CLI) return false;
       //Unable to open directory (probably)
     }
-
     return $map;
+  }
+
+  private function _concatAllRelatedContent($baseDirectory, $subDirectory,
+                                            $filename)
+  {
+    $content = '';
+    $directories = $this->_getBrandDirectoryList($baseDirectory);
+    $filenames = $this->_getAllPossibleFilenames($filename);
+
+    array_walk(
+      $directories,
+      function(&$directory, $key, $pathDirectories)
+      {
+        $directory = $pathDirectories[0] . DIRECTORY_SEPARATOR . $directory;
+        $directory .= $pathDirectories[1];
+      },
+      array($baseDirectory, $subDirectory)
+    );
+
+    $directories[] = $baseDirectory . $subDirectory;
+
+    foreach($directories as $directory)
+    {
+      foreach($filenames as $possibleFilename)
+      {
+        $currentFileRef = $directory . DIRECTORY_SEPARATOR . $possibleFilename;
+        if(file_exists($currentFileRef))
+        {
+          $content .= file_get_contents($currentFileRef);
+        }
+      }
+    }
+
+    return $content;
+  }
+
+  /**
+   * @param $directory
+   *
+   * @return array
+   */
+  private function _getBrandDirectoryList($directory)
+  {
+    $directories = array();
+
+    try
+    {
+      if($handle = \opendir($directory))
+      {
+        while(false !== ($reference = \readdir($handle)))
+        {
+          $fullReference = $directory . DIRECTORY_SEPARATOR . $reference;
+
+          if(\is_dir($fullReference) && \substr($reference, 0, 1) === '.')
+          {
+            if(!in_array($reference, $this->_ignoredDirectories))
+            {
+              $directories[] = $reference;
+            }
+          }
+        }
+
+        \closedir($handle);
+      }
+    }
+    catch(\Exception $e)
+    {
+    }
+
+    return $directories;
+  }
+
+  /**
+   * @param $filename
+   *
+   * @return array
+   */
+  private function _getAllPossibleFilenames($filename)
+  {
+    $filenameParts = explode(".", $filename);
+    $filenameExtension = array_pop($filenameParts);
+    $filenameName = implode(".", $filenameParts);
+
+    return array(
+      "{$filenameName}.pre.{$filenameExtension}",
+      "{$filenameName}.{$filenameExtension}",
+      "{$filenameName}.post.{$filenameExtension}"
+    );
+  }
+
+  /**
+   * @param $filename
+   *
+   * @return bool
+   */
+  private function _shouldMap($filename)
+  {
+    $shouldMap = true;
+
+    $ignoredFilenameEntries = array_merge(
+      $this->_ignoredDirectories, $this->_ignoredFiles
+    );
+    if(in_array($filename, $ignoredFilenameEntries))
+    {
+      $shouldMap = false;
+    }
+
+    if(\substr($filename, 0, 1) == '.')
+    {
+      $shouldMap = false;
+    }
+
+    return $shouldMap;
   }
 
   /**
