@@ -222,4 +222,17 @@ class Fabricate
     }
     return $this;
   }
+
+  public static function getAllFilenamesOrdered($filename)
+  {
+    $filenameParts = explode(".", $filename);
+    $filenameExtension = array_pop($filenameParts);
+    $filenameName = implode(".", $filenameParts);
+
+    return array(
+      "pre"  => "{$filenameName}.pre.{$filenameExtension}",
+      "main" => "{$filenameName}.{$filenameExtension}",
+      "post" => "{$filenameName}.post.{$filenameExtension}"
+    );
+  }
 }

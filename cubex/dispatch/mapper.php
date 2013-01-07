@@ -240,7 +240,7 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
   {
     $content = '';
     $directories = $this->_getBrandDirectoryList($baseDirectory);
-    $filenames = $this->_getAllPossibleFilenames($filename);
+    $filenames = Fabricate::getAllFilenamesOrdered($filename);
 
     array_walk(
       $directories,
@@ -303,24 +303,6 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
     }
 
     return $directories;
-  }
-
-  /**
-   * @param $filename
-   *
-   * @return array
-   */
-  private function _getAllPossibleFilenames($filename)
-  {
-    $filenameParts = explode(".", $filename);
-    $filenameExtension = array_pop($filenameParts);
-    $filenameName = implode(".", $filenameParts);
-
-    return array(
-      "{$filenameName}.pre.{$filenameExtension}",
-      "{$filenameName}.{$filenameExtension}",
-      "{$filenameName}.post.{$filenameExtension}"
-    );
   }
 
   /**
