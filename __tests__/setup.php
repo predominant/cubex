@@ -10,7 +10,7 @@
 namespace Cubex\Tests
 {
   use Cubex\Cubex;
-  use Cubex\Data\SQLModel;
+  use Cubex\Model\SQLModel;
   use Cubex\Type\Enum;
 
   require_once dirname(dirname(__FILE__)) . '/cubex/cubex.php';
