@@ -164,7 +164,7 @@ class Fabricate
     {
       if(self::$_baseMap === null)
       {
-        $this->loadBaseMap();
+        $this->_loadBaseMap();
       }
       if(isset(self::$_baseMap[$path]))
       {
@@ -175,7 +175,7 @@ class Fabricate
     {
       if($this->_entityMap === null)
       {
-        $this->loadEntityMap();
+        $this->_loadEntityMap();
       }
 
       if(isset($this->_entityMap[$path]))
@@ -190,7 +190,7 @@ class Fabricate
   /**
    * @return Fabricate
    */
-  protected function loadEntityMap()
+  protected function _loadEntityMap()
   {
     try
     {
@@ -208,7 +208,7 @@ class Fabricate
    *
    * @return Fabricate
    */
-  protected function loadBaseMap()
+  protected function _loadBaseMap()
   {
     try
     {
