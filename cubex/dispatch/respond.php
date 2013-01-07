@@ -152,38 +152,89 @@ class Respond implements Dispatchable
   {
     $basePath = Cubex::core()->projectBasePath() . DIRECTORY_SEPARATOR . $entityPath;
 
+    $filePathParts = \explode("/", $filePath);
+    $filename = \array_pop($filePathParts);
+    $filenameExtension = \end(\explode(".", $filename));
+    $filenames = Fabricate::getAllFilenamesOrdered($filename);
+    $filenamesOrder = \array_keys($filenames);
+    $subDirectory = \implode("/", $filePathParts);
+    $locateList  = array();
+    foreach($filenamesOrder as $filenameOrder)
+    {
+      $locateList[$filenameOrder] = array();
+    }
+
     if($domain !== null && !empty($domain))
     {
-      $locateList  = array();
       $domainParts = \explode('.', $domain);
       $domainPath  = '';
+      $filenamesOrderReverse = \array_reverse($filenamesOrder);
+
       foreach($domainParts as $dpart)
       {
-        //Prepend with . on domain to avoid conflicts in standard resources
+        // Prepend with . on domain to avoid conflicts in standard resources
         $domainPath .= '.' . $dpart;
-        $locateList[] = $basePath . DIRECTORY_SEPARATOR . $domainPath . DIRECTORY_SEPARATOR . $filePath;
-      }
-      $locateList = \array_reverse($locateList);
-    }
+        $locateFilePath = $basePath . DIRECTORY_SEPARATOR . $domainPath;
+        $locateFilePath .= DIRECTORY_SEPARATOR . $subDirectory;
+        $locateFilePath .= DIRECTORY_SEPARATOR;
 
-    $locateList[] = $basePath . DIRECTORY_SEPARATOR . $filePath;
-
-    foreach($locateList as $file)
-    {
-      try
-      {
-        $data = \file_get_contents($file);
-        if(!empty($data))
+        foreach($filenamesOrderReverse as $fileKey)
         {
-          $data = $this->dispatchContent($data);
-          return $this->minifyData($data, \end(\explode('.', $filePath)));
+          $locateList[$fileKey][] = $locateFilePath . $filenames[$fileKey];
         }
       }
-      catch(\Exception $e)
+
+      foreach($filenamesOrderReverse as $fileKey)
       {
+        $locateList[$fileKey] = \array_reverse($locateList[$fileKey]);
       }
     }
-    return "";
+
+    $locateFilePath = $basePath . DIRECTORY_SEPARATOR . $subDirectory;
+    $locateFilePath .= DIRECTORY_SEPARATOR;
+    foreach($filenamesOrder as $fileKey)
+    {
+      $locateList[$fileKey][] = $locateFilePath . $filenames[$fileKey];
+    }
+
+    $data = "";
+    $locatedFileKeys = array();
+
+    foreach($locateList as $fileKey => $files)
+    {
+      foreach($files as $file)
+      {
+        if(\array_key_exists($fileKey, $locatedFileKeys))
+        {
+          continue;
+        }
+
+        try
+        {
+          $fileData = \file_get_contents($file);
+
+          if(!empty($fileData))
+          {
+            $data .= $this->dispatchContent($fileData);
+          }
+
+          if($fileData !== false)
+          {
+            $locatedFileKeys[$fileKey] = true;
+          }
+        }
+        catch(\Exception $e)
+        {
+        }
+      }
+    }
+
+    if(!empty($data))
+    {
+      $data = $this->minifyData($data, $filenameExtension);
+    }
+
+    return $data;
   }
 
   /**
@@ -213,7 +264,7 @@ class Respond implements Dispatchable
 
     if(!$resources)
     {
-      $resources = Mapper::mapDirectory($basePath);
+      $resources = (new Mapper())->mapDirectory($basePath);
       if($this->_useMap)
       {
         Mapper::saveMap($resources, $basePath);
