@@ -21,7 +21,9 @@ class Router
     foreach($routes as $route => $control)
     {
       //Parse route
-      $attempt = $this->tryRoute($prepend . $route . (empty($route) ? '$' : ''), $path);
+      $attempt = $this->tryRoute(
+        $prepend . $route . (empty($route) ? '$' : ''), $path
+      );
 
       //Import any matched URI Data
       if($attempt[0] && \is_array($attempt[1]))
@@ -80,7 +82,18 @@ class Router
     /* Allow Simple Routes */
     if(!$second && !$match && \stristr($route, ':'))
     {
-      $retry = \preg_replace("/\:(_?[a-zA-Z]+)/", "(?P<$1>[^\/]+)", $route);
+      $retry = \preg_replace(
+        "/\:(_?[a-zA-Z]+)\@alpha/", "(?P<$1>\w+)/", $route
+      );
+      $retry = \preg_replace(
+        "/\:(_?[a-zA-Z]+)\@all/", "(?P<$1>.*)/", $retry
+      );
+      $retry = \preg_replace(
+        "/\:(_?[a-zA-Z]+)\@num/", "(?P<$1>[1-9]\d*)/", $retry
+      );
+      $retry = \preg_replace("/\:(_?[a-zA-Z]+)/", "(?P<$1>[^\/]+)/", $retry);
+
+      $retry = str_replace('//', '/', $retry);
 
       return $this->tryRoute($retry, $path, true);
     }
