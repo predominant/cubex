@@ -34,7 +34,7 @@ class Router
         }
       }
 
-      if(\is_array($control))
+      if($attempt[0] && \is_array($control))
       {
         $this->_processedRoute = $prepend . $route;
 
@@ -71,8 +71,10 @@ class Router
   protected function tryRoute($route, $path, $second = false)
   {
     if(\substr($path, -1) != '/') $path = $path . '/';
-    $data = $matches = array();
+    if(\substr($route, -1) != '/') $route = $route . '/';
+    $data  = $matches = array();
     $match = \preg_match("#^$route#", $path, $matches);
+
     foreach($matches as $k => $v)
     {
       //Strip out all non declared matches
