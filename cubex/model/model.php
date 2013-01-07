@@ -15,6 +15,7 @@ abstract class Model
 {
   protected $_attributes;
   protected $_invalidAttributes;
+  protected $_exists = false;
 
   //TODO: on load, store data results in ephemeral to stop re-collecting data from source
   protected static $_ephemeralDatastore;
@@ -59,9 +60,7 @@ abstract class Model
    */
   public function getIterator()
   {
-    $attrs = $this->_getRawAttributesArr($this->_attributes);
-
-    return new \ArrayIterator($attrs);
+    return new \ArrayIterator($this->_getRawAttributesArr($this->_attributes));
   }
 
   /**
@@ -107,6 +106,17 @@ abstract class Model
     }
 
     return $rawAttributes;
+  }
+
+  public function exists()
+  {
+    return $this->_exists;
+  }
+
+  public function setExists($bool = true)
+  {
+    $this->_exists = $bool;
+    return $this;
   }
 
   /**
@@ -420,6 +430,26 @@ abstract class Model
         }
       }
     }
+
+    return $this;
+  }
+
+  /**
+   * @param array $data
+   *
+   * @return Model
+   */
+  public function hydrate(array $data)
+  {
+    foreach($data as $k => $v)
+    {
+      if($this->attributeExists($k))
+      {
+        $set = "set$k";
+        $this->$set($this->attribute($k)->unserialize($v));
+      }
+    }
+    $this->unmodifyAttributes();
 
     return $this;
   }

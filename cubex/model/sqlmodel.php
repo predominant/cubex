@@ -9,6 +9,7 @@
 namespace Cubex\Model;
 
 use Cubex\Cubex;
+use Cubex\Logger\Debug;
 
 /**
  * Database Model
@@ -19,7 +20,7 @@ abstract class SQLModel extends DataModel
   /**
    * Recommended to override this method in your models
    */
-  public function dataConnection()
+  protected function dataConnection()
   {
     return Cubex::core()->getServiceManager()->db();
   }
@@ -37,10 +38,14 @@ abstract class SQLModel extends DataModel
     $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
     if(\count($data) > 1)
+    {
       throw new \Exception("More than one result in loadOneWhere() $pattern");
+    }
     $data = \reset($data);
     if($data)
-      return $this->loadFromArray($data);
+    {
+      return $this->hydrate($data);
+    }
     else return false;
   }
 
@@ -56,7 +61,9 @@ abstract class SQLModel extends DataModel
     $data = \call_user_func_array(array($this, 'loadRawWhere'), $args);
 
     if($data)
-      return $this->loadMultiFromArray($data);
+    {
+      return $this->multiHydrate($data);
+    }
     else return false;
   }
 
@@ -69,16 +76,18 @@ abstract class SQLModel extends DataModel
   {
     $data = $this->loadRawWhere($columns, "1=1");
     if($data)
-      return $this->loadMultiFromArray($data);
+    {
+      return $this->multiHydrate($data);
+    }
     else return false;
   }
 
   /**
-   * @param SearchObject $o
+   * @param \Cubex\Data\SearchObject $o
    *
    * @return array|bool
    */
-  public function loadMatches(SearchObject $o)
+  public function loadMatches(\Cubex\Data\SearchObject $o)
   {
     return self::loadAllWhere("%QO", $o);
   }
@@ -110,7 +119,9 @@ abstract class SQLModel extends DataModel
     {
       $columns = \explode(',', $columns);
       if(!\is_array($columns))
+      {
         $columns = array($columns);
+      }
       \array_unshift($args, $columns);
     }
     else
@@ -121,7 +132,7 @@ abstract class SQLModel extends DataModel
     $pattern = 'SELECT ' . $column . ' FROM %T WHERE ' . $pattern;
     \array_unshift($args, $pattern);
 
-    $query = Sprintf::parseQuery($this->dataConnection("r"), $args);
+    $query = \Cubex\Data\Sprintf::parseQuery($this->dataConnection("r"), $args);
 
     if($query !== false)
     {
@@ -138,16 +149,18 @@ abstract class SQLModel extends DataModel
    */
   public function load($id, $columns = array("*"))
   {
+    $this->setExists(false);
     if(\is_array($id))
     {
       $id = $this->composeID($id);
     }
 
     $data = $this->loadRawWhere($columns, $this->idPattern(), $this->getIDKey(), $id);
-    if(is_array($data))
+    if(is_array($data) && !empty($data))
     {
-      $this->loadFromStdClass(\current($data));
-
+      $this->{$this->getIDKey()} = $id;
+      $this->hydrate((array)\current($data));
+      $this->setExists(true);
       return true;
     }
     else return false;
@@ -175,17 +188,15 @@ abstract class SQLModel extends DataModel
   public function saveChanges()
   {
     $modified = $this->getModifiedAttributes();
-    $updates  = array();
+    $updates  = $inserts = array();
     foreach($modified as $attr)
     {
-      if($attr instanceof Attribute)
+      if($attr instanceof \Cubex\Data\Attribute)
       {
         if($attr->isModified())
         {
-          /*echo "\n<br/>";
-          echo "Setting: " . $attr->getName() . "\n<br/>";
-          echo "Changing from " . $attr->originalData() . " to " . $attr->rawData() . "\n<br/>";*/
-          $updates[] = Sprintf::parseQuery(
+          $inserts[$attr->getName()] = $attr->serialize();
+          $updates[]                 = \Cubex\Data\Sprintf::parseQuery(
             $this->dataConnection("w"), array("%C = %ns", $attr->getName(), $attr->serialize())
           );
           $attr->unsetModified();
@@ -193,9 +204,44 @@ abstract class SQLModel extends DataModel
       }
     }
 
-    $pattern = 'UPDATE %T SET ' . implode(', ', $updates) . ' WHERE ' . $this->idPattern();
-    $args    = array($pattern, $this->getTableName(), $this->getIDKey(), $this->getID());
-    $query   = Sprintf::parseQuery($this->dataConnection("w"), $args);
+    if(empty($updates))
+    {
+      return true;
+    }
+
+    if(!$this->exists())
+    {
+      $pattern = "INSERT INTO %T (%LC) VALUES(%Ls)";
+
+      $args = array(
+        $this->getTableName(),
+        array_keys($inserts),
+        array_values($inserts),
+      );
+
+      if($this->getID() !== null)
+      {
+        $pattern .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $updates);
+        $pattern .= ' WHERE ' . $this->idPattern();
+        $args[] = $this->getIDKey();
+        $args[] = $this->getID();
+      }
+
+      array_unshift($args, $pattern);
+
+      $query = \Cubex\Data\Sprintf::parseQuery(
+        $this->dataConnection("w"),
+        $args
+      );
+    }
+    else
+    {
+      $pattern = 'UPDATE %T SET ' . implode(', ', $updates) . ' WHERE ' . $this->idPattern();
+      $args    = array($pattern, $this->getTableName(), $this->getIDKey(), $this->getID());
+      $query   = \Cubex\Data\Sprintf::parseQuery($this->dataConnection("w"), $args);
+    }
+
+    Debug::info($query, 0, 'Query');
 
     return $this->dataConnection()->query($query);
   }

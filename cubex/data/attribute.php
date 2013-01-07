@@ -98,10 +98,15 @@ class Attribute
 
   public function setData($data)
   {
-    if(!$this->isModified())
+    if($data == $this->_data)
+    {
+      return true;
+    }
+    else if(!$this->isModified())
     {
       $this->_originalData = $this->_data;
     }
+
     $this->_populated = $data !== null;
     $this->_data      = $data;
     $this->_modified  = true;

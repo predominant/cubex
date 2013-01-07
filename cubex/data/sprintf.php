@@ -97,7 +97,7 @@ class Sprintf
 
     if($arg != ($argc - 1))
     {
-      throw new \Exception("Too many arguments to Sprintf::call().");
+      throw new \Exception("Too many arguments to Sprintf::call() expected $arg got $argc.");
     }
 
     $argv[0] = $pattern;
@@ -219,13 +219,19 @@ class Sprintf
                 switch($value->getMatchType($k))
                 {
                   case '~':
-                    $qu[] = $connection->escapeColumnName($k) . " LIKE '%" . $connection->escapeString($v) . "%'";
+                    $qu[] = $connection->escapeColumnName(
+                      $k
+                    ) . " LIKE '%" . $connection->escapeString($v) . "%'";
                     break;
                   case '>':
-                    $qu[] = $connection->escapeColumnName($k) . " LIKE '" . $connection->escapeString($v) . "%'";
+                    $qu[] = $connection->escapeColumnName(
+                      $k
+                    ) . " LIKE '" . $connection->escapeString($v) . "%'";
                     break;
                   case '<':
-                    $qu[] = $connection->escapeColumnName($k) . " LIKE '%" . $connection->escapeString($v) . "'";
+                    $qu[] = $connection->escapeColumnName(
+                      $k
+                    ) . " LIKE '%" . $connection->escapeString($v) . "'";
                     break;
                   case '=':
                     $qu[] = $connection->escapeColumnName($k) . " = " . $val;

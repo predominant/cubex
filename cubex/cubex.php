@@ -544,7 +544,10 @@ final class Cubex
     switch($code)
     {
       case E_WARNING:
-        throw new \Exception($message, $code);
+        throw new \Exception(
+          "$message\nFile: $file\nLine:$line\nContext:" . json_encode($context),
+          $code
+        );
       default:
         break;
     }

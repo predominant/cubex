@@ -9,6 +9,7 @@
 namespace Cubex\Model;
 
 use Cubex\Base\Callback;
+use Cubex\Data\Attribute;
 
 /**
  * Base DataModel
@@ -34,6 +35,20 @@ abstract class DataModel extends Model implements \IteratorAggregate, \JsonSeria
    * Base ID on multiple keys
    */
   const ID_COMPOSITE_SPLIT = 'compositesplit';
+
+  public function __construct()
+  {
+    parent::__construct();
+    /**
+     * Add the default ID
+     */
+    if(!$this->attributeExists($this->getIDKey()))
+    {
+      $this->addAttribute(new Attribute($this->getIDKey()));
+    }
+  }
+
+  //TODO: Add Created & Updated attributes
 
   /**
    * @return mixed
@@ -167,8 +182,13 @@ abstract class DataModel extends Model implements \IteratorAggregate, \JsonSeria
    *
    * @return bool
    */
-  public function load($id, $columns = array("*"))
+  public function load($id, array $columns = array("*"))
   {
+    if(empty($columns))
+    {
+      $columns = ['*'];
+    }
+
     if(\is_array($id))
     {
       $id = $this->composeID($id);
@@ -203,31 +223,11 @@ abstract class DataModel extends Model implements \IteratorAggregate, \JsonSeria
   }
 
   /**
-   * @param array $data
-   *
-   * @return Model
-   */
-  public function loadFromArray(array $data)
-  {
-    foreach($data as $k => $v)
-    {
-      if($this->attributeExists($k))
-      {
-        $set = "set$k";
-        $this->$set($this->attribute($k)->unserialize($v));
-      }
-    }
-    $this->unmodifyAttributes();
-
-    return $this;
-  }
-
-  /**
    * @param array $rows
    *
    * @return array
    */
-  public function loadMultiFromArray(array $rows)
+  public function multiHydrate(array $rows)
   {
     $result = array();
     $id     = $this->getIDKey();
@@ -238,14 +238,14 @@ abstract class DataModel extends Model implements \IteratorAggregate, \JsonSeria
       {
         if($id && isset($row->$id))
         {
-          $result[$row->$id] = $object->loadFromArray((array)$row);
+          $result[$row->$id] = $object->hydrate((array)$row);
         }
       }
       else if(\is_array($row))
       {
         if($id && isset($row[$id]))
         {
-          $result[$row[$id]] = $object->loadFromArray($row);
+          $result[$row[$id]] = $object->hydrate($row);
         }
       }
     }
