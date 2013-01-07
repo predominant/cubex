@@ -71,7 +71,7 @@ class Router
   protected function tryRoute($route, $path, $second = false)
   {
     if(\substr($path, -1) != '/') $path = $path . '/';
-    $data  = $matches = array();
+    $data = $matches = array();
     $match = \preg_match("#^$route#", $path, $matches);
     foreach($matches as $k => $v)
     {
@@ -83,17 +83,21 @@ class Router
     if(!$second && !$match && \stristr($route, ':'))
     {
       $retry = \preg_replace(
-        "/\:(_?[a-zA-Z]+)\@alpha/", "(?P<$1>\w+)/", $route
+        "/\:(_?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\@alpha/", "(?P<$1>\w+)/", $route
       );
       $retry = \preg_replace(
-        "/\:(_?[a-zA-Z]+)\@all/", "(?P<$1>.*)/", $retry
+        "/\:(_?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\@all/", "(?P<$1>.*)/", $retry
       );
       $retry = \preg_replace(
-        "/\:(_?[a-zA-Z]+)\@num/", "(?P<$1>[1-9]\d*)/", $retry
+        "/\:(_?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\@num/", "(?P<$1>[1-9]\d*)/", $retry
       );
-      $retry = \preg_replace("/\:(_?[a-zA-Z]+)/", "(?P<$1>[^\/]+)/", $retry);
+      $retry = \preg_replace(
+        "/\:(_?[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)/", "(?P<$1>[^\/]+)/", $retry
+      );
 
       $retry = str_replace('//', '/', $retry);
+
+      var_dump($retry);
 
       return $this->tryRoute($retry, $path, true);
     }
