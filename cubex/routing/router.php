@@ -97,8 +97,6 @@ class Router
 
       $retry = str_replace('//', '/', $retry);
 
-      var_dump($retry);
-
       return $this->tryRoute($retry, $path, true);
     }
 
