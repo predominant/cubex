@@ -219,7 +219,6 @@ _  /  / / / /_/ /__  /_/ /_  /_/ /  __/  /
                   $directory, $subDirectory, $filename
                 )
               );
-              echo $map[$safeRel] . PHP_EOL;
             }
           }
         }
