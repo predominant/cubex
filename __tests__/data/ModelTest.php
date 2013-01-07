@@ -41,9 +41,9 @@ class Data_ModelTest extends \PHPUnit_Framework_TestCase
 
   public function testToString()
   {
-    $modelToStringExpected = "Cubex\\Tests\\Model {foo = bar, bar = foo}";
+    $modelToString = "Cubex\\Tests\\Model {foo = bar, bar = foo}";
 
-    $this->assertEquals($modelToStringExpected, (string)$this->_model);
+    $this->assertEquals($modelToString, (string)$this->_model);
   }
 
   public function testGetAndSet()

@@ -111,6 +111,15 @@ namespace Cubex\Tests
     const __default = "0";
   }
 
+  /**
+   * @method Model getFoo()
+   * @method Model getBar()
+   * @method Model setFoo()
+   * @method Model setBar()
+   *
+   * @method Model setTestSet()
+   * @method Model getTestGet()
+   */
   class Model extends SQLModel
   {
     public $foo = 'bar';
