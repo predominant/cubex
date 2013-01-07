@@ -279,14 +279,16 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
       $action = $this->defaultAction();
     }
 
+    $params = [];
     if($action !== null)
     {
       foreach($router->getRouteData() as $k => $v)
       {
+        $params[] = $v;
         $this->setData($k, $v);
       }
 
-      return $this->processRouteReturn($action);
+      return $this->processRouteReturn($action, $params);
     }
 
     throw new \Exception("Unable to route request");
@@ -301,11 +303,12 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
    * @returns Response
    * @throws \BadMethodCallException
    * */
-  protected function processRouteReturn($action)
+  protected function processRouteReturn($action, $params = [])
   {
     if($action === null)
     {
-      throw new \BadMethodCallException("No action specified on " . $this->controllerName());
+      throw new \BadMethodCallException("No action specified on " . $this->controllerName(
+      ));
     }
 
     if($this->request()->isAjax())
@@ -329,10 +332,11 @@ abstract class BaseController implements Dispatchable, \IteratorAggregate
     $attempt = 'render' . \ucfirst($action);
     if(\method_exists($this, $attempt))
     {
-      return $this->$attempt();
+      return call_user_func_array([$this, $attempt], $params);
     }
 
-    throw new \BadMethodCallException("Invalid action $action specified on " . $this->controllerName());
+    throw new \BadMethodCallException("Invalid action $action specified on " . $this->controllerName(
+    ));
   }
 
   /**
