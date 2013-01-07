@@ -90,7 +90,9 @@ final class Cubex
 
     $hash = md5(serialize($_SERVER));
 
-    return substr(md5(implode('.', $host)), 0, 10) . time() . substr($hash, 0, 8);
+    return substr(md5(implode('.', $host)), 0, 10) . time() . substr(
+      $hash, 0, 8
+    );
   }
 
   /**
@@ -111,25 +113,31 @@ final class Cubex
     define("CUBEX_WEB", isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']));
     define("CUBEX_CLI", isset($_SERVER['CUBEX_CLI']));
     define("WEB_ROOT", CUBEX_WEB ? $_SERVER['DOCUMENT_ROOT'] : false);
-    $dirName = \dirname(__FILE__);
-    define("CUBEX_ROOT", \substr(\dirname(__FILE__), -5) == 'cache' ? $dirName : \dirname(
-      $dirName
-    ));
+    if(!defined('CUBEX_ROOT'))
+    {
+      define("CUBEX_ROOT", dirname(dirname(__FILE__)));
+    }
 
     if(CUBEX_WEB && !isset($_REQUEST['__path__']))
     {
-      Cubex::fatal("__path__ is not set. Your rewrite rules are not configured correctly.");
+      Cubex::fatal(
+        "__path__ is not set. Your rewrite rules are not configured correctly."
+      );
     }
 
     $cubex = self::core(); //Construct Cubex
     Events::trigger(Events::CUBEX_LAUNCH, [], $cubex);
-    Events::listen(Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responseDebugInfo'));
+    Events::listen(
+      Events::CUBEX_RESPONSE_PREPARE, array($cubex, 'responseDebugInfo')
+    );
 
     $cubex->_serviceManager = new ServiceManager();
     $dispatcher             = null;
     $request                = new Request($_REQUEST['__path__']);
     Cubex::core()->setRequest($request);
-    self::configureServiceManager($cubex->_serviceManager, $cubex->configuration());
+    self::configureServiceManager(
+      $cubex->_serviceManager, $cubex->configuration()
+    );
 
     $response = new Response();
     $response->addHeader("X-Cubex-TID", CUBEX_TRANSACTION);
@@ -149,7 +157,9 @@ final class Cubex
     }
     else if(CUBEX_WEB)
     {
-      list($verify, $dispatchPath) = \explode('/', \ltrim($_REQUEST['__path__'], '/'), 2);
+      list($verify, $dispatchPath) = \explode(
+        '/', \ltrim($_REQUEST['__path__'], '/'), 2
+      );
 
       if(Cubex::config("dispatch")->getStr('base', 'res') == $verify)
       {
@@ -161,7 +171,9 @@ final class Cubex
       }
       else
       {
-        $loaderClass = Cubex::config("project")->getStr("dispatcher", '\Cubex\Applications\Loader');
+        $loaderClass = Cubex::config("project")->getStr(
+          "dispatcher", '\Cubex\Applications\Loader'
+        );
         if(class_exists($loaderClass))
         {
           $dispatcher = new $loaderClass();
@@ -299,7 +311,9 @@ final class Cubex
   {
     try
     {
-      $this->_configuration = \parse_ini_file(CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true);
+      $this->_configuration = \parse_ini_file(
+        CUBEX_ROOT . '/conf/' . CUBEX_ENV . '.ini', true
+      );
       if(isset($this->_configuration['general']['include_path']))
       {
         $applicationDir = $this->_configuration['general']['include_path'];
@@ -317,7 +331,9 @@ final class Cubex
     }
     catch(\Exception $e)
     {
-      self::fatal("Configuration file missing or invalid for '" . CUBEX_ENV . "' environment");
+      self::fatal(
+        "Configuration file missing or invalid for '" . CUBEX_ENV . "' environment"
+      );
     }
   }
 
@@ -363,10 +379,14 @@ final class Cubex
           $namespace   = substr($class, 0, $lastNsPos);
           $class       = substr($class, $lastNsPos + 1);
           $includeFile = strtolower(
-            str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR
+            str_replace(
+              '\\', DIRECTORY_SEPARATOR, $namespace
+            ) . DIRECTORY_SEPARATOR
           );
         }
-        $includeFile .= strtolower(str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php');
+        $includeFile .= strtolower(
+          str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php'
+        );
       }
       include_once $includeFile;
     }
@@ -449,8 +469,12 @@ final class Cubex
         $shutdownContent = "Completed in: " . \number_format(
           (\microtime(true) - CUBEX_START), 4
         ) . " sec" .
-        " - " . \number_format(((\microtime(true) - CUBEX_START)) * 1000, 1) . " ms" .
-        "\nTransaction: " . (defined("CUBEX_TRANSACTION") ? CUBEX_TRANSACTION : 'UNKNOWN');
+        " - " . \number_format(
+          ((\microtime(true) - CUBEX_START)) * 1000, 1
+        ) . " ms" .
+        "\nTransaction: " . (defined(
+          "CUBEX_TRANSACTION"
+        ) ? CUBEX_TRANSACTION : 'UNKNOWN');
 
         if(\defined('CUBEX_FATAL_ERROR'))
         {
@@ -514,7 +538,8 @@ final class Cubex
    *
    * @throws \Exception
    */
-  final public static function errorHandler($code, $message, $file, $line, $context)
+  final public static function errorHandler($code, $message, $file, $line,
+                                            $context)
   {
     switch($code)
     {
@@ -554,7 +579,9 @@ final class Cubex
       \header("Content-Type: text/plain; charset=utf-8", true, 500);
     }
     echo "== Fatal Error ==\n";
-    echo "Environment: " . (defined("CUBEX_ENV") ? CUBEX_ENV : 'Undefined') . "\n\n";
+    echo "Environment: " . (defined(
+      "CUBEX_ENV"
+    ) ? CUBEX_ENV : 'Undefined') . "\n\n";
     echo $message . "\n";
     define("CUBEX_FATAL_ERROR", $message);
     exit(1);
