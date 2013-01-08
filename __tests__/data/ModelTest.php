@@ -19,7 +19,9 @@ class Data_ModelTest extends \PHPUnit_Framework_TestCase
   public function setUp()
   {
     $this->_model = new Model();
-    $this->_modelAttributes = array('foo' => 'bar', 'bar' => 'foo');
+    $this->_modelAttributes = array(
+      'foo' => 'bar', 'bar' => 'foo', 'id' => null
+    );
   }
 
   public function testClassImplementsJsonSerializable()
@@ -41,7 +43,7 @@ class Data_ModelTest extends \PHPUnit_Framework_TestCase
 
   public function testToString()
   {
-    $modelToString = "Cubex\\Tests\\Model {foo = bar, bar = foo}";
+    $modelToString = "Cubex\\Tests\\Model {foo = bar, bar = foo, id = }";
 
     $this->assertEquals($modelToString, (string)$this->_model);
   }
