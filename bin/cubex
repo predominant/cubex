@@ -1,0 +1,5 @@
+if which php-win >/dev/null; then
+    php-win cli.php "$*"
+else
+    php cli.php "$*"
+fi
