@@ -9,6 +9,8 @@
  * USAGE:
  * php /path_to_cubex/bin/cli.php "class_name" --env=ENVIRONENT
  *
+ * export CUBEX_ENV=environment; php /path_to_cubex/bin/cli.php Namespace.Namespace.ClassName
+ *
  */
 
 $script    = $_REQUEST['__path__'] = '';
@@ -16,13 +18,13 @@ $arguments = array();
 
 foreach($argv as $argi => $arg)
 {
-  if(substr($arg, 0, 6) == '--env=')
-  {
-    $_ENV['CUBEX_ENV'] = substr($arg, 6);
-  }
-  else if($argi == 1)
+  if($argi == 1)
   {
     $script = $_REQUEST['__path__'] = $arg;
+  }
+  else if(substr($arg, 0, 6) == '--env=')
+  {
+    $_ENV['CUBEX_ENV'] = substr($arg, 6);
   }
   else if($argi > 1)
   {
@@ -36,6 +38,16 @@ $_SERVER['CUBEX_CLI'] = true;
 require_once dirname(dirname(__FILE__)) . '/cubex/cubex.php';
 chdir(dirname(__FILE__));
 \Cubex\Cubex::boot();
+
+if(stristr($script, '.'))
+{
+  $script = str_replace('.', '\\', $script);
+}
+
+if(!class_exists($script))
+{
+  $script = 'Cubex\\' . $script;
+}
 
 if(class_exists($script))
 {
