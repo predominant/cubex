@@ -342,7 +342,7 @@ final class Cubex
    *
    * @param $area
    *
-   * @return Config
+   * @return \Cubex\Config\Config
    */
   public static function config($area)
   {
@@ -461,7 +461,11 @@ final class Cubex
    */
   public function responseDebugInfo(Event $e)
   {
-    if($this->_allowShutdownDetails)
+    if(!self::config('general')->getBool('debug', false))
+    {
+      return;
+    }
+    else if($this->_allowShutdownDetails)
     {
       $response = $e->getCallee();
       if($response instanceof Response)
