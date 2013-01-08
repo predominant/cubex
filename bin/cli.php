@@ -9,7 +9,8 @@
  * USAGE:
  * php /path_to_cubex/bin/cli.php "class_name" --env=ENVIRONENT
  *
- * export CUBEX_ENV=environment; php /path_to_cubex/bin/cli.php Namespace.Namespace.ClassName
+ * export CUBEX_ENV=environment;
+ * php /path_to_cubex/bin/cli.php Namespace.Namespace.ClassName
  *
  */
 
