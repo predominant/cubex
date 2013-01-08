@@ -20,7 +20,7 @@ abstract class SQLModel extends DataModel
   /**
    * Recommended to override this method in your models
    */
-  protected function dataConnection()
+  protected function _dataConnection()
   {
     return Cubex::core()->getServiceManager()->db();
   }
@@ -134,11 +134,11 @@ abstract class SQLModel extends DataModel
     $pattern = 'SELECT ' . $column . ' FROM %T WHERE ' . $pattern;
     \array_unshift($args, $pattern);
 
-    $query = \Cubex\Data\Sprintf::parseQuery($this->dataConnection("r"), $args);
+    $query = \Cubex\Data\Sprintf::parseQuery($this->_dataConnection("r"), $args);
 
     if($query !== false)
     {
-      return $this->dataConnection()->getRows($query);
+      return $this->_dataConnection()->getRows($query);
     }
     else return false;
   }
@@ -200,7 +200,7 @@ abstract class SQLModel extends DataModel
         {
           $inserts[$attr->getName()] = $attr->serialize();
           $updates[]                 = \Cubex\Data\Sprintf::parseQuery(
-            $this->dataConnection("w"), array("%C = %ns", $attr->getName(), $attr->serialize())
+            $this->_dataConnection("w"), array("%C = %ns", $attr->getName(), $attr->serialize())
           );
           $attr->unsetModified();
         }
@@ -233,7 +233,7 @@ abstract class SQLModel extends DataModel
       array_unshift($args, $pattern);
 
       $query = \Cubex\Data\Sprintf::parseQuery(
-        $this->dataConnection("w"),
+        $this->_dataConnection("w"),
         $args
       );
     }
@@ -241,11 +241,11 @@ abstract class SQLModel extends DataModel
     {
       $pattern = 'UPDATE %T SET ' . implode(', ', $updates) . ' WHERE ' . $this->idPattern();
       $args    = array($pattern, $this->getTableName(), $this->getIDKey(), $this->getID());
-      $query   = \Cubex\Data\Sprintf::parseQuery($this->dataConnection("w"), $args);
+      $query   = \Cubex\Data\Sprintf::parseQuery($this->_dataConnection("w"), $args);
     }
 
     Debug::info($query, 0, 'Query');
 
-    return $this->dataConnection()->query($query);
+    return $this->_dataConnection()->query($query);
   }
 }

@@ -147,7 +147,7 @@ abstract class DataModel extends Model implements \IteratorAggregate, \JsonSeria
   /**
    * @return mixed
    */
-  abstract protected function dataConnection();
+  abstract protected function _dataConnection();
 
 
   /**
