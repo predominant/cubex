@@ -59,7 +59,7 @@ abstract class View extends Dispatcher implements Renderable
    */
   public function t($message)
   {
-    return Application::getApp()->t($message);
+    return call_user_func_array(array(Application::getApp(), 't'), func_get_args());
   }
 
   /**

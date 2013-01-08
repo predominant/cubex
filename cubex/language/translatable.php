@@ -43,7 +43,17 @@ abstract class Translatable extends Dispatcher
    */
   public function t($message)
   {
-    return $this->getTranslator()->t($this->textDomain(), $message);
+    if(func_num_args() > 1)
+    {
+      $args = func_get_args();
+      array_shift($args);
+      $translation = $this->getTranslator()->t($this->textDomain(), $message);
+      return vsprintf($translation, $args);
+    }
+    else
+    {
+      return $this->getTranslator()->t($this->textDomain(), $message);
+    }
   }
 
   /**
@@ -83,7 +93,9 @@ abstract class Translatable extends Dispatcher
 
   public function textDomain()
   {
-    $path = \str_replace(\dirname(\dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath());
+    $path = \str_replace(
+      \dirname(\dirname($this->filePath())) . DIRECTORY_SEPARATOR, '', $this->filePath()
+    );
 
     $this->_textdomain = \md5($path);
 
@@ -96,7 +108,9 @@ abstract class Translatable extends Dispatcher
   {
     $this->_boundTd = true;
 
-    return $this->getTranslator()->bindLanguage($this->textDomain(), $this->filePath() . '\\locale');
+    return $this->getTranslator()->bindLanguage(
+      $this->textDomain(), $this->filePath() . '\\locale'
+    );
   }
 
   /**
