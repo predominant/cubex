@@ -44,7 +44,9 @@ abstract class SQLModel extends DataModel
     $data = \reset($data);
     if($data)
     {
-      return $this->hydrate($data);
+      $this->hydrate($data);
+      $this->unmodifyAttributes();
+      return $this;
     }
     else return false;
   }
@@ -161,6 +163,7 @@ abstract class SQLModel extends DataModel
       $this->{$this->getIDKey()} = $id;
       $this->hydrate((array)\current($data));
       $this->setExists(true);
+      $this->unmodifyAttributes();
       return true;
     }
     else return false;

@@ -449,7 +449,6 @@ abstract class Model
         $this->$set($this->attribute($k)->unserialize($v));
       }
     }
-    $this->unmodifyAttributes();
 
     return $this;
   }

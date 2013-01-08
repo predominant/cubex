@@ -103,6 +103,7 @@ class APIModel extends Model
     $this->_passthru = $this->_newPassthru();
     $this->_passthru->load($id, $attributes);
     $this->hydrate($this->_passthru);
+    $this->unmodifyAttributes();
     return $this;
   }
 
