@@ -342,7 +342,7 @@ final class Cubex
    *
    * @param $area
    *
-   * @return Config
+   * @return \Cubex\Traits\Data\Handler
    */
   public static function config($area)
   {
