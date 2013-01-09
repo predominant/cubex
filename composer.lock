@@ -1,0 +1,59 @@
+{
+    "hash": "4fdfe7243f4a1a8735d2c869ea90a459",
+    "packages": [
+        {
+            "name": "mobiledetect/mobiledetectlib",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/serbanghita/Mobile-Detect",
+                "reference": "ad0d45f100999b3ef07be99ec188a3475bebf54c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/serbanghita/Mobile-Detect/archive/ad0d45f100999b3ef07be99ec188a3475bebf54c.zip",
+                "reference": "ad0d45f100999b3ef07be99ec188a3475bebf54c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "time": "2013-01-08 11:35:32",
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Mobile_Detect.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Serban Ghita",
+                    "email": "serbanghita@gmail.com",
+                    "homepage": "http://mobiledetect.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Mobile_Detect is a lightweight PHP class for detecting mobile devices. It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.",
+            "homepage": "https://github.com/serbanghita/Mobile-Detect",
+            "keywords": [
+                "mobile",
+                "mobile detect",
+                "mobile detector",
+                "php mobile detect",
+                "detect mobile devices"
+            ]
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "mobiledetect/mobiledetectlib": 20
+    }
+}
