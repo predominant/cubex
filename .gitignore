@@ -4,3 +4,6 @@
 # ini files for testing without affecting git
 conf/*.ini
 !conf/development.ini
+
+
+/vendor
