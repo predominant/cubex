@@ -4,6 +4,7 @@
  */
 namespace Cubex\Platform;
 
+use Cubex\Config\Config;
 use Cubex\Cubex;
 
 class Detection implements DetectionInterface
@@ -28,14 +29,14 @@ class Detection implements DetectionInterface
   }
 
   /**
+   * @param \Cubex\Config\Config $config
    * @return Detection
    * @throws \RuntimeException
    */
-  public static function loadFromConfig()
+  public static function loadFromConfig(Config $config = null)
   {
-    $detectionClass = Cubex::config('project')->getStr(
-      static::DETECTION_CLASS_KEY, null
-    );
+    $config = $config ?: Cubex::config('project');
+    $detectionClass = $config->getStr(static::DETECTION_CLASS_KEY, null);
 
     if($detectionClass === null || empty($detectionClass))
     {
@@ -48,7 +49,11 @@ class Detection implements DetectionInterface
       );
     }
 
-    $detection = new $detectionClass();
+    $detection = null;
+    if(class_exists($detectionClass))
+    {
+      $detection = new $detectionClass();
+    }
 
     if(!$detection instanceof DetectionInterface)
     {

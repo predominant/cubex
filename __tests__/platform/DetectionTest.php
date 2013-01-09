@@ -44,7 +44,7 @@ class DetectionTest extends \PHPUnit_Framework_TestCase
     $this->_userAgents[self::USER_AGENT_DESKTOP][] = "Opera/9.80 (Macintosh; ".
       "Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00";
 
-    $class = Cubex::config('project')->getStr('platform_detection');
+    $class = Cubex::config('project')->getStr(Detection::DETECTION_CLASS_KEY);
     if($class === null || empty($class))
     {
       $this->_skip = "Platform Detection not available";
@@ -56,6 +56,14 @@ class DetectionTest extends \PHPUnit_Framework_TestCase
       {
         $this->_skip = "Platform Detection does not support setUserAgent()";
       }
+    }
+  }
+
+  private function _checkSkip()
+  {
+    if($this->_skip !== null)
+    {
+      $this->markTestSkipped($this->_skip);
     }
   }
 
@@ -91,11 +99,54 @@ class DetectionTest extends \PHPUnit_Framework_TestCase
     }
   }
 
-  private function _checkSkip()
+  public function testBothLoadOptions()
   {
-    if($this->_skip !== null)
-    {
-      $this->markTestSkipped($this->_skip);
-    }
+    $this->_checkSkip();
+
+    $this->assertEquals(Detection::loadFromConfig(), new Detection());
+  }
+
+  public function testCorrectExceptionsGetThrown()
+  {
+    $config = Cubex::core()->config('project');
+    $platformDetection = $config->getStr(Detection::DETECTION_CLASS_KEY);
+
+    $config->setData(Detection::DETECTION_CLASS_KEY, null);
+    $this->setExpectedException(
+      "\\RuntimeException",
+      "No platform detection class is set in your config<br />\n".
+      "Please set<br />\n".
+      "[project]<br />\n".
+      Detection::DETECTION_CLASS_KEY.
+      "={{Prefered Platform Detection Class}}"
+    );
+    Detection::loadFromConfig($config);
+
+    $config->setData(Detection::DETECTION_CLASS_KEY, "random");
+    $this->setExpectedException(
+      "\\RuntimeException",
+      "The detection class does not implement the correct interface;<br />\n".
+      "\\Cubex\\Platform\\DetectionInterface"
+    );
+    Detection::loadFromConfig($config);
+
+    $config->setData(Detection::DETECTION_CLASS_KEY, $platformDetection);
+  }
+
+  public function testExceptionThrownWhenSetUserAgentNotAvailable()
+  {
+    $mockDetection = $this->getMock(
+      "\\Cubex\\Platform\\Detection\\MobileDetectMobileDetectLib"
+    );
+    $mockDetection->expects($this->once())
+      ->method("canSetUserAgent")
+      ->will($this->returnArgument(false));
+
+    $this->setExpectedException(
+      "\\BadMethodCallException",
+      "This detection class does not support the setUserAgent() method"
+    );
+
+    (new Detection($mockDetection))->setUserAgent("");
   }
 }
